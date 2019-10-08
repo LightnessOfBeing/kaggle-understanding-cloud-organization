@@ -205,7 +205,7 @@ def get_optimal_postprocess(loaders=None,
         for t in range(0, 100, 10):
             t /= 100
           #  for ms in [0, 1000, 5000, 10000, 11000, 14000, 15000, 16000, 18000, 19000, 20000, 21000, 23000, 25000, 27000, 30000, 50000]:
-            for ms in [0, 1000, 5000, 10000, 11000]:
+            for ms in [5000]:
                 masks = []
                 for i in range(class_id, len(probabilities), 4):
                     probability = probabilities[i]

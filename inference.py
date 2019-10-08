@@ -47,4 +47,4 @@ def predict(loaders=None,
 
     sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['EncodedPixels'] = encoded_pixels
-    sub.to_csv(f'submissions/submission_{sub_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+    sub.to_csv(f'submission_{sub_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)

@@ -48,7 +48,7 @@ def get_training_augmentation2():
     return albu.Compose(train_transform)
 
 
-def get_validation_augmentation():
+def get_validation_augmentation(image_size: tuple = (320, 640)):
     test_transform = [
        # albu.Resize(*image_size)
     ]

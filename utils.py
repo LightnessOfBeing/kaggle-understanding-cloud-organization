@@ -1,3 +1,5 @@
+import json
+
 import matplotlib.pyplot as plt
 import cv2
 import numpy as np
@@ -230,3 +232,13 @@ def get_optimal_postprocess(loaders=None,
 
     print(class_params)
     return class_params
+
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, np.int64):
+            return int(obj)
+        if isinstance(obj, np.float32) or isinstance(obj, np.float64):
+            return float(obj)
+        return json.JSONEncoder.default(self, obj)

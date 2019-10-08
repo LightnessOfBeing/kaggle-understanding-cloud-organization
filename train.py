@@ -13,7 +13,7 @@ import json
 from dataset import prepare_loaders
 from models import get_model
 from optimizers import get_optimizer
-from utils import get_optimal_postprocess
+from utils import get_optimal_postprocess, NumpyEncoder
 from inference import predict
 from catalyst import utils
 from catalyst.utils import set_global_seed, prepare_cudnn
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         runner = SupervisedRunner(model=model)
         class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)
         with open(f'{logdir}/class_params.json', 'w') as f:
-            json.dump(class_params, f)
+            json.dump(class_params, f, cls=NumpyEncoder)
 
     if args.make_prediction:
         loaders['test'] = test_loader

@@ -1,6 +1,6 @@
 import pretrainedmodels
 import segmentation_models_pytorch as smp
-from .fpn import resnet34_fpn, effnetB4_fpn
+from fpn import resnet34_fpn, effnetB4_fpn
 import torch.nn as nn
 import torchvision
 import torch

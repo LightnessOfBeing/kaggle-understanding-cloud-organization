@@ -300,12 +300,12 @@ def prepare_loaders(path: str = '',
 
     """
 
-    train = pd.read_csv(f'{path}/train_all.csv')
+    train = pd.read_csv(f'{path}/train.csv')
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 
-    sub = train[train["is_train"] == 0]
-    train = train[train["is_train"] == 1]
+    #sub = train[train["is_train"] == 0]
+    #train = train[train["is_train"] == 1]
     
     id_mask_count = train.loc[~train['EncodedPixels'].isnull(), 'Image_Label'].apply(
         lambda x: x.split('_')[0]).value_counts(). \
@@ -322,7 +322,7 @@ def prepare_loaders(path: str = '',
 
         img_2_ohe_vector = {img: np.float32(vec) for img, vec in zip(train_df['im_id'], train_df.iloc[:, 2:].values)}
 
-  #  sub = pd.read_csv(f'{path}/sample_submission.csv')
+    sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['label'] = sub['Image_Label'].apply(lambda x: x.split('_')[1])
     sub['im_id'] = sub['Image_Label'].apply(lambda x: x.split('_')[0])
     test_ids = sub['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values

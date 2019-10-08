@@ -1,29 +1,25 @@
-import argparse
-import datetime
-import gc
-import json
-import os
-import warnings
-
-# from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
-import segmentation_models_pytorch as smp
 import torch
 import torch.nn as nn
-from catalyst import utils
-from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
-from catalyst.dl.runner import SupervisedRunner
-from catalyst.utils import set_global_seed, prepare_cudnn
-#from losses import FocalLoss, BCEMulticlassDiceLoss
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-#from callbacks import MulticlassDiceMetricCallback
+from catalyst.dl.runner import SupervisedRunner
+from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
+# from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
+import segmentation_models_pytorch as smp
+import datetime
+import argparse
+import warnings
+import gc
+import json
 from dataset import prepare_loaders
-from inference import predict
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess
-
+from inference import predict
+from catalyst import utils
+from catalyst.utils import set_global_seed, prepare_cudnn
+import os
 warnings.filterwarnings("once")
+
 
 if __name__ == '__main__':
     """
@@ -80,6 +76,7 @@ if __name__ == '__main__':
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task)
     test_loader = loaders['test']
     del loaders['test']
+
     model = get_model(model_type=args.segm_type, encoder=args.encoder, encoder_weights=args.encoder_weights,
                       activation=None, task=args.task)
 

@@ -304,9 +304,6 @@ def prepare_loaders(path: str = '',
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 
-    #sub = train[train["is_train"] == 0]
-    #train = train[train["is_train"] == 1]
-    
     id_mask_count = train.loc[~train['EncodedPixels'].isnull(), 'Image_Label'].apply(
         lambda x: x.split('_')[0]).value_counts(). \
         reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'})

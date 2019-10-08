@@ -12,7 +12,7 @@ def get_training_augmentation(augmentation: str = 'default', image_size: tuple =
     }
 
     assert augmentation in LEVELS.keys()
-    return LEVELS[augmentation](image_size)
+    return LEVELS[augmentation]()
 
 
 def get_training_augmentation0():

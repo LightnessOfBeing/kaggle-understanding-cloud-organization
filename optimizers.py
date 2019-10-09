@@ -4,8 +4,9 @@ from torch.optim.optimizer import Optimizer
 import math
 import itertools as it
 import torch.optim as optim
+from catalyst.contrib.optimizers import RAdam, Lookahead
 warnings.filterwarnings("once")
-
+import catalyst
 
 class Ranger(Optimizer):
 
@@ -203,7 +204,7 @@ class RAdam(Optimizer):
 
 # https://github.com/lonePatient/lookahead_pytorch/blob/master/optimizer.py
 
-
+'''
 class Lookahead(Optimizer):
     def __init__(self, base_optimizer,alpha=0.5, k=6):
         if not 0.0 <= alpha <= 1.0:
@@ -237,7 +238,7 @@ class Lookahead(Optimizer):
                 q.data.add_(self.alpha,p.data - q.data)
                 p.data.copy_(q.data)
         return loss
-
+'''
 
 class Ralamb(Optimizer):
     '''
@@ -362,13 +363,13 @@ def get_optimizer(optimizer: str = 'Adam',
     if optimizer == 'Adam':
         optimizer = optim.Adam(params, lr=lr)
     elif optimizer == 'RAdam':
-        optimizer = RAdam(params, lr=lr)
+        optimizer = catalyst.contrib.optimizers.RAdam(params, lr=lr, weight_decay=0.0003)
     elif optimizer == 'Ralamb':
         optimizer = Ralamb(params, lr=lr)
     else:
         raise ValueError('unknown base optimizer type')
 
     if lookahead:
-        optimizer = Lookahead(base_optimizer=optimizer, k=5, alpha=0.5)
+        optimizer = catalyst.contrib.optimizers.Lookahead(optimizer=optimizer, k=5, alpha=0.5)
 
     return optimizer

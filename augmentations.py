@@ -1,3 +1,5 @@
+import cv2
+
 import albumentations as albu
 
 
@@ -32,7 +34,8 @@ def get_training_augmentation(augmentation: str='default', image_size: tuple = (
     LEVELS = {
         'default': get_training_augmentation0,
         '1': get_training_augmentation1,
-        '2': get_training_augmentation2
+        '2': get_training_augmentation2,
+        '3': get_training_augmentation3
     }
 
     assert augmentation in LEVELS.keys()
@@ -95,6 +98,49 @@ def get_training_augmentation2(image_size: tuple = (320, 640)):
         albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.2),
         albu.Blur(),
         albu.RandomBrightnessContrast()
+    ]
+    return albu.Compose(train_transform)
+
+
+def get_training_augmentation3(image_size: tuple = (320, 640)):
+    """
+
+    Args:
+        image_size:
+
+    Returns:
+
+    """
+    train_transform = [
+        albu.OneOf([
+            albu.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.1,
+                                  rotate_limit=15,
+                                  border_mode=cv2.BORDER_CONSTANT, value=0),
+            albu.OpticalDistortion(distort_limit=0.11, shift_limit=0.15,
+                                   border_mode=cv2.BORDER_CONSTANT,
+                                   value=0),
+            albu.NoOp()
+        ]),
+        albu.OneOf([
+            albu.ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
+            albu.GridDistortion(p=0.5),
+            albu.NoOp()
+        ]),
+        albu.OneOf(
+            [albu.RandomBrightnessContrast(brightness_limit=0.5, contrast_limit=0.4),
+             albu.RGBShift(r_shift_limit=20, b_shift_limit=15, g_shift_limit=15),
+             albu.HueSaturationValue(hue_shift_limit=5,
+                                     sat_shift_limit=5),
+             albu.NoOp()]),
+        albu.OneOf([
+            albu.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=False, p=0.4),
+            albu.NoOp()
+        ]),
+        albu.OneOf(
+            [albu.GaussNoise(p=0.4),
+             albu.GaussianBlur(p=0.4),
+             albu.NoOp()]),
+        albu.HorizontalFlip(p=0.5)
     ]
     return albu.Compose(train_transform)
 

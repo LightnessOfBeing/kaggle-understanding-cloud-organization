@@ -5,6 +5,7 @@ from catalyst.dl.runner import SupervisedRunner
 from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
 # from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
 import segmentation_models_pytorch as smp
+import ttach as tta
 import datetime
 import argparse
 import warnings
@@ -18,6 +19,7 @@ from inference import predict
 from catalyst import utils
 from catalyst.utils import set_global_seed, prepare_cudnn
 import os
+import ttach
 warnings.filterwarnings("once")
 
 
@@ -58,6 +60,7 @@ if __name__ == '__main__':
     parser.add_argument("--separate_decoder", help="number of epochs", type=bool, default=False)
     parser.add_argument("--multigpu", help="use multi-gpu", type=bool, default=False)
     parser.add_argument("--lookahead", help="use lookahead", type=bool, default=False)
+    parser.add_argument("--tta", help="tta", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -151,4 +154,13 @@ if __name__ == '__main__':
             with open(f'{logdir}/class_params.json', 'r') as f:
                 class_params = json.load(f)
 
-        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+        if args.use_tta:
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
+            tta_runner = SupervisedRunner(
+                model=tta_model,
+                input_key="image"
+            )
+            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            print("TTA SET")
+        else:
+            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

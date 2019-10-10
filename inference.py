@@ -34,7 +34,6 @@ def predict(loaders=None,
         runner_out = runner.predict_batch({"features": test_batch[0].cuda()})['logits']
         for _, batch in enumerate(runner_out):
             for probability in batch:
-
                 probability = probability.cpu().detach().numpy()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)

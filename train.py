@@ -141,8 +141,9 @@ if __name__ == '__main__':
         print("resume_inference")
         weights_path = args.resume_inference
 
+
+    del loaders['train']
     if args.optimize_postprocess:
-        del loaders['train']
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
@@ -154,6 +155,7 @@ if __name__ == '__main__':
         with open(f'{logdir}/class_params.json', 'w') as f:
             json.dump(class_params, f, cls=NumpyEncoder)
 
+    del loaders['valid']
     torch.cuda.empty_cache()
     gc.collect()
 

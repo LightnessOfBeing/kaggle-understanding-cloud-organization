@@ -60,7 +60,8 @@ if __name__ == '__main__':
     parser.add_argument("--separate_decoder", help="number of epochs", type=bool, default=False)
     parser.add_argument("--multigpu", help="use multi-gpu", type=bool, default=False)
     parser.add_argument("--lookahead", help="use lookahead", type=bool, default=False)
-    parser.add_argument("--tta", help="tta", type=bool, default=False)
+    parser.add_argument("--use_tta", help="tta", type=bool, default=False)
+    parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
 
     args = parser.parse_args()
 
@@ -136,7 +137,10 @@ if __name__ == '__main__':
 
     if args.optimize_postprocess:
         del loaders['train']
-        checkpoint = utils.load_checkpoint(f'{logdir}/checkpoints/best.pth')
+        weights_path = f'{logdir}/checkpoints/best.pth'
+        if args.resume_inference is not None:
+            weights_path = args.resume_inference
+        checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
@@ -146,7 +150,10 @@ if __name__ == '__main__':
 
     if args.make_prediction:
         loaders['test'] = test_loader
-        checkpoint = utils.load_checkpoint(f'{logdir}/checkpoints/best.pth')
+        weights_path = f'{logdir}/checkpoints/best.pth'
+        if args.resume_inference is not None:
+            weights_path = args.resume_inference
+        checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)

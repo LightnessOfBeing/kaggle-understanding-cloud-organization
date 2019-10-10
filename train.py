@@ -147,7 +147,7 @@ if __name__ == '__main__':
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
-        if args.resume_inference:
+        if args.resume_inference is not None:
             class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir, resume_inference_path=weights_path)
         else:
             class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)

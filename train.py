@@ -147,7 +147,10 @@ if __name__ == '__main__':
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
-        class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)
+        if args.resume_inference:
+            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir, resume_inference_path=weights_path)
+        else:
+            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)
         with open(f'{logdir}/class_params.json', 'w') as f:
             json.dump(class_params, f, cls=NumpyEncoder)
 

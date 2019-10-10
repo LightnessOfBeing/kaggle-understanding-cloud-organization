@@ -154,6 +154,9 @@ if __name__ == '__main__':
         with open(f'{logdir}/class_params.json', 'w') as f:
             json.dump(class_params, f, cls=NumpyEncoder)
 
+    torch.cuda.empty_cache()
+    gc.collect()
+
     if args.make_prediction:
         loaders['test'] = test_loader
         weights_path = f'{logdir}/checkpoints/best.pth'

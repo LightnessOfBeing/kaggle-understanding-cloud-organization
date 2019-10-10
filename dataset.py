@@ -306,7 +306,7 @@ def prepare_loaders(path: str = '',
 
     id_mask_count = train.loc[~train['EncodedPixels'].isnull(), 'Image_Label'].apply(
         lambda x: x.split('_')[0]).value_counts(). \
-        reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'})
+        reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'}).sort_values(['count', 'img_id'])
     train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_state=42,
                                             stratify=id_mask_count['count'], test_size=0.1)
 

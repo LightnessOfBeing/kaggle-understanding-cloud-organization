@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
         if args.use_tta:
             print("TTA started")
-            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.flip_transform(), merge_mode='tsharpen')
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='tsharpen')
             del runner
             tta_runner = SupervisedRunner(
                 model=tta_model,

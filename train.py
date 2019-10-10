@@ -168,11 +168,12 @@ if __name__ == '__main__':
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
         if not class_params:
-            if not args.resume_inference:
+            if args.resume_inference is None:
                 with open(f'{logdir}/class_params.json', 'r') as f:
                     class_params = json.load(f)
             else:
-                class_params = {0: (0.2, 30000), 1: (0.7, 11000), 2: (0.6, 30000), 3: (0.3, 16000)}
+                print("Default class_params")
+                class_params = {0: (0.5, 15000), 1: (0.5, 15000), 2: (0.5, 15000), 3: (0.5, 15000)}
 
         if args.use_tta:
             print("TTA started")

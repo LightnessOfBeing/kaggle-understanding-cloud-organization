@@ -171,8 +171,7 @@ if __name__ == '__main__':
         if args.use_tta:
             tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
             tta_runner = SupervisedRunner(
-                model=tta_model,
-                input_key="image"
+                model=tta_model
             )
             predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
             print("TTA SET")

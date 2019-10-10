@@ -168,8 +168,11 @@ if __name__ == '__main__':
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
         if not class_params:
-            with open(f'{logdir}/class_params.json', 'r') as f:
-                class_params = json.load(f)
+            if not args.resume_inference:
+                with open(f'{logdir}/class_params.json', 'r') as f:
+                    class_params = json.load(f)
+            else:
+                class_params = {0: (0.2, 30000), 1: (0.7, 11000), 2: (0.6, 30000), 3: (0.3, 16000)}
 
         if args.use_tta:
             tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')

@@ -1,25 +1,27 @@
-import torch
-import torch.nn as nn
-from torch.optim.lr_scheduler import ReduceLROnPlateau
-from catalyst.dl.runner import SupervisedRunner
-from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
-# from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
-import segmentation_models_pytorch as smp
-import ttach as tta
-import datetime
 import argparse
-import warnings
+import datetime
 import gc
 import json
+import os
+import warnings
+
+# from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
+import segmentation_models_pytorch as smp
+import torch
+import torch.nn as nn
+import ttach as tta
+from catalyst import utils
+from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
+from catalyst.dl.runner import SupervisedRunner
+from catalyst.utils import set_global_seed, prepare_cudnn
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+
 from dataset import prepare_loaders
+from inference import predict
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
-from inference import predict
-from catalyst import utils
-from catalyst.utils import set_global_seed, prepare_cudnn
-import os
-import ttach
+
 warnings.filterwarnings("once")
 
 
@@ -139,6 +141,7 @@ if __name__ == '__main__':
         del loaders['train']
         weights_path = f'{logdir}/checkpoints/best.pth'
         if args.resume_inference is not None:
+            print("resume_inference")
             weights_path = args.resume_inference
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
@@ -152,6 +155,7 @@ if __name__ == '__main__':
         loaders['test'] = test_loader
         weights_path = f'{logdir}/checkpoints/best.pth'
         if args.resume_inference is not None:
+            print("resume_inference")
             weights_path = args.resume_inference
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()

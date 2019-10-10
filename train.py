@@ -5,7 +5,6 @@ import json
 import os
 import warnings
 
-# from catalyst.contrib.criterion.lovasz import LovaszLossMultiClass, LovaszLossBinary
 import segmentation_models_pytorch as smp
 import torch
 import torch.nn as nn
@@ -170,7 +169,7 @@ if __name__ == '__main__':
                     class_params = json.load(f)
             else:
                 print("Default class_params")
-                class_params = {0: (0.5, 15000), 1: (0.5, 15000), 2: (0.5, 15000), 3: (0.5, 15000)}
+                class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
 
         if args.use_tta:
             print("TTA started")
@@ -178,5 +177,5 @@ if __name__ == '__main__':
             runner = SupervisedRunner(
                 model=tta_model
             )
-            
+
         predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

@@ -14,6 +14,8 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, Optimizer
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+import apex
+from catalyst import utils
 
 from dataset import prepare_loaders
 from inference import predict
@@ -161,6 +163,7 @@ if __name__ == '__main__':
 
     if args.make_prediction:
         loaders['test'] = test_loader
+        del test_loader
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
@@ -175,9 +178,12 @@ if __name__ == '__main__':
 
         if args.use_tta:
             print("TTA started")
-            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
-            runner = SupervisedRunner(
-                model=tta_model
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.flip_transform(), merge_mode='tsharpen')
+            del runner
+            tta_runner = SupervisedRunner(
+                model=tta_model,
+                device=utils.get_device()
             )
-
-        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
+        else:
+            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

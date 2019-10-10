@@ -1,3 +1,6 @@
+import gc
+import torch
+
 import cv2
 import numpy as np
 import pandas as pd
@@ -30,6 +33,8 @@ def predict(loaders=None,
     """
     encoded_pixels = []
     image_id = 0
+    torch.cuda.empty_cache()
+    gc.collect()
     for _, test_batch in tqdm.tqdm(enumerate(loaders['test'])):
         runner_out = runner.predict_batch({"features": test_batch[0].cuda()})['logits']
         for _, batch in enumerate(runner_out):

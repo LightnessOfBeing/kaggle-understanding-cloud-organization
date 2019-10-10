@@ -137,12 +137,13 @@ if __name__ == '__main__':
 
     class_params = None
 
+    weights_path = f'{logdir}/checkpoints/best.pth'
+    if args.resume_inference is not None:
+        print("resume_inference")
+        weights_path = args.resume_inference
+
     if args.optimize_postprocess:
         del loaders['train']
-        weights_path = f'{logdir}/checkpoints/best.pth'
-        if args.resume_inference is not None:
-            print("resume_inference")
-            weights_path = args.resume_inference
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
@@ -159,10 +160,6 @@ if __name__ == '__main__':
 
     if args.make_prediction:
         loaders['test'] = test_loader
-        weights_path = f'{logdir}/checkpoints/best.pth'
-        if args.resume_inference is not None:
-            print("resume_inference")
-            weights_path = args.resume_inference
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
@@ -178,10 +175,8 @@ if __name__ == '__main__':
         if args.use_tta:
             print("TTA started")
             tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
-            tta_runner = SupervisedRunner(
+            runner = SupervisedRunner(
                 model=tta_model
             )
-            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
-         #   predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
-        else:
-            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            
+        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

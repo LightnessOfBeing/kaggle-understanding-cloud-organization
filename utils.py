@@ -159,7 +159,8 @@ def dice(img1: np.array, img2: np.array) -> float:
 
 def get_optimal_postprocess(loaders=None,
                             runner=None,
-                            logdir: str = ''
+                            logdir: str = '',
+                            resume_inference_path: str=None
                             ):
     """
     Calculate optimal thresholds for validation data.
@@ -174,12 +175,16 @@ def get_optimal_postprocess(loaders=None,
     """
     loaders['infer'] = loaders['valid']
 
+    weights_path = f"{logdir}/checkpoints/best.pth"
+    if resume_inference_path is not None:
+        weights_path = resume_inference_path
+
     runner.infer(
         model=runner.model,
         loaders=loaders,
         callbacks=[
             CheckpointCallback(
-                resume=f"{logdir}/checkpoints/best.pth"),
+                resume=weights_path),
             InferCallback()
         ],
     )

@@ -176,11 +176,11 @@ if __name__ == '__main__':
 
         if args.use_tta:
             print("TTA started")
-         #   tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
-         #   tta_runner = SupervisedRunner(
-         #       model=tta_model
-         #   )
-         #   predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
-            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.d4_transform(), merge_mode='mean')
+            tta_runner = SupervisedRunner(
+                model=tta_model
+            )
+            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
+         #   predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
         else:
             predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

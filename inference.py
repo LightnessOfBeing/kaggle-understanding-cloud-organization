@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 import pandas as pd
+import tqdm
+
 from utils import post_process
 from dataset import mask2rle
 
@@ -28,7 +30,7 @@ def predict(loaders=None,
     """
     encoded_pixels = []
     image_id = 0
-    for _, test_batch in enumerate(loaders['test']):
+    for _, test_batch in tqdm.tqdm(enumerate(loaders['test'])):
         runner_out = runner.predict_batch({"features": test_batch[0].cuda()})['logits']
         for _, batch in enumerate(runner_out):
             for probability in batch:

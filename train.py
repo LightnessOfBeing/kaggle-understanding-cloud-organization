@@ -14,8 +14,6 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, Optimizer
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-import apex
-from catalyst import utils
 
 from dataset import prepare_loaders
 from inference import predict

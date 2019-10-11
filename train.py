@@ -63,6 +63,7 @@ if __name__ == '__main__':
     parser.add_argument("--lookahead", help="use lookahead", type=bool, default=False)
     parser.add_argument("--use_tta", help="tta", type=bool, default=False)
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
+    parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
 
     args = parser.parse_args()
 
@@ -78,7 +79,8 @@ if __name__ == '__main__':
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
     loaders = prepare_loaders(path=args.path, bs=args.bs,
                               num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
-                              image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task)
+                              image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
+                              validation_strategy=args.validation_split_strategy)
     test_loader = loaders['test']
     del loaders['test']
 

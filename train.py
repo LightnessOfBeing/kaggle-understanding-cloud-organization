@@ -80,7 +80,7 @@ if __name__ == '__main__':
     loaders = prepare_loaders(path=args.path, bs=args.bs,
                               num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
-                              validation_strategy=args.validation_split_strategy)
+                              validation_strategy=args.valid_split)
     test_loader = loaders['test']
     del loaders['test']
 

@@ -314,7 +314,7 @@ def prepare_loaders(path: str = '',
                                                 stratify=id_mask_count['count'], test_size=0.1)
     else:
         names_unique = train["im_id"].unique()
-        train_ids, valid_ids = train_test_split(names_unique, random_state=239, test_size=0.1)
+        train_ids, valid_ids = train_test_split(names_unique, random_state=42, test_size=0.1)
 
     if task == 'classification':
         train_df = train[~train['EncodedPixels'].isnull()]

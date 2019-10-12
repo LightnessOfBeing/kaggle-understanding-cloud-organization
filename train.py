@@ -21,8 +21,6 @@ from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
 
-tta_transformations = {"flip": tta.aliases.flip_transform(), "d4": tta.aliases.d4_transform()}
-
 warnings.filterwarnings("once")
 
 
@@ -66,7 +64,6 @@ if __name__ == '__main__':
     parser.add_argument("--use_tta", help="tta", type=bool, default=False)
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
-    parser.add_argument("--tta_type", help="choose type of tta", type=str, default="flip")
 
     args = parser.parse_args()
 
@@ -182,7 +179,7 @@ if __name__ == '__main__':
 
         if args.use_tta:
             print("TTA started")
-            tta_model = tta.SegmentationTTAWrapper(runner.model, tta_transformations[args.tta_type], merge_mode='tsharpen')
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.flip_transform(), merge_mode='tsharpen')
             del runner
             tta_runner = SupervisedRunner(
                 model=tta_model,

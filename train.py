@@ -162,9 +162,8 @@ if __name__ == '__main__':
     gc.collect()
 
     if args.make_prediction:
-        test_loader = loaders['test']
-        del loaders['test']
-        del loaders
+        loaders['test'] = test_loader
+        del test_loader
         checkpoint = utils.load_checkpoint(weights_path)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
@@ -185,6 +184,6 @@ if __name__ == '__main__':
                 model=tta_model,
                 device=utils.get_device()
             )
-            predict(test_loader=test_loader, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
         else:
-            predict(test_loader=test_loader, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

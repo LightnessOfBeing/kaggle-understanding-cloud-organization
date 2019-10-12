@@ -14,7 +14,7 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def predict(test_loader=None,
+def predict(loaders=None,
             runner=None,
             class_params: dict = None,
             path: str = '',
@@ -35,7 +35,7 @@ def predict(test_loader=None,
     image_id = 0
     torch.cuda.empty_cache()
     gc.collect()
-    for _, test_batch in tqdm.tqdm(enumerate(test_loader)):
+    for _, test_batch in tqdm.tqdm(enumerate(loaders['test'])):
         runner_out = runner.predict_batch({"features": test_batch[0].cuda()})['logits']
         for _, batch in enumerate(runner_out):
             for probability in batch:

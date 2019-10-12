@@ -21,8 +21,10 @@ from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
 
-warnings.filterwarnings("once")
+tta_transformations = {"d4": tta.aliases.d4_transform(), "flip": tta.aliases.flip_transform(),
+                       "scale": tta.aliases.multiscale_transform(1.5)}
 
+warnings.filterwarnings("once")
 
 if __name__ == '__main__':
     """
@@ -64,6 +66,7 @@ if __name__ == '__main__':
     parser.add_argument("--use_tta", help="tta", type=bool, default=False)
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
+    parser.add_argument("--tta_type", help="type of tta", type=str, default="flip")
 
     args = parser.parse_args()
 
@@ -110,7 +113,8 @@ if __name__ == '__main__':
     if args.task == 'segmentation':
         callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()]
     elif args.task == 'classification':
-        callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4), EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()]
+        callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
+                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()]
 
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
@@ -143,7 +147,6 @@ if __name__ == '__main__':
         print("resume_inference")
         weights_path = args.resume_inference
 
-
     del loaders['train']
     if args.optimize_postprocess:
         checkpoint = utils.load_checkpoint(weights_path)
@@ -151,7 +154,8 @@ if __name__ == '__main__':
         utils.unpack_checkpoint(checkpoint, model=model)
         runner = SupervisedRunner(model=model)
         if args.resume_inference is not None:
-            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir, resume_inference_path=weights_path)
+            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir,
+                                                   resume_inference_path=weights_path)
         else:
             class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)
         with open(f'{logdir}/class_params.json', 'w') as f:
@@ -178,7 +182,7 @@ if __name__ == '__main__':
 
         if args.use_tta:
             print("TTA started")
-            tta_model = tta.SegmentationTTAWrapper(runner.model, tta.aliases.flip_transform(), merge_mode='tsharpen')
+            tta_model = tta.SegmentationTTAWrapper(runner.model, tta_transformations[args.tta_type], merge_mode='tsharpen')
             del runner
             tta_runner = SupervisedRunner(
                 model=tta_model,

@@ -22,7 +22,7 @@ from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
 
 tta_transformations = {"d4": tta.aliases.d4_transform(), "flip": tta.aliases.flip_transform(),
-                       "scale": tta.aliases.multiscale_transform(1.5)}
+                       "scale": tta.aliases.multiscale_transform([1.1, 1.2, 1.3, 1.4, 1.5])}
 
 warnings.filterwarnings("once")
 

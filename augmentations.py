@@ -156,7 +156,7 @@ def get_validation_augmentation(image_size: tuple = (320, 640)):
 
     """
     test_transform = [
-        albu.Resize(*image_size)
+        #albu.Resize(*image_size)
     ]
     return albu.Compose(test_transform)
 

@@ -68,6 +68,7 @@ if __name__ == '__main__':
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
     parser.add_argument("--tta_type", help="type of tta", type=str, default="flip")
+    parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -179,4 +180,5 @@ if __name__ == '__main__':
         del test_loader
         if class_params is None:
             class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
-        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path,
+                sub_name=sub_name, convex_hull=args.convex_hull)

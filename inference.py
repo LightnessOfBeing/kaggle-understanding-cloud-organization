@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import tqdm
 
-from utils import post_process
+from utils import post_process, draw_convex_hull
 from dataset import mask2rle
 
 
@@ -18,7 +18,8 @@ def predict(loaders=None,
             runner=None,
             class_params: dict = None,
             path: str = '',
-            sub_name: str = ''):
+            sub_name: str = '',
+            convex_hull: bool = False):
     """
 
     Args:
@@ -32,6 +33,7 @@ def predict(loaders=None,
 
     """
     encoded_pixels = []
+    encoded_pixels_ch = []
     image_id = 0
     torch.cuda.empty_cache()
     gc.collect()
@@ -46,11 +48,20 @@ def predict(loaders=None,
                                                        class_params[image_id % 4][1])
                 if num_predict == 0:
                     encoded_pixels.append('')
+                    encoded_pixels_ch.append('')
                 else:
                     r = mask2rle(prediction)
                     encoded_pixels.append(r)
+                    if convex_hull:
+                        r_ch = mask2rle(draw_convex_hull(prediction))
+                        encoded_pixels_ch.append(r_ch)
                 image_id += 1
 
     sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['EncodedPixels'] = encoded_pixels
     sub.to_csv(f'submission_{sub_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+    if convex_hull:
+        print("convex hull is used")
+        sub_ch = sub.copy()
+        sub_ch["EncodedPixels"] = encoded_pixels_ch
+        sub_ch.to_csv(f'submission_{sub_name}_ch.csv', columns=['Image_Label', 'EncodedPixels'], index=False)

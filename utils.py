@@ -230,6 +230,29 @@ def get_optimal_postprocess(loaders=None,
     print(class_params)
     return class_params
 
+
+def draw_convex_hull(mask, mode='convex'):
+    img = np.zeros(mask.shape)
+    contours, hier = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    for c in contours:
+        if mode == 'rect':  # simple rectangle
+            x, y, w, h = cv2.boundingRect(c)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), -1)
+        elif mode == 'convex':  # minimum convex hull
+            hull = cv2.convexHull(c)
+            cv2.drawContours(img, [hull], 0, (255, 255, 255), -1)
+        elif mode == 'approx':
+            epsilon = 0.02 * cv2.arcLength(c, True)
+            approx = cv2.approxPolyDP(c, epsilon, True)
+            cv2.drawContours(img, [approx], 0, (255, 255, 255), -1)
+        elif mode == 'min':  # minimum area rectangle
+            rect = cv2.minAreaRect(c)
+            box = cv2.boxPoints(rect)
+            box = np.int0(box)
+            cv2.drawContours(img, [box], 0, (255, 255, 255), -1)
+    return img / 255.
+
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):

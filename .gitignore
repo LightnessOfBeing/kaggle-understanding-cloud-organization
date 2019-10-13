@@ -125,4 +125,6 @@ dmypy.json
 
 # additional
 *.pth
+.idea/workspace.xml
+.idea/
 .idea/*

@@ -77,7 +77,7 @@ if __name__ == '__main__':
     set_global_seed(args.seed)
     prepare_cudnn(deterministic=True)
 
-    sub_name = f'Model_{args.task}_{args.model_type}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
+    sub_name = f'Model_{args.task}_{args.model_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
@@ -95,9 +95,9 @@ if __name__ == '__main__':
                               separate_decoder=args.separate_decoder, lr=args.lr, lr_e=args.lr_e)
 
     if args.scheduler == 'ReduceLROnPlateau':
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.6, patience=2)
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=2)
     else:
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.3, patience=3)
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
 
     if args.loss == 'BCEDiceLoss':
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
@@ -152,46 +152,31 @@ if __name__ == '__main__':
         weights_path = args.resume_inference
 
     del loaders['train']
+
+    checkpoint = utils.load_checkpoint(weights_path)
+    model.cuda()
+    utils.unpack_checkpoint(checkpoint, model=model)
+    runner = SupervisedRunner(model=model)
+
+    if args.use_tta:
+        print("TTA model created")
+        tta_model = tta.SegmentationTTAWrapper(model, tta_transformations[args.tta_type], merge_mode='tsharpen')
+        del runner
+        runner = SupervisedRunner(
+            model=tta_model,
+            device=utils.get_device()
+        )
+
     if args.optimize_postprocess:
-        checkpoint = utils.load_checkpoint(weights_path)
-        model.cuda()
-        utils.unpack_checkpoint(checkpoint, model=model)
-        runner = SupervisedRunner(model=model)
-        if args.resume_inference is not None:
-            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir,
-                                                   resume_inference_path=weights_path)
-        else:
-            class_params = get_optimal_postprocess(loaders=loaders, runner=runner, logdir=logdir)
+        class_params = get_optimal_postprocess(loaders=loaders, runner=runner)
         with open(f'{logdir}/class_params.json', 'w') as f:
             json.dump(class_params, f, cls=NumpyEncoder)
 
     del loaders['valid']
-    torch.cuda.empty_cache()
-    gc.collect()
 
     if args.make_prediction:
         loaders['test'] = test_loader
         del test_loader
-        checkpoint = utils.load_checkpoint(weights_path)
-        model.cuda()
-        utils.unpack_checkpoint(checkpoint, model=model)
-        runner = SupervisedRunner(model=model)
-        if not class_params:
-            if args.resume_inference is None:
-                with open(f'{logdir}/class_params.json', 'r') as f:
-                    class_params = json.load(f)
-            else:
-                print("Default class_params")
-                class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
-
-        if args.use_tta:
-            print("TTA started")
-            tta_model = tta.SegmentationTTAWrapper(runner.model, tta_transformations[args.tta_type], merge_mode='tsharpen')
-            del runner
-            tta_runner = SupervisedRunner(
-                model=tta_model,
-                device=utils.get_device()
-            )
-            predict(loaders=loaders, runner=tta_runner, class_params=class_params, path=args.path, sub_name=sub_name)
-        else:
-            predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)
+        if class_params is None:
+            class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
+        predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path, sub_name=sub_name)

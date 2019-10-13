@@ -33,7 +33,9 @@ def predict(loaders=None,
 
     """
     encoded_pixels = []
-    encoded_pixels_ch = []
+    if convex_hull:
+        print("convex hull is enabled")
+        encoded_pixels_ch = []
     image_id = 0
     torch.cuda.empty_cache()
     gc.collect()
@@ -61,7 +63,6 @@ def predict(loaders=None,
     sub['EncodedPixels'] = encoded_pixels
     sub.to_csv(f'submission_{sub_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
     if convex_hull:
-        print("convex hull is used")
         sub_ch = sub.copy()
         sub_ch["EncodedPixels"] = encoded_pixels_ch
         sub_ch.to_csv(f'submission_{sub_name}_ch.csv', columns=['Image_Label', 'EncodedPixels'], index=False)

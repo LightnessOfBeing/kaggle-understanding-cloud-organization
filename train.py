@@ -117,7 +117,7 @@ if __name__ == '__main__':
                      CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
-                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
+                     EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback(),
                      CustomCheckpointCallback()
                      ]
 

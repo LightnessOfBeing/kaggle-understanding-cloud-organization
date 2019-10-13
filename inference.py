@@ -50,7 +50,8 @@ def predict(loaders=None,
                                                        class_params[image_id % 4][1])
                 if num_predict == 0:
                     encoded_pixels.append('')
-                    encoded_pixels_ch.append('')
+                    if convex_hull:
+                        encoded_pixels_ch.append('')
                 else:
                     r = mask2rle(prediction)
                     encoded_pixels.append(r)

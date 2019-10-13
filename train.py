@@ -68,7 +68,7 @@ if __name__ == '__main__':
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
     parser.add_argument("--tta_type", help="type of tta", type=str, default="flip")
-    parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=False)
+    parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
 
     args = parser.parse_args()
 

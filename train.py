@@ -113,7 +113,7 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
+        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback(),
                      CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),

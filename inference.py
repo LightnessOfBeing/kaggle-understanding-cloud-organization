@@ -53,7 +53,7 @@ def predict(loaders=None,
                     r = mask2rle(prediction)
                     encoded_pixels.append(r)
                     if convex_hull:
-                        r_ch = mask2rle(draw_convex_hull(prediction))
+                        r_ch = mask2rle(draw_convex_hull(prediction.astype(np.uint8)))
                         encoded_pixels_ch.append(r_ch)
                 image_id += 1
 

@@ -30,7 +30,7 @@ def get_img(x: str = 'img_name', folder: str = 'train_images'):
     return img
 
 
-def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
+def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
     """
     Decode rle encoded mask.
 
@@ -52,7 +52,7 @@ def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
     return img.reshape(shape, order='F')
 
 
-def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320, 640)):
+def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (1400, 2100)):
     """
     Create mask based on df, image name and shape.
 

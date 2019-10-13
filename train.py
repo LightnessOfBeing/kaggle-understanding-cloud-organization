@@ -15,6 +15,7 @@ from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+from callbacks import CustomCheckpointCallback
 from dataset import prepare_loaders
 from inference import predict
 from models import get_model
@@ -111,10 +112,13 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()]
+        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
+                     CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
-                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()]
+                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
+                     CustomCheckpointCallback()
+                     ]
 
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))

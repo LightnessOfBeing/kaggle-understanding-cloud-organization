@@ -56,8 +56,8 @@ def get_training_augmentation0(image_size: tuple = (320, 640)):
         albu.ShiftScaleRotate(scale_limit=0.5, rotate_limit=0, shift_limit=0.1, p=0.5, border_mode=0),
         albu.GridDistortion(p=0.5),
         albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.5),
-        albu.RandomGamma()#,
-        #albu.Resize(*image_size)
+        albu.RandomGamma(),
+        albu.Resize(*image_size)
     ]
     return albu.Compose(train_transform)
 
@@ -75,8 +75,8 @@ def get_training_augmentation1(image_size: tuple = (320, 640)):
         albu.HorizontalFlip(p=0.5),
         albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.5, border_mode=0),
         albu.GridDistortion(p=0.5),
-        albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.2)#,
-       # albu.Resize(*image_size),
+        albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.2),
+        albu.Resize(*image_size),
     ]
     return albu.Compose(train_transform)
 
@@ -91,7 +91,7 @@ def get_training_augmentation2(image_size: tuple = (320, 640)):
 
     """
     train_transform = [
-      #  albu.Resize(*image_size),
+        albu.Resize(*image_size),
         albu.HorizontalFlip(p=0.5),
         albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.5, border_mode=0),
         albu.GridDistortion(p=0.5),
@@ -112,6 +112,7 @@ def get_training_augmentation3(image_size: tuple = (320, 640)):
 
     """
     train_transform = [
+        albu.Resize(*image_size),
         albu.OneOf([
             albu.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.1,
                                   rotate_limit=15,

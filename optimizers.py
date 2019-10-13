@@ -363,7 +363,7 @@ def get_optimizer(optimizer: str = 'Adam',
     if optimizer == 'Adam':
         optimizer = optim.Adam(params, lr=lr)
     elif optimizer == 'RAdam':
-        optimizer = catalyst.contrib.optimizers.RAdam(params, lr=lr, weight_decay=0.0003)
+        optimizer = catalyst.contrib.optimizers.RAdam(params, lr=lr)
     elif optimizer == 'Ralamb':
         optimizer = Ralamb(params, lr=lr)
     else:

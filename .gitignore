@@ -125,4 +125,4 @@ dmypy.json
 
 # additional
 *.pth
-.idea/
+.idea/*

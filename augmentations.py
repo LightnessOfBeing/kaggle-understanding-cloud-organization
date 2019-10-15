@@ -120,12 +120,6 @@ def get_training_augmentation3(image_size: tuple = (320, 640)):
                                    value=0),
         albu.ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
         albu.Solarize(threshold=128, always_apply=False, p=0.9),
-        albu.OneOf(
-            [albu.RandomBrightnessContrast(brightness_limit=0.5, contrast_limit=0.4),
-             albu.RGBShift(r_shift_limit=20, b_shift_limit=15, g_shift_limit=15),
-             albu.HueSaturationValue(hue_shift_limit=5,
-                                     sat_shift_limit=5)]),
-        albu.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=False, p=0.4),
         albu.HorizontalFlip(p=0.5)
     ]
     return albu.Compose(train_transform)

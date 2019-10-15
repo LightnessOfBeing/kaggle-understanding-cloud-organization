@@ -125,6 +125,9 @@ if __name__ == '__main__':
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
 
+    torch.cuda.empty_cache()
+    gc.collect()
+
     runner = SupervisedRunner()
     if args.train:
         runner.train(

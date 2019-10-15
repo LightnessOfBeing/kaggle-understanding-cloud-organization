@@ -105,7 +105,7 @@ if __name__ == '__main__':
         criterion = nn.BCEWithLogitsLoss()
     elif args.loss == 'lovasz':
         print("Lovasz loss is used")
-        criterion = L.LovaszLoss()
+        criterion = L.LovaszLoss(per_image=True)
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 

@@ -112,7 +112,6 @@ def get_training_augmentation3(image_size: tuple = (320, 640)):
 
     """
     train_transform = [
-        albu.Resize(*image_size),
         albu.ShiftScaleRotate(shift_limit=0.05, scale_limit=0.1,
                                   rotate_limit=15,
                                   border_mode=cv2.BORDER_CONSTANT, value=0),

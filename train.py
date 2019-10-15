@@ -70,6 +70,7 @@ if __name__ == '__main__':
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
     parser.add_argument("--tta_type", help="type of tta", type=str, default="flip")
     parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
+    parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
 
     args = parser.parse_args()
 
@@ -125,8 +126,9 @@ if __name__ == '__main__':
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
 
-    torch.cuda.empty_cache()
-    gc.collect()
+    fp16_params = None
+    if args.fp16:
+        fp16_params = dict(opt_level="O1")
 
     runner = SupervisedRunner()
     if args.train:
@@ -139,6 +141,7 @@ if __name__ == '__main__':
             callbacks=callbacks,
             logdir=logdir,
             num_epochs=args.num_epochs,
+            fp16=fp16_params,
             verbose=True
         )
 
@@ -146,7 +149,6 @@ if __name__ == '__main__':
             for k, v in args.__dict__.items():
                 f.write(f'{k}: {v}' + '\n')
 
-    torch.cuda.empty_cache()
     gc.collect()
 
     class_params = None

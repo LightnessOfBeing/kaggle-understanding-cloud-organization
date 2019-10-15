@@ -6,25 +6,20 @@ import os
 import warnings
 
 import segmentation_models_pytorch as smp
-import torch
 import torch.nn as nn
-import ttach as tta
 from catalyst import utils
-from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback
+from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback, CheckpointCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
+from pytorch_toolbelt import losses as L
+from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from callbacks import CustomCheckpointCallback
 from dataset import prepare_loaders
 from inference import predict
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
-
-
-tta_transformations = {"d4": tta.aliases.d4_transform(), "flip": tta.aliases.flip_transform(),
-                       "scale": tta.aliases.multiscale_transform([1.1, 1.2, 1.3, 1.4, 1.5])}
 
 warnings.filterwarnings("once")
 
@@ -108,6 +103,9 @@ if __name__ == '__main__':
         criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
     elif args.loss == 'BCE':
         criterion = nn.BCEWithLogitsLoss()
+    elif args.loss == 'lovasz':
+        print("Lovasz loss is used")
+        criterion = L.LovaszLoss()
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 
@@ -115,12 +113,11 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback(),
-                     CustomCheckpointCallback()]
+        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=10, min_delta=0.001),
+                     CriterionCallback(), CheckpointCallback(save_n_best=3)]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
-                     EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback(),
-                     CustomCheckpointCallback()
+                     EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback()
                      ]
 
     if args.gradient_accumulation:
@@ -129,6 +126,10 @@ if __name__ == '__main__':
     fp16_params = None
     if args.fp16:
         fp16_params = dict(opt_level="O1")
+
+    if args.use_tta:
+        print("TTA model created")
+        model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
     if args.train:
@@ -160,19 +161,13 @@ if __name__ == '__main__':
 
     del loaders['train']
 
+    print("-------------------")
+    print(f"Weights path = {weights_path}")
+    print("-------------------")
     checkpoint = utils.load_checkpoint(weights_path)
     model.cuda()
     utils.unpack_checkpoint(checkpoint, model=model)
     runner = SupervisedRunner(model=model)
-
-    if args.use_tta:
-        print("TTA model created")
-        tta_model = tta.SegmentationTTAWrapper(model, tta_transformations[args.tta_type], merge_mode='tsharpen')
-        del runner
-        runner = SupervisedRunner(
-            model=tta_model,
-            device=utils.get_device()
-        )
 
     if args.optimize_postprocess:
         class_params = get_optimal_postprocess(loaders=loaders, runner=runner)

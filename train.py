@@ -125,6 +125,7 @@ if __name__ == '__main__':
 
     fp16_params = None
     if args.fp16:
+        print("FP16 is used")
         fp16_params = dict(opt_level="O1")
 
     if args.use_tta:

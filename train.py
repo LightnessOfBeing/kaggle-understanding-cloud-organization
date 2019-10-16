@@ -14,6 +14,7 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, Optimizer
     AUCCallback, CheckpointCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
+from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from dataset import prepare_loaders
@@ -146,7 +147,6 @@ if __name__ == '__main__':
                 loss_aggregate_fn="sum"
             )
     ]
-    print(callbacks)
 
     fp16_params = None
     if args.fp16:
@@ -155,8 +155,8 @@ if __name__ == '__main__':
 
     if args.use_tta:
         print("TTA model created")
-        model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
-        #model = TTAWrapper(model, fliplr_image2mask)
+        #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
+        model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
     if args.train:

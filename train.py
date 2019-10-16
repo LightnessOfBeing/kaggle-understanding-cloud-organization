@@ -7,16 +7,18 @@ import warnings
 
 import segmentation_models_pytorch as smp
 import torch.nn as nn
+import ttach as tta
 from catalyst import utils
-from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, AUCCallback, CheckpointCallback
+from catalyst.contrib.criterion import DiceLoss
+from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
+    AUCCallback, CheckpointCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
-from pytorch_toolbelt import losses as L
-from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from dataset import prepare_loaders
 from inference import predict
+from lovasz_losses import LovaszLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
@@ -89,6 +91,7 @@ if __name__ == '__main__':
     model = get_model(model_type=args.segm_type, encoder=args.encoder, encoder_weights=args.encoder_weights,
                       activation=None, task=args.task)
 
+    print(model.activation)
     optimizer = get_optimizer(optimizer=args.optimizer, lookahead=args.lookahead, model=model,
                               separate_decoder=args.separate_decoder, lr=args.lr, lr_e=args.lr_e)
 
@@ -105,7 +108,12 @@ if __name__ == '__main__':
         criterion = nn.BCEWithLogitsLoss()
     elif args.loss == 'lovasz':
         print("Lovasz loss is used")
-        criterion = L.LovaszLoss(per_image=True)
+        criterion = LovaszLoss()
+    elif args.loss == "complex":
+        criterion = {
+            "dice": DiceLoss(),
+            "bce": nn.BCEWithLogitsLoss()
+        }
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 
@@ -113,15 +121,36 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=10, min_delta=0.001),
+        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001),
                      CriterionCallback(), CheckpointCallback(save_n_best=3)]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
-                     EarlyStoppingCallback(patience=10, min_delta=0.001), CriterionCallback()
+                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()
                      ]
 
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
+
+    if args.loss == "complex":
+        callbacks += [
+            CriterionCallback(
+                input_key="features",
+                prefix="loss_dice",
+                criterion_key="dice",
+                multiplier=2.0
+            ),
+            CriterionCallback(
+                input_key="features",
+                prefix="loss_bce",
+                criterion_key="bce"
+            ),
+            CriterionAggregatorCallback(
+                prefix="loss",
+                loss_keys=["loss_dice", "loss_bce"],
+                loss_aggregate_fn="sum"
+            )
+    ]
+    print(callbacks)
 
     fp16_params = None
     if args.fp16:
@@ -130,7 +159,8 @@ if __name__ == '__main__':
 
     if args.use_tta:
         print("TTA model created")
-        model = TTAWrapper(model, fliplr_image2mask)
+        model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
+        #model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
     if args.train:

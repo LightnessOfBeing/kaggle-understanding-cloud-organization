@@ -14,7 +14,6 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, Optimizer
     AUCCallback, CheckpointCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
-from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from dataset import prepare_loaders
@@ -65,9 +64,10 @@ if __name__ == '__main__':
     parser.add_argument("--use_tta", help="tta", type=bool, default=False)
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
-    parser.add_argument("--tta_type", help="type of tta", type=str, default="flip")
     parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
     parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
+    parser.add_argument("--generate_pl", help="generate pseudo labels", type=bool, default=False)
+    #parser.add_argument("--train_folder", help=train_folder)
 
     args = parser.parse_args()
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     set_global_seed(args.seed)
     prepare_cudnn(deterministic=True)
 
-    sub_name = f'Model_{args.task}_{args.model_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
+    sub_name = f'{args.model_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
@@ -209,4 +209,4 @@ if __name__ == '__main__':
         if class_params is None:
             class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
         predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path,
-                sub_name=sub_name, convex_hull=args.convex_hull)
+                sub_name=sub_name, convex_hull=args.convex_hull, generate_pl=args.generate_pl)

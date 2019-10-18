@@ -104,7 +104,8 @@ class CloudDataset(Dataset):
                  preload: bool = False,
                  image_size: tuple = (320, 640),
                  augmentation: str = 'default',
-                 filter_bad_images: bool = False):
+                 filter_bad_images: bool = False,
+                 train_folder: str = "train_images"):
         """
 
         Args:
@@ -124,7 +125,7 @@ class CloudDataset(Dataset):
         self.path = path
         self.datatype = datatype if datatype == 'test' else 'train'
         if self.datatype != 'test':
-            self.data_folder = f"{path}/train_images"
+            self.data_folder = f"{path}/{train_folder}"
         else:
             self.data_folder = f"{path}/test_images"
         self.img_ids = img_ids
@@ -280,7 +281,9 @@ def prepare_loaders(path: str = '',
                     image_size: tuple = (320, 640),
                     augmentation: str = 'default',
                     task: str = 'segmentation',
-                    validation_strategy: str = 'stratify'):
+                    validation_strategy: str = 'stratify',
+                    train_df: str = "train",
+                    train_folder = "train_images"):
     """
     Prepare dataloaders for catalyst.
 
@@ -301,7 +304,7 @@ def prepare_loaders(path: str = '',
 
     """
 
-    train = pd.read_csv(f'{path}/train.csv')
+    train = pd.read_csv(f'{path}/{train_df}.csv')
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 
@@ -335,16 +338,16 @@ def prepare_loaders(path: str = '',
             _ = CloudDataset(path=path, df=train, datatype='train', img_ids=id_mask_count['img_id'].values,
                              transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                              preprocessing=get_preprocessing(preprocessing_fn),
-                             preload=preload, image_size=(320, 640))
+                             preload=preload, image_size=(320, 640), train_folder=train_folder)
 
         train_dataset = CloudDataset(path=path, df=train, datatype='train', img_ids=train_ids,
                                      transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640))
+                                     preload=preload, image_size=(320, 640), train_folder=train_folder)
         valid_dataset = CloudDataset(path=path, df=train, datatype='valid', img_ids=valid_ids,
                                      transforms=get_validation_augmentation(image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640))
+                                     preload=preload, image_size=(320, 640), train_folder=train_folder)
 
     elif task == 'classification':
         if preload:

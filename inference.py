@@ -37,8 +37,6 @@ def predict(loaders=None,
     if convex_hull:
         print("convex hull is enabled")
         encoded_pixels_ch = []
-    if generate_pl:
-        encoded_pixels_pl = []
     image_id = 0
     torch.cuda.empty_cache()
     gc.collect()
@@ -47,11 +45,6 @@ def predict(loaders=None,
         for _, batch in enumerate(runner_out):
             for probability in batch:
                 probability = probability.cpu().detach().numpy()
-                if generate_pl:
-                   # prediction_pl, num_predict_pl = post_process(sigmoid(probability), class_params[image_id % 4][0],
-                   #                                        class_params[image_id % 4][1])
-                    encoded_pixels_pl.append(probability)
-
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                     prediction, num_predict = post_process(sigmoid(probability), class_params[image_id % 4][0],
@@ -75,7 +68,3 @@ def predict(loaders=None,
         sub_ch = sub.copy()
         sub_ch["EncodedPixels"] = encoded_pixels_ch
         sub_ch.to_csv(f'submission_{sub_name}_ch.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
-    if generate_pl:
-        sub_pl = sub.copy()
-        sub_pl["pseudo_labels"] = encoded_pixels_pl
-        sub_pl.to_csv(f'submission_{sub_name}_pl.csv', index=False)

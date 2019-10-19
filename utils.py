@@ -180,9 +180,9 @@ def get_optimal_postprocess(loaders=None,
             InferCallback()
         ]
     )
-
+    print(f"Loader valid length {len(loaders['valid'])}")
     valid_masks = []
-    probabilities = np.zeros((2220, 350, 525))
+    probabilities = np.zeros((len(loaders['valid']) * 4, 350, 525))
     for i, (batch, output) in enumerate(zip(
             loaders['infer'].dataset, runner.callbacks[0].predictions["logits"])):
         image, mask = batch

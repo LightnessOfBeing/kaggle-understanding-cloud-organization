@@ -158,8 +158,8 @@ def dice(img1: np.array, img2: np.array) -> float:
 
 
 def get_optimal_postprocess(loaders=None,
-                            runner=None
-                            ):
+                            runner=None,
+                            valid_len=0):
     """
     Calculate optimal thresholds for validation data.
 
@@ -180,9 +180,9 @@ def get_optimal_postprocess(loaders=None,
             InferCallback()
         ]
     )
-    print(f"Loader valid length {len(loaders['valid'])}")
+    print(f"valid length {valid_len}")
     valid_masks = []
-    probabilities = np.zeros((len(loaders['valid']) * 4, 350, 525))
+    probabilities = np.zeros((valid_len * 4, 350, 525))
     for i, (batch, output) in enumerate(zip(
             loaders['infer'].dataset, runner.callbacks[0].predictions["logits"])):
         image, mask = batch

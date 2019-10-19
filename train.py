@@ -82,7 +82,7 @@ if __name__ == '__main__':
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
-    loaders = prepare_loaders(path=args.path, bs=args.bs,
+    loaders, valid_len = prepare_loaders(path=args.path, bs=args.bs,
                               num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
                               validation_strategy=args.valid_split,
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     runner = SupervisedRunner(model=model)
 
     if args.optimize_postprocess:
-        class_params = get_optimal_postprocess(loaders=loaders, runner=runner)
+        class_params = get_optimal_postprocess(loaders=loaders, runner=runner, valid_len=valid_len)
         with open(f'{logdir}/class_params.json', 'w') as f:
             json.dump(class_params, f, cls=NumpyEncoder)
 

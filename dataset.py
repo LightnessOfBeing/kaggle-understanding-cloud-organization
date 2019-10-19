@@ -384,4 +384,4 @@ def prepare_loaders(path: str = '',
         "test": test_loader
     }
 
-    return loaders
+    return loaders, len(valid_dataset)

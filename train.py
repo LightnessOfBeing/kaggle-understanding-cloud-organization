@@ -67,7 +67,8 @@ if __name__ == '__main__':
     parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
     parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
     parser.add_argument("--generate_pl", help="generate pseudo labels", type=bool, default=False)
-    #parser.add_argument("--train_folder", help=train_folder)
+    parser.add_argument("--pl_df", help="name of df with pseudo labels", type=str, default=None)
+    parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
 
     args = parser.parse_args()
 
@@ -84,7 +85,9 @@ if __name__ == '__main__':
     loaders = prepare_loaders(path=args.path, bs=args.bs,
                               num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
-                              validation_strategy=args.valid_split)
+                              validation_strategy=args.valid_split,
+                              pl_df=args.pl_df,
+                              train_folder=args.train_folder)
     test_loader = loaders['test']
     del loaders['test']
 

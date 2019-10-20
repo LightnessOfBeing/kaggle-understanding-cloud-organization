@@ -14,6 +14,7 @@ from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, Optimizer
     AUCCallback, CheckpointCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
+from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from callbacks import CustomCheckpointCallback
@@ -99,7 +100,7 @@ if __name__ == '__main__':
                               separate_decoder=args.separate_decoder, lr=args.lr, lr_e=args.lr_e)
 
     if args.scheduler == 'ReduceLROnPlateau':
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.5, patience=2)
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=2)
     else:
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
 
@@ -160,7 +161,7 @@ if __name__ == '__main__':
     if args.use_tta:
         print("TTA model created")
         #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
-        #model = TTAWrapper(model, fliplr_image2mask)
+        model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
     if args.train:

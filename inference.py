@@ -19,8 +19,7 @@ def predict(loaders=None,
             class_params: dict = None,
             path: str = '',
             sub_name: str = '',
-            convex_hull: bool = False,
-            generate_pl: bool = False):
+            convex_hull: bool = False):
     """
 
     Args:

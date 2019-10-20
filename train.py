@@ -16,6 +16,7 @@ from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
+from callbacks import CustomCheckpointCallback
 from dataset import prepare_loaders
 from inference import predict
 from models import get_model
@@ -66,7 +67,6 @@ if __name__ == '__main__':
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
     parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
     parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
-    parser.add_argument("--generate_pl", help="generate pseudo labels", type=bool, default=False)
     parser.add_argument("--pl_df_path", help="path to df with pseudo labels", type=str, default=None)
     parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
 
@@ -122,10 +122,11 @@ if __name__ == '__main__':
 
     if args.task == 'segmentation':
         callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001),
-                     CriterionCallback(), CheckpointCallback(save_n_best=3)]
+                     CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
-                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback()
+                     EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
+                     CustomCheckpointCallback()
                      ]
 
     if args.gradient_accumulation:
@@ -159,7 +160,7 @@ if __name__ == '__main__':
     if args.use_tta:
         print("TTA model created")
         #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
-        model = TTAWrapper(model, fliplr_image2mask)
+        #model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
     if args.train:
@@ -212,4 +213,4 @@ if __name__ == '__main__':
         if class_params is None:
             class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
         predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path,
-                sub_name=sub_name, convex_hull=args.convex_hull, generate_pl=args.generate_pl)
+                sub_name=sub_name, convex_hull=args.convex_hull)

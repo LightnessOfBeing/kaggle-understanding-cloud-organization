@@ -282,7 +282,7 @@ def prepare_loaders(path: str = '',
                     augmentation: str = 'default',
                     task: str = 'segmentation',
                     validation_strategy: str = 'stratify',
-                    pl_df: str = None,
+                    pl_df_path: str = None,
                     train_folder = "train_images"):
     """
     Prepare dataloaders for catalyst.
@@ -305,8 +305,8 @@ def prepare_loaders(path: str = '',
     """
 
     train = pd.read_csv(f'{path}/train.csv')
-    if pl_df is not None:
-        pl_df = pd.read_csv(f'{path}/{pl_df}')
+    if pl_df_path is not None:
+        pl_df = pd.read_csv(pl_df_path)
         train = train.append(pl_df)
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])

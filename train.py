@@ -7,11 +7,10 @@ import warnings
 
 import segmentation_models_pytorch as smp
 import torch.nn as nn
-import ttach as tta
 from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
 from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
-    AUCCallback, CheckpointCallback, CriterionAggregatorCallback
+    AUCCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask

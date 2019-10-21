@@ -283,7 +283,8 @@ def prepare_loaders(path: str = '',
                     task: str = 'segmentation',
                     validation_strategy: str = 'stratify',
                     pl_df_path: str = None,
-                    train_folder = "train_images"):
+                    train_folder = "train_images",
+                    train_df_name = "train.csv"):
     """
     Prepare dataloaders for catalyst.
 
@@ -304,7 +305,7 @@ def prepare_loaders(path: str = '',
 
     """
 
-    train = pd.read_csv(f'{path}/train.csv')
+    train = pd.read_csv(f'{path}/{train_df_name}')
     if pl_df_path is not None:
         pl_df = pd.read_csv(pl_df_path)
         train = train.append(pl_df)

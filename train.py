@@ -69,6 +69,7 @@ if __name__ == '__main__':
     parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
     parser.add_argument("--pl_df_path", help="path to df with pseudo labels", type=str, default=None)
     parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
+    parser.add_argument("--train_df_name", help="name of train df", type=str, default="train.csv")
 
     args = parser.parse_args()
 
@@ -87,7 +88,8 @@ if __name__ == '__main__':
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
                               validation_strategy=args.valid_split,
                               pl_df_path=args.pl_df_path,
-                              train_folder=args.train_folder)
+                              train_folder=args.train_folder,
+                              train_df_name=args.train_df_name)
     test_loader = loaders['test']
     del loaders['test']
 

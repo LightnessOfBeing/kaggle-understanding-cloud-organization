@@ -306,6 +306,7 @@ def prepare_loaders(path: str = '',
     """
 
     if train_df_path is not None:
+        print("Used train_df_path")
         train = pd.read_csv(train_df_path)
     else:
         train = pd.read_csv(f"{path}/train.csv")

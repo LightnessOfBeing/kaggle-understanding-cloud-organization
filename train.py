@@ -19,6 +19,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from callbacks import CustomCheckpointCallback
 from dataset import prepare_loaders
 from inference import predict
+from lovasz_losses import CustomLovaszLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
@@ -66,10 +67,10 @@ if __name__ == '__main__':
     parser.add_argument("--resume_inference", help="path from which weights will be uploaded", type=str, default=None)
     parser.add_argument("--valid_split", help="choose validation split strategy", type=str, default="stratify")
     parser.add_argument("--convex_hull", help="use of convex hull in prediction", type=bool, default=True)
-    parser.add_argument("--fp16", help="use fp16", type=bool, default=True)
+    parser.add_argument("--fp16", help="use fp16", type=bool, default=False)
     parser.add_argument("--pl_df_path", help="path to df with pseudo labels", type=str, default=None)
     parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
-    parser.add_argument("--train_df_path", help="name of train df", type=str, default="train.csv")
+    parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
 
     args = parser.parse_args()
@@ -112,6 +113,8 @@ if __name__ == '__main__':
         criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
     elif args.loss == 'BCE':
         criterion = nn.BCEWithLogitsLoss()
+    elif args.loss == "Lovasz":
+        criterion = CustomLovaszLoss()
     elif args.loss == "complex":
         criterion = {
             "dice": DiceLoss(),
@@ -156,6 +159,7 @@ if __name__ == '__main__':
     ]
 
     fp16_params = None
+    print(args.fp16)
     if args.fp16:
         print("FP16 is used")
         fp16_params = dict(opt_level="O1")

@@ -284,7 +284,7 @@ def prepare_loaders(path: str = '',
                     validation_strategy: str = 'stratify',
                     pl_df_path: str = None,
                     train_folder = "train_images",
-                    train_df_name = "train.csv"):
+                    train_df_path = None):
     """
     Prepare dataloaders for catalyst.
 
@@ -305,7 +305,10 @@ def prepare_loaders(path: str = '',
 
     """
 
-    train = pd.read_csv(f'{path}/{train_df_name}')
+    if train_df_path is not None:
+        train = pd.read_csv(train_df_path)
+    else:
+        train = pd.read_csv(f"{path}/train.csv")
     if pl_df_path is not None:
         pl_df = pd.read_csv(pl_df_path)
         train = train.append(pl_df)

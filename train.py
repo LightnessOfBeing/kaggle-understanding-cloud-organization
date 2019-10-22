@@ -19,7 +19,6 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from callbacks import CustomCheckpointCallback
 from dataset import prepare_loaders
 from inference import predict
-from lovasz_losses import CustomLovaszLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
@@ -113,8 +112,6 @@ if __name__ == '__main__':
         criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
     elif args.loss == 'BCE':
         criterion = nn.BCEWithLogitsLoss()
-    elif args.loss == "Lovasz":
-        criterion = CustomLovaszLoss()
     elif args.loss == "complex":
         criterion = {
             "dice": DiceLoss(),

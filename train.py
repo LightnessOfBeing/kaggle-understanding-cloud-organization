@@ -90,7 +90,7 @@ if __name__ == '__main__':
                               validation_strategy=args.valid_split,
                               pl_df_path=args.pl_df_path,
                               train_folder=args.train_folder,
-                              train_df_path=args.train_df_path)
+                              train_df_name=args.train_df_name)
     test_loader = loaders['test']
     del loaders['test']
 

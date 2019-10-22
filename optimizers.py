@@ -361,8 +361,10 @@ def get_optimizer(optimizer: str = 'Adam',
         params = [{'params': model.parameters(), 'lr': lr}]
 
     if optimizer == 'Adam':
+        print("Adam optimizer")
         optimizer = optim.Adam(params, lr=lr)
     elif optimizer == 'RAdam':
+        print("RAdam optimizer")
         optimizer = catalyst.contrib.optimizers.RAdam(params, lr=lr)
     elif optimizer == 'Ralamb':
         optimizer = Ralamb(params, lr=lr)

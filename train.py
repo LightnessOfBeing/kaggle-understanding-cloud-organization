@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument("--num_workers", help="num_workers", type=int, default=0)
     parser.add_argument("--bs", help="batch size", type=int, default=4)
     parser.add_argument("--lr", help="learning rate", type=float, default=1e-3)
-    parser.add_argument("--lr_e", help="learning rate for decoder", type=float, default=1e-3)
+    parser.add_argument("--lr_e", help="learning rate for encoder", type=float, default=1e-3)
     parser.add_argument("--num_epochs", help="number of epochs", type=int, default=100)
     parser.add_argument("--gradient_accumulation", help="gradient_accumulation steps", type=int, default=None)
     parser.add_argument("--height", help="height", type=int, default=320)
@@ -70,6 +70,7 @@ if __name__ == '__main__':
     parser.add_argument("--pl_df_path", help="path to df with pseudo labels", type=str, default=None)
     parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
     parser.add_argument("--train_df_name", help="name of train df", type=str, default="train.csv")
+    parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
 
     args = parser.parse_args()
 
@@ -89,7 +90,7 @@ if __name__ == '__main__':
                               validation_strategy=args.valid_split,
                               pl_df_path=args.pl_df_path,
                               train_folder=args.train_folder,
-                              train_df_name=args.train_df_name)
+                              train_df_path=args.train_df_path)
     test_loader = loaders['test']
     del loaders['test']
 
@@ -159,12 +160,21 @@ if __name__ == '__main__':
         print("FP16 is used")
         fp16_params = dict(opt_level="O1")
 
+    if args.resume_train is not None:
+        print("-------------------")
+        print(f"resume weights path = {args.resume_weights}")
+        print("-------------------")
+        checkpoint = utils.load_checkpoint(args.resume_weights)
+        model.cuda()
+        utils.unpack_checkpoint(checkpoint, model=model)
+
     if args.use_tta:
         print("TTA model created")
         #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
         model = TTAWrapper(model, fliplr_image2mask)
 
     runner = SupervisedRunner()
+
     if args.train:
         runner.train(
             model=model,

@@ -162,9 +162,9 @@ if __name__ == '__main__':
 
     if args.resume_train is not None:
         print("-------------------")
-        print(f"resume weights path = {args.resume_weights}")
+        print(f"resume weights path = {args.resume_train}")
         print("-------------------")
-        checkpoint = utils.load_checkpoint(args.resume_weights)
+        checkpoint = utils.load_checkpoint(args.resume_train)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
 

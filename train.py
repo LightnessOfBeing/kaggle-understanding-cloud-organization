@@ -72,6 +72,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_folder", help="name of train folder", type=str, default="train_images")
     parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
+    parser.add_argument("--patience", help="patience parameter", type=int, default=2)
 
     args = parser.parse_args()
 
@@ -81,7 +82,7 @@ if __name__ == '__main__':
     set_global_seed(args.seed)
     prepare_cudnn(deterministic=True)
 
-    sub_name = f'{args.model_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
+    sub_name = f'{args.segm_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
@@ -103,7 +104,8 @@ if __name__ == '__main__':
                               separate_decoder=args.separate_decoder, lr=args.lr, lr_e=args.lr_e)
 
     if args.scheduler == 'ReduceLROnPlateau':
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=2)
+        print(f"Patience = {args.patience}")
+        scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=args.patience)
     else:
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
 

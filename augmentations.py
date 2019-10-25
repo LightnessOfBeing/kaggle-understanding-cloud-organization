@@ -118,7 +118,7 @@ def get_training_augmentation3(image_size: tuple = (320, 640)):
                                    border_mode=cv2.BORDER_CONSTANT,
                                    value=0),
         albu.ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
-        albu.Solarize(threshold=128, always_apply=False, p=0.9),
+        albu.Solarize(threshold=128, always_apply=False, p=0.5),
         albu.HorizontalFlip(p=0.5)
     ]
     return albu.Compose(train_transform)

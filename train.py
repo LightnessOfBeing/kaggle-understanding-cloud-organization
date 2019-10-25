@@ -10,10 +10,11 @@ import torch.nn as nn
 from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
 from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
-    AUCCallback, CriterionAggregatorCallback
+    AUCCallback, CriterionAggregatorCallback, MixupCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
+from pytorch_toolbelt.losses import FocalLoss
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from callbacks import CustomCheckpointCallback
@@ -73,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
     parser.add_argument("--patience", help="patience parameter", type=int, default=2)
+    parser.add_argument("--mixup", help="mixup augmentation", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -93,6 +95,7 @@ if __name__ == '__main__':
                               pl_df_path=args.pl_df_path,
                               train_folder=args.train_folder,
                               train_df_path=args.train_df_path)
+
     test_loader = loaders['test']
     del loaders['test']
 
@@ -122,6 +125,8 @@ if __name__ == '__main__':
             "dice": DiceLoss(),
             "bce": nn.BCEWithLogitsLoss()
         }
+    elif args.loss == "Focal":
+        criterion = FocalLoss()
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 
@@ -130,12 +135,14 @@ if __name__ == '__main__':
 
     if args.task == 'segmentation':
         callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001),
-                     CriterionCallback(), CustomCheckpointCallback()]
+                     MixupCallback() if args.mixup else CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
                      EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
                      CustomCheckpointCallback()
                      ]
+
+    print(callbacks)
 
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))

@@ -125,8 +125,6 @@ if __name__ == '__main__':
             "dice": DiceLoss(),
             "bce": nn.BCEWithLogitsLoss()
         }
-    elif args.loss == "Focal":
-        criterion = FocalLoss()
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 

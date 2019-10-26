@@ -85,6 +85,9 @@ if __name__ == '__main__':
     prepare_cudnn(deterministic=True)
 
     sub_name = f'{args.segm_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
+
+    print(sub_name)
+
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)

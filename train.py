@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
     sub_name = f'{args.segm_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
 
-    print(sub_name)
+    print(f'submission_{sub_name}.csv')
 
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 

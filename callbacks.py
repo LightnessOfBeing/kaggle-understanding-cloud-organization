@@ -66,18 +66,29 @@ class CustomCheckpointCallback(CheckpointCallback):
         self.save_metric(logdir, metrics)
 
 
-def my_dice(outputs, targets, **kwargs):
+def single_dice_coef(y_pred_bin, y_true):
+    # shape of y_true and y_pred_bin: (height, width)
     activation_fn = get_activation_fn("Sigmoid")
-    outputs = activation_fn(outputs)
+    y_pred_bin = activation_fn(y_pred_bin)
+    y_pred_bin = y_pred_bin.cpu().detach().numpy()
+    y_true = y_true.cpu().detach().numpy()
+    intersection = np.sum(y_true * y_pred_bin)
+    if (np.sum(y_true)==0) and (np.sum(y_pred_bin)==0):
+        return 1
+    return (2*intersection) / (np.sum(y_true) + np.sum(y_pred_bin))
 
-    outputs = outputs.cpu().detach().numpy()
-    targets = targets.cpu().detach().numpy()
+def mean_dice_coef(y_pred_bin, y_true, **kwargs):
+    # shape of y_true and y_pred_bin: (n_samples, height, width, n_channels)
+    # actual shape batch, channels, height, width
+    batch_size = y_true.shape[0]
+    channel_num = y_true.shape[1]
+    mean_dice_channel = 0.
+    for i in range(batch_size):
+        for j in range(channel_num):
+            channel_dice = single_dice_coef(y_true[i, j, :, :], y_pred_bin[i, j, :, :])
+            mean_dice_channel += channel_dice/(channel_num*batch_size)
+    return mean_dice_channel
 
-    outputs = np.asarray(outputs).astype(np.bool)
-    targets = np.asarray(targets).astype(np.bool)
-    if outputs.sum() + targets.sum() == 0: return 1
-    intersection = np.logical_and(outputs, targets)
-    return 2. * intersection.sum() / (outputs.sum() + targets.sum())
 
 class CustomDiceCallback(MetricCallback):
     """
@@ -100,7 +111,7 @@ class CustomDiceCallback(MetricCallback):
         """
         super().__init__(
             prefix="custom_dice_kirill",
-            metric_fn=my_dice,
+            metric_fn=mean_dice_coef,
             input_key=input_key,
             output_key=output_key,
             eps=eps,

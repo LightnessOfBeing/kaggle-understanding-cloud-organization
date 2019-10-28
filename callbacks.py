@@ -2,7 +2,7 @@ from typing import Dict
 
 import cv2
 
-from catalyst.dl import Callback, CallbackOrder, RunnerState, CheckpointCallback
+from catalyst.dl import Callback, CallbackOrder, RunnerState, CheckpointCallback, MetricCallback
 import numpy as np
 from catalyst.utils import save_checkpoint
 
@@ -64,3 +64,43 @@ class CustomCheckpointCallback(CheckpointCallback):
 
         metrics = self.get_metric(valid_metrics)
         self.save_metric(logdir, metrics)
+
+
+def my_dice(img1, img2, **kwargs):
+    img1 = img1.detach().numpy()
+    img2 = img2.detach().numpy()
+
+    img1 = np.asarray(img1).astype(np.bool)
+    img2 = np.asarray(img2).astype(np.bool)
+    if img1.sum() + img2.sum() == 0: return 1
+    intersection = np.logical_and(img1, img2)
+    return 2. * intersection.sum() / (img1.sum() + img2.sum())
+
+class CustomDiceCallback(MetricCallback):
+    """
+    Dice metric callback.
+    """
+    def __init__(
+        self,
+        input_key: str = "targets",
+        output_key: str = "logits",
+        prefix: str = "dice",
+        eps: float = 1e-7,
+        threshold: float = None,
+        activation: str = "Sigmoid"
+    ):
+        """
+        :param input_key: input key to use for dice calculation;
+            specifies our `y_true`.
+        :param output_key: output key to use for dice calculation;
+            specifies our `y_pred`.
+        """
+        super().__init__(
+            prefix="custom_dice_kirill",
+            metric_fn=my_dice,
+            input_key=input_key,
+            output_key=output_key,
+            eps=eps,
+            threshold=threshold,
+            activation=activation
+        )

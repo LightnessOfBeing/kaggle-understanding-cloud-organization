@@ -85,7 +85,7 @@ def mean_dice_coef(y_pred_bin, y_true, **kwargs):
     mean_dice_channel = 0.
     for i in range(batch_size):
         for j in range(channel_num):
-            channel_dice = single_dice_coef(y_true[i, j, :, :], y_pred_bin[i, j, :, :])
+            channel_dice = single_dice_coef(y_pred_bin[i, j, :, :], y_true[i, j, :, :])
             mean_dice_channel += channel_dice/(channel_num*batch_size)
     return mean_dice_channel
 
@@ -98,7 +98,7 @@ class CustomDiceCallback(MetricCallback):
         self,
         input_key: str = "targets",
         output_key: str = "logits",
-        prefix: str = "dice",
+        prefix: str = "custom_dice_kirill",
         eps: float = 1e-7,
         threshold: float = None,
         activation: str = "Sigmoid"

@@ -79,14 +79,15 @@ def single_dice_coef(y_pred_bin, y_true):
 
 def mean_dice_coef(y_pred_bin, y_true, **kwargs):
     # shape of y_true and y_pred_bin: (n_samples, height, width, n_channels)
-    # actual shape batch, channels, height, width
+    # actual shape (Batch, channels, height, width)
     batch_size = y_true.shape[0]
     channel_num = y_true.shape[1]
     mean_dice_channel = 0.
     for i in range(batch_size):
         for j in range(channel_num):
             channel_dice = single_dice_coef(y_pred_bin[i, j, :, :], y_true[i, j, :, :])
-            mean_dice_channel += channel_dice/(channel_num*batch_size)
+            mean_dice_channel += channel_dice
+    mean_dice_channel /= channel_num * batch_size
     return mean_dice_channel
 
 

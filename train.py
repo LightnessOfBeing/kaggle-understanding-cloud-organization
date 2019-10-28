@@ -9,15 +9,14 @@ import segmentation_models_pytorch as smp
 import torch.nn as nn
 from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
-from catalyst.dl.callbacks import DiceCallback, EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
+from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
     AUCCallback, CriterionAggregatorCallback, MixupCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
-from pytorch_toolbelt.losses import FocalLoss
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-from callbacks import CustomCheckpointCallback
+from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
 from inference import predict
 from lovasz_losses import CustomLovaszLoss
@@ -74,7 +73,6 @@ if __name__ == '__main__':
     parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
     parser.add_argument("--patience", help="patience parameter", type=int, default=2)
-    parser.add_argument("--mixup", help="mixup augmentation", type=bool, default=False)
 
     args = parser.parse_args()
 
@@ -135,8 +133,9 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [DiceCallback(), EarlyStoppingCallback(patience=5, min_delta=0.001),
-                     MixupCallback() if args.mixup else CriterionCallback(), CustomCheckpointCallback()]
+        #DiceCallback()
+        callbacks = [CustomDiceCallback(), EarlyStoppingCallback(metric="custom_dice_kirill", patience=5, min_delta=0.001),
+                     CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
                      EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),

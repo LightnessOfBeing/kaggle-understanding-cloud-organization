@@ -67,8 +67,8 @@ class CustomCheckpointCallback(CheckpointCallback):
 
 
 def my_dice(img1, img2, **kwargs):
-    img1 = img1.detach().numpy()
-    img2 = img2.detach().numpy()
+    img1 = img1.cpu().detach().numpy()
+    img2 = img2.cpu().detach().numpy()
 
     img1 = np.asarray(img1).astype(np.bool)
     img2 = np.asarray(img2).astype(np.bool)

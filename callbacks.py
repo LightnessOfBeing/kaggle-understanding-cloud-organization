@@ -71,7 +71,7 @@ def single_dice_coef(y_pred_bin, y_true):
     activation_fn = get_activation_fn("Sigmoid")
     y_pred_bin = activation_fn(y_pred_bin)
     y_pred_bin = y_pred_bin.cpu().detach().numpy()
-    y_pred_bin = (y_pred_bin > 0.5).float()
+    y_pred_bin = (y_pred_bin > 0.5)
     y_true = y_true.cpu().detach().numpy()
     intersection = np.sum(y_true * y_pred_bin)
     if (np.sum(y_true)==0) and (np.sum(y_pred_bin)==0):

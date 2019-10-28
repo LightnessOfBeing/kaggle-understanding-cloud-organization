@@ -4,7 +4,7 @@ import cv2
 
 from catalyst.dl import Callback, CallbackOrder, RunnerState, CheckpointCallback, MetricCallback
 import numpy as np
-from catalyst.utils import save_checkpoint
+from catalyst.utils import save_checkpoint, get_activation_fn
 
 
 class CustomSegmentationInferCallback(Callback):
@@ -66,15 +66,18 @@ class CustomCheckpointCallback(CheckpointCallback):
         self.save_metric(logdir, metrics)
 
 
-def my_dice(img1, img2, **kwargs):
-    img1 = img1.cpu().detach().numpy()
-    img2 = img2.cpu().detach().numpy()
+def my_dice(outputs, targets, **kwargs):
+    activation_fn = get_activation_fn("Sigmoid")
+    outputs = activation_fn(outputs)
 
-    img1 = np.asarray(img1).astype(np.bool)
-    img2 = np.asarray(img2).astype(np.bool)
-    if img1.sum() + img2.sum() == 0: return 1
-    intersection = np.logical_and(img1, img2)
-    return 2. * intersection.sum() / (img1.sum() + img2.sum())
+    outputs = outputs.cpu().detach().numpy()
+    targets = targets.cpu().detach().numpy()
+
+    outputs = np.asarray(outputs).astype(np.bool)
+    targets = np.asarray(targets).astype(np.bool)
+    if outputs.sum() + targets.sum() == 0: return 1
+    intersection = np.logical_and(outputs, targets)
+    return 2. * intersection.sum() / (outputs.sum() + targets.sum())
 
 class CustomDiceCallback(MetricCallback):
     """

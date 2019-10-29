@@ -9,6 +9,7 @@ import segmentation_models_pytorch as smp
 import torch.nn as nn
 from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
+from catalyst.dl import DiceCallback
 from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
     AUCCallback, CriterionAggregatorCallback, MixupCallback
 from catalyst.dl.runner import SupervisedRunner
@@ -73,6 +74,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
     parser.add_argument("--patience", help="patience parameter", type=int, default=2)
+    parser.add_argument("--smooth", help="smooth parameter", type=float, default=1.)
 
     args = parser.parse_args()
 
@@ -114,9 +116,9 @@ if __name__ == '__main__':
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
 
     if args.loss == 'BCEDiceLoss':
-        criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
+        criterion = smp.utils.losses.BCEDiceLoss(eps=args.smooth)
     elif args.loss == 'BCEJaccardLoss':
-        criterion = smp.utils.losses.BCEJaccardLoss(eps=1.)
+        criterion = smp.utils.losses.BCEJaccardLoss(eps=args.smooth)
     elif args.loss == 'BCE':
         criterion = nn.BCEWithLogitsLoss()
     elif args.loss == "Lovasz":
@@ -133,8 +135,7 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        #DiceCallback()
-        callbacks = [CustomDiceCallback(), EarlyStoppingCallback(metric="custom_dice_kirill", patience=5, min_delta=0.001),
+        callbacks = [CustomDiceCallback(), DiceCallback(eps=args.smooth), EarlyStoppingCallback(patience=5, min_delta=0.001),
                      CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
@@ -165,7 +166,7 @@ if __name__ == '__main__':
                 loss_keys=["loss_dice", "loss_bce"],
                 loss_aggregate_fn="sum"
             )
-    ]
+        ]
 
     fp16_params = None
     print(args.fp16)

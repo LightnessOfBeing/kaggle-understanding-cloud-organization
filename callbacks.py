@@ -112,7 +112,7 @@ class CustomDiceCallback(MetricCallback):
             specifies our `y_pred`.
         """
         super().__init__(
-            prefix="custom_dice_kirill",
+            prefix="dice_kirill",
             metric_fn=mean_dice_coef,
             input_key=input_key,
             output_key=output_key,

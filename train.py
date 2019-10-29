@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     if args.task == 'segmentation':
         callbacks = [CustomDiceCallback(), DiceCallback(eps=0, prefix="dice_0"), DiceCallback(eps=1., prefix="dice_1"),
-                     DiceCallback(eps=10., prefix="dice_10"), DiceCallback(eps=100., prefix="dice_100"),
+                     DiceCallback(eps=10., prefix="dice_10"), DiceCallback(prefix="dice_default"),
                      EarlyStoppingCallback(patience=5, min_delta=0.001),
                      CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':

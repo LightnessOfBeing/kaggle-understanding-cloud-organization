@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_df_path", help="name of train df", type=str, default=None)
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
     parser.add_argument("--patience", help="patience parameter", type=int, default=2)
-    parser.add_argument("--smooth", help="smooth parameter", type=float, default=1.)
+    parser.add_argument("--loss_smooth", help="smooth parameter", type=float, default=1.)
 
     args = parser.parse_args()
 
@@ -116,9 +116,10 @@ if __name__ == '__main__':
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
 
     if args.loss == 'BCEDiceLoss':
-        criterion = smp.utils.losses.BCEDiceLoss(eps=args.smooth)
+        print(f"Loss smooth is {args.loss_smooth}")
+        criterion = smp.utils.losses.BCEDiceLoss(eps=args.loss_smooth)
     elif args.loss == 'BCEJaccardLoss':
-        criterion = smp.utils.losses.BCEJaccardLoss(eps=args.smooth)
+        criterion = smp.utils.losses.BCEJaccardLoss(eps=args.loss_smooth)
     elif args.loss == 'BCE':
         criterion = nn.BCEWithLogitsLoss()
     elif args.loss == "Lovasz":
@@ -135,7 +136,9 @@ if __name__ == '__main__':
         model = nn.DataParallel(model)
 
     if args.task == 'segmentation':
-        callbacks = [CustomDiceCallback(), DiceCallback(eps=args.smooth), EarlyStoppingCallback(patience=5, min_delta=0.001),
+        callbacks = [CustomDiceCallback(), DiceCallback(eps=0, prefix="dice_0"), DiceCallback(eps=1., prefix="dice_1"),
+                     DiceCallback(eps=10., prefix="dice_10"), DiceCallback(eps=100., prefix="dice_100"),
+                     EarlyStoppingCallback(patience=5, min_delta=0.001),
                      CriterionCallback(), CustomCheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),

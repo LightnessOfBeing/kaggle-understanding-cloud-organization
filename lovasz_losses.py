@@ -217,8 +217,10 @@ class LovaszLoss(_Loss):
 
 #([2, 4, 320, 640]) B x C x H x W
 
+def symmetric_lovasz(outputs, targets):
+    return (_lovasz_hinge(outputs, targets) + _lovasz_hinge(-outputs, 1 - targets)) / 2
 
-class CustomLovaszLoss(_Loss):
+class StmmetricLovaszLoss(_Loss):
     def __init__(self, per_image=False, ignore=None):
         super().__init__()
         self.ignore = ignore
@@ -226,7 +228,8 @@ class CustomLovaszLoss(_Loss):
 
     def forward(self, logits, target):
         #{0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
-       # print(logits.size(), target.size())
+        # B x C x H x W
+
         logits_fish = logits[:, 0, :, :]
         logits_flower = logits[:, 1, :, :]
         logits_gravel = logits[:, 2, :, :]
@@ -237,7 +240,37 @@ class CustomLovaszLoss(_Loss):
         target_gravel = target[:, 2, :, :]
         target_sugar = target[:, 3, :, :]
 
-        #print(target_sugar.size())
+
+        lovasz_fish = symmetric_lovasz(logits_fish, target_fish)
+
+        lovasz_flower = symmetric_lovasz(logits_flower, target_flower)
+
+        lovasz_gravel = symmetric_lovasz(logits_gravel, target_gravel)
+
+        lovasz_sugar = symmetric_lovasz(logits_sugar, target_sugar)
+
+        return lovasz_fish + lovasz_flower + lovasz_gravel + lovasz_sugar
+
+class CustomLovaszLoss(_Loss):
+    def __init__(self, per_image=False, ignore=None):
+        super().__init__()
+        self.ignore = ignore
+        self.per_image = per_image
+
+    def forward(self, logits, target):
+        #{0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
+        # B x C x H x W
+
+        logits_fish = logits[:, 0, :, :]
+        logits_flower = logits[:, 1, :, :]
+        logits_gravel = logits[:, 2, :, :]
+        logits_sugar = logits[:, 3, :, :]
+
+        target_fish = target[:, 0, :, :]
+        target_flower = target[:, 1, :, :]
+        target_gravel = target[:, 2, :, :]
+        target_sugar = target[:, 3, :, :]
+
 
         lovasz_fish = _lovasz_hinge(
             logits_fish, target_fish, per_image=self.per_image, ignore=self.ignore

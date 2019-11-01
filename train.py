@@ -3,6 +3,7 @@ import datetime
 import gc
 import json
 import os
+import torch
 import warnings
 
 import segmentation_models_pytorch as smp
@@ -11,11 +12,11 @@ from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
 from catalyst.dl import DiceCallback
 from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
-    AUCCallback, CriterionAggregatorCallback, MixupCallback
+    AUCCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmRestarts
 
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
@@ -28,6 +29,7 @@ from utils import get_optimal_postprocess, NumpyEncoder
 warnings.filterwarnings("once")
 
 if __name__ == '__main__':
+    print(torch.__version__)
     """
     Example of usage:
     >>> python train.py --chunk_size=10000 --n_jobs=10
@@ -112,8 +114,9 @@ if __name__ == '__main__':
     if args.scheduler == 'ReduceLROnPlateau':
         print(f"Patience = {args.patience}")
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=args.patience)
-    else:
-        scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=3)
+    elif args.scheduler == 'cosine_anneal':
+        print(f"Cosine Annealing")
+        scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=4, T_mult=2)
 
     if args.loss == 'BCEDiceLoss':
         print(f"Loss smooth is {args.loss_smooth}")
@@ -142,8 +145,7 @@ if __name__ == '__main__':
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
                      EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
-                     CustomCheckpointCallback()
-                     ]
+                     CustomCheckpointCallback()]
 
     print(callbacks)
 

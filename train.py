@@ -192,7 +192,7 @@ if __name__ == '__main__':
         print("TTA model created")
         #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
         model = TTAWrapper(model, fliplr_image2mask)
-
+    model.cuda()
     runner = SupervisedRunner()
 
     if args.train:

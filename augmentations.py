@@ -35,7 +35,9 @@ def get_training_augmentation(augmentation: str='default', image_size: tuple = (
         'default': get_training_augmentation0,
         '1': get_training_augmentation1,
         '2': get_training_augmentation2,
-        '3': get_training_augmentation3
+        '3': get_training_augmentation3,
+        'both': get_training_augmentation_both,
+        'none': get_training_augmentation_none
     }
 
     assert augmentation in LEVELS.keys()
@@ -93,6 +95,44 @@ def get_training_augmentation2(image_size: tuple = (320, 640)):
     train_transform = [
       #  albu.Resize(*image_size),
         albu.HorizontalFlip(p=0.6),
+        albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.6, border_mode=0),
+        albu.GridDistortion(p=0.6),
+        albu.OpticalDistortion(p=0.6, distort_limit=0.1, shift_limit=0.2),
+        albu.RandomBrightnessContrast(p=0.6)
+    ]
+    return albu.Compose(train_transform)
+
+def get_training_augmentation_both(image_size: tuple = (320, 640)):
+    """
+
+    Args:
+        image_size:
+
+    Returns:
+
+    """
+    train_transform = [
+      #  albu.Resize(*image_size),
+        albu.VerticalFlip(p=0.6),
+        albu.HorizontalFlip(p=0.6),
+        albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.6, border_mode=0),
+        albu.GridDistortion(p=0.6),
+        albu.OpticalDistortion(p=0.6, distort_limit=0.1, shift_limit=0.2),
+        albu.RandomBrightnessContrast(p=0.6)
+    ]
+    return albu.Compose(train_transform)
+
+def get_training_augmentation_none(image_size: tuple = (320, 640)):
+    """
+
+    Args:
+        image_size:
+
+    Returns:
+
+    """
+    train_transform = [
+      #  albu.Resize(*image_size),
         albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.6, border_mode=0),
         albu.GridDistortion(p=0.6),
         albu.OpticalDistortion(p=0.6, distort_limit=0.1, shift_limit=0.2),

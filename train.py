@@ -116,7 +116,7 @@ if __name__ == '__main__':
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=args.patience)
     elif args.scheduler == 'cosine_anneal':
         print(f"Cosine Annealing")
-        scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=2, T_mult=2, last_epoch=30)
+        scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=2, T_mult=2)
 
     if args.loss == 'BCEDiceLoss':
         print(f"Loss smooth is {args.loss_smooth}")

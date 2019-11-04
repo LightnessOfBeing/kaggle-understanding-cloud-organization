@@ -21,7 +21,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmResta
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
 from inference import predict
-from lovasz_losses import CustomLovaszLoss
+from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
@@ -127,6 +127,8 @@ if __name__ == '__main__':
         criterion = nn.BCEWithLogitsLoss()
     elif args.loss == "Lovasz":
         criterion = CustomLovaszLoss()
+    elif args.loss == "Lovasz_sym":
+        criterion = SymmetricLovaszLoss()
     elif args.loss == "complex":
         criterion = {
             "dice": DiceLoss(),

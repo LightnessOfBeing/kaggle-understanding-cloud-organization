@@ -220,7 +220,7 @@ class LovaszLoss(_Loss):
 def symmetric_lovasz(outputs, targets):
     return (_lovasz_hinge(outputs, targets) + _lovasz_hinge(-outputs, 1 - targets)) / 2
 
-class StmmetricLovaszLoss(_Loss):
+class SymmetricLovaszLoss(_Loss):
     def __init__(self, per_image=False, ignore=None):
         super().__init__()
         self.ignore = ignore

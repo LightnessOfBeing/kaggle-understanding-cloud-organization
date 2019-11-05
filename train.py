@@ -20,7 +20,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmResta
 
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
-from inference import predict
+from inference import predict, get_ensemble_prediction, aggregate_ensemble_predictions
 from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss
 from models import get_model
 from optimizers import get_optimizer
@@ -77,7 +77,8 @@ if __name__ == '__main__':
     parser.add_argument("--resume_train", help="name of train weights", type=str, default=None)
     parser.add_argument("--patience", help="patience parameter", type=int, default=2)
     parser.add_argument("--loss_smooth", help="smooth parameter", type=float, default=1.)
-
+    parser.add_argument("--ensemble", help="ensemble", type=bool, default=False)
+    parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
     args = parser.parse_args()
 
     if args.task == 'classification':
@@ -103,6 +104,13 @@ if __name__ == '__main__':
 
     test_loader = loaders['test']
     del loaders['test']
+
+    if args.ensemble == True:
+        preds = get_ensemble_prediction(args.ensemble_path, loaders)
+        aggregate_ensemble_predictions(preds, mode="all",
+                                       json_folder=args.ensemble_path, technique="voting", convex_hull=True)
+        print("Ensembling finished")
+        exit()
 
     model = get_model(model_type=args.segm_type, encoder=args.encoder, encoder_weights=args.encoder_weights,
                       activation=None, task=args.task)

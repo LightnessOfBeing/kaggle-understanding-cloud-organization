@@ -304,7 +304,7 @@ def prepare_loaders(path: str = '',
     Returns:
 
     """
-
+    print(image_size)
     if train_df_path is not None:
         print("Used train_df_path")
         train = pd.read_csv(train_df_path)
@@ -377,7 +377,7 @@ def prepare_loaders(path: str = '',
     train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers, pin_memory=True)
     valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers, pin_memory=True)
 
-    print(f"Image_shape:{type(train_dataset[0])}, {train_dataset[0].shape}")
+    print(f"Image_shape:{type(train_dataset[0][0])}, {train_dataset[0][0].shape}")
 
     test_dataset = CloudDataset(path=path, df=sub, datatype='test', img_ids=test_ids,
                                 transforms=get_validation_augmentation(image_size=image_size),

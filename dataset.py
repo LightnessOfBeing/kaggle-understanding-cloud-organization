@@ -30,7 +30,7 @@ def get_img(x: str = 'img_name', folder: str = 'train_images'):
     return img
 
 
-def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
+def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
     """
     Decode rle encoded mask.
 
@@ -52,7 +52,7 @@ def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
     return img.reshape(shape, order='F')
 
 
-def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320, 640)):
+def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (1400, 2100)):
     """
     Create mask based on df, image name and shape.
 
@@ -346,41 +346,43 @@ def prepare_loaders(path: str = '',
             _ = CloudDataset(path=path, df=train, datatype='train', img_ids=id_mask_count['img_id'].values,
                              transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                              preprocessing=get_preprocessing(preprocessing_fn),
-                             preload=preload, image_size=(320, 640), train_folder=train_folder)
+                             preload=preload, image_size=image_size, train_folder=train_folder)
 
         train_dataset = CloudDataset(path=path, df=train, datatype='train', img_ids=train_ids,
                                      transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640), train_folder=train_folder)
+                                     preload=preload, image_size=image_size, train_folder=train_folder)
         valid_dataset = CloudDataset(path=path, df=train, datatype='valid', img_ids=valid_ids,
                                      transforms=get_validation_augmentation(image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640), train_folder=train_folder)
+                                     preload=preload, image_size=image_size, train_folder=train_folder)
 
     elif task == 'classification':
         if preload:
             _ = CloudDatasetClassification(path=path, df=train, datatype='train', img_ids=id_mask_count['img_id'].values,
                              transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                              preprocessing=get_preprocessing(preprocessing_fn),
-                             preload=preload, image_size=(320, 640), one_hot_labels=img_2_ohe_vector)
+                             preload=preload, image_size=image_size, one_hot_labels=img_2_ohe_vector)
 
         train_dataset = CloudDatasetClassification(path=path, df=train, datatype='train', img_ids=train_ids,
                                      transforms=get_training_augmentation(augmentation=augmentation,
                                                                           image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640), one_hot_labels=img_2_ohe_vector)
+                                     preload=preload, image_size=image_size, one_hot_labels=img_2_ohe_vector)
         valid_dataset = CloudDatasetClassification(path=path, df=train, datatype='valid', img_ids=valid_ids,
                                      transforms=get_validation_augmentation(image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=(320, 640), one_hot_labels=img_2_ohe_vector)
+                                     preload=preload, image_size=image_size, one_hot_labels=img_2_ohe_vector)
 
     train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers, pin_memory=True)
     valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers, pin_memory=True)
 
+    print("Image_shape:{type(train_dataset[0])}, {train_dataset[0].shape}")
+
     test_dataset = CloudDataset(path=path, df=sub, datatype='test', img_ids=test_ids,
                                 transforms=get_validation_augmentation(image_size=image_size),
                                 preprocessing=get_preprocessing(preprocessing_fn), preload=preload,
-                                image_size=(320, 640))
+                                image_size=image_size)
     test_loader = DataLoader(test_dataset, batch_size=bs // 2, shuffle=False, num_workers=num_workers, pin_memory=True)
 
     loaders = {

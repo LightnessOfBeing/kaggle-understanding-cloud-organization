@@ -91,6 +91,7 @@ if __name__ == '__main__':
 
     print(f'submission_{sub_name}.csv')
 
+    print(f"Height : {args.height} Width {args.width}")
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)

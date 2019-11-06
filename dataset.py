@@ -132,7 +132,7 @@ class CloudDataset(Dataset):
         # list of bad images from discussions
         self.bad_imgs = ['046586a.jpg', '1588d4c.jpg', '1e40a05.jpg', '41f92e5.jpg', '449b792.jpg', '563fc48.jpg',
                          '8bd81ce.jpg', 'c0306e5.jpg', 'c26c635.jpg', 'e04fea3.jpg', 'e5f2f24.jpg', 'eda52f2.jpg',
-                         'fa645da.jpg']
+                         'fa645da.jpg', 'b092cc1.jpg', 'ee0ba55.jpg']
         if filter_bad_images:
             self.img_ids = [i for i in self.img_ids if i not in self.bad_imgs]
         self.transforms = transforms
@@ -225,7 +225,7 @@ class CloudDatasetClassification(Dataset):
         self.img_ids = img_ids
         self.bad_imgs = ['046586a.jpg', '1588d4c.jpg', '1e40a05.jpg', '41f92e5.jpg', '449b792.jpg', '563fc48.jpg',
                          '8bd81ce.jpg', 'c0306e5.jpg', 'c26c635.jpg', 'e04fea3.jpg', 'e5f2f24.jpg', 'eda52f2.jpg',
-                         'fa645da.jpg']
+                         'fa645da.jpg', 'b092cc1.jpg', 'ee0ba55.jpg']
         if filter_bad_images:
             self.img_ids = [i for i in self.img_ids if i not in self.bad_imgs]
         self.transforms = transforms

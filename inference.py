@@ -117,7 +117,9 @@ def get_ensemble_prediction(weights_path, loaders):
     weights_names = sorted(list(filter(lambda x: "pth" in x, os.listdir(weights_path))))
     num_ensembles = len(weights_path)
     encoder_names = []
-    predictions_arr = np.zeros((num_ensembles, len(loaders["test"]) * 4, 350, 525))
+    print("kek")
+    predictions_arr = np.zeros((num_ensembles, len(loaders["test"]) * 4, 350, 525), dtype=np.float16)
+    print("kek2")
     for i in range(num_ensembles):
         weights_path = weights_path + weights_names[i]
         ENCODER = encoder_names[i]

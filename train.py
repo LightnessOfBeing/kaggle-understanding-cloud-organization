@@ -20,7 +20,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmResta
 
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
-from inference import predict, get_ensemble_prediction, aggregate_ensemble_predictions
+from inference import predict, get_ensemble_prediction
 from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss
 from models import get_model
 from optimizers import get_optimizer

@@ -109,7 +109,7 @@ def get_class_params(json_path=None, mode="custom"):
         class_params_arr = []
         files = sorted(list(filter(lambda x: "json" in x, os.listdir(json_path))))
         for file_path in files:
-            json_file = open(file_path)
+            json_file = open(os.path.join(json_path, file_path))
             data = json.load(json_file)
             class_params_arr.append({0: data["0"], 1: data["1"], 2: data["2"], 3: data["3"]})
         return class_params_arr

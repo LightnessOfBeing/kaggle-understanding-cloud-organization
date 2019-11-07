@@ -138,7 +138,7 @@ def get_thresholds(threshold_mode, json_path):
     return threshold, mask_size
 
 
-def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold_mode="all", json_path="./ensemble", path="./" ,convex_hull=True):
+def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold_mode="all", json_path="./ensemble", path="." ,convex_hull=True):
     if technique == "averaging" and threshold_mode == "all":
         raise ValueError(f'technique={technique} and threshold_mode={threshold_mode} cannot be combined')
 

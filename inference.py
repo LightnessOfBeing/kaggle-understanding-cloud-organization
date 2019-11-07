@@ -144,10 +144,10 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     if technique == "averaging" and threshold_mode == "all":
         raise ValueError(f'technique={technique} and threshold_mode={threshold_mode} cannot be combined')
 
-    print(f"PATH={path}")
     if threshold_mode == "all":
         print("getting class_params")
         class_params_arr = get_thresholds(threshold_mode, json_path)
+        print(f"class_params_arr={class_params_arr}")
     else:
         threshold, mask_size = get_thresholds(threshold_mode, json_path)
 
@@ -183,14 +183,13 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     encoded_pixels = []
     encoded_pixels_ch = []
 
-    print(f"Technique = {technique}")
-    for _, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
-        runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits'] for i in range(len(runners))]
-        runner_out_len = len(runner_out_arr)
-        batch_len = len(runner_out_arr[0])
-        pred_len = len(runner_out_arr[0][0])
-        #print(runner_out_len, batch_len, pred_len)
-        if technique == "averaging":
+    if technique == "averaging":
+        for _, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
+            runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits']
+                              for i in range(len(runners))]
+            runner_out_len = len(runner_out_arr)
+            batch_len = len(runner_out_arr[0])
+            pred_len = len(runner_out_arr[0][0])
             for batch_id in range(batch_len):
                 for pred_id in range(pred_len):
                     probability_final = np.zeros((350, 525))
@@ -212,9 +211,16 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             r_ch = mask2rle(draw_convex_hull(prediction.astype(np.uint8)))
                             encoded_pixels_ch.append(r_ch)
                     iters += 1
-        elif technique == "voting":
-
-            threshold = num_models // 2 + 1
+    elif technique == "voting":
+        print("Technique = voting")
+        threshold = num_models // 2 + 1
+        print(f"threshold = {threshold}")
+        for _, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
+            runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits']
+                              for i in range(len(runners))]
+            runner_out_len = len(runner_out_arr)
+            batch_len = len(runner_out_arr[0])
+            pred_len = len(runner_out_arr[0][0])
             for batch_id in range(batch_len):
                 for pred_id in range(pred_len):
                     prediction_final = np.zeros((350, 525))
@@ -229,8 +235,9 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         prediction_final += prediction_model
 
                     #prediction_final /= num_models
-                    prediction_final[prediction_final < threshold] = 0
-                    prediction_final[prediction_final >= threshold] = 1
+                    #prediction_final[prediction_final < threshold] = 0
+                    #prediction_final[prediction_final >= threshold] = 1
+                    prediction_final = np.where(prediction_final >= threshold, 1, 0)
 
                     if prediction_final.sum() == 0:
                         encoded_pixels.append('')

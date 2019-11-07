@@ -212,10 +212,10 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         probability_model = runner_out_arr[run_id][batch_id][pred_id].cpu().detach().numpy()
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                        print(class_params_arr[run_id])
+                      #  print(class_params_arr[run_id])
                         prediction_model, num_predict = post_process(sigmoid(probability_model),
-                                                               class_params_arr[run_id][0],
-                                                               class_params_arr[run_id][1])
+                                                               class_params_arr[run_id][iters%4][0],
+                                                               class_params_arr[run_id][iters%4][1])
                         prediction_final += prediction_model
 
                     prediction_final /= num_models

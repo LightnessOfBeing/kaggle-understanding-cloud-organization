@@ -104,7 +104,9 @@ if __name__ == '__main__':
                               train_df_path=args.train_df_path)
     if args.ensemble is not None:
         print("Ensembling started")
-        get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path, threshold_mode="all", json_path=args.ensemble_path, technique=args.ensemble, convex_hull=True)
+        get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path,
+                                threshold_mode="all", json_path=args.ensemble_path,
+                                technique=args.ensemble, convex_hull=True)
         print("Ensembling finished")
         exit()
 

@@ -149,6 +149,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
 
     weights_names = sorted(list(filter(lambda x: "pth" in x, os.listdir(weights_path))))
     num_models = len(weights_path)
+    print(f"Num models={num_models}")
     models = [None] * num_models
     runners = [None] * num_models
     encoder_names = get_encoder_names(weights_names)

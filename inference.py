@@ -147,9 +147,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     else:
         threshold, mask_size = get_thresholds(threshold_mode, json_path)
 
-    print(weights_path)
     weights_names = sorted(list(filter(lambda x: "pth" in x, os.listdir(weights_path))))
-    num_models = len(weights_path)
+    num_models = len(weights_names)
     print(f"Num models={num_models}")
     models = [None] * num_models
     runners = [None] * num_models

@@ -109,6 +109,7 @@ def get_class_params(json_path=None, mode="custom"):
         assert ".json" not in json_path
         class_params_arr = []
         files = sorted(list(filter(lambda x: "json" in x, os.listdir(json_path))))
+        print(f"Json files {files}")
         for file_path in files:
             json_file = open(os.path.join(json_path, file_path))
             data = json.load(json_file)
@@ -145,23 +146,27 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
 
     print(f"PATH={path}")
     if threshold_mode == "all":
+        print("getting class_params")
         class_params_arr = get_thresholds(threshold_mode, json_path)
     else:
         threshold, mask_size = get_thresholds(threshold_mode, json_path)
 
     weights_names = sorted(list(filter(lambda x: "pth" in x, os.listdir(weights_path))))
+    print(f"weights_names {weights_names}")
     num_models = len(weights_names)
     print(f"Num models={num_models}")
     models = [None] * num_models
     runners = [None] * num_models
     encoder_names = get_encoder_names(weights_names)
 
+    print("loading weights")
     for i in range(num_models):
         models[i] = get_model(model_type="Unet", encoder=encoder_names[i],
                               encoder_weights="imagenet",
                               activation=None, task="segmentation")
+        print(f"enc={encoder_names[i]} weight={weights_names[i]} class_params={class_params_arr[i]}")
         checkpoint = utils.load_checkpoint(os.path.join(weights_path, weights_names[i]))
-        models[i].cuda()
+      #  models[i].cuda()
         utils.unpack_checkpoint(checkpoint, model=models[i])
         runners[i] = SupervisedRunner(model=models[i])
     #loader_valid = {"infer": loaders["valid"]}

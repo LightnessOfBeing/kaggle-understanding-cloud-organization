@@ -106,7 +106,7 @@ if __name__ == '__main__':
         print("Ensembling started")
         get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path,
                                 threshold_mode="all", json_path=args.ensemble_path,
-                                technique=args.ensemble, convex_hull=True)
+                                technique=args.ensemble, convex_hull=True, path=args.path)
         print("Ensembling finished")
         exit()
 

@@ -142,6 +142,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     if technique == "averaging" and threshold_mode == "all":
         raise ValueError(f'technique={technique} and threshold_mode={threshold_mode} cannot be combined')
 
+    print(f"PATH={path}")
     if threshold_mode == "all":
         class_params_arr = get_thresholds(threshold_mode, json_path)
     else:

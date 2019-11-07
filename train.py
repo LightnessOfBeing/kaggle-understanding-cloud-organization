@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser.add_argument("--loss_smooth", help="smooth parameter", type=float, default=1.)
     parser.add_argument("--ensemble", help="ensemble", type=str, default=None)
     parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
-    parser.add_argument("--threshold_mode", "threshold mode", type=str, default="all")
+    parser.add_argument("--threshold_mode", help="threshold mode", type=str, default="all")
     args = parser.parse_args()
 
     if args.task == 'classification':

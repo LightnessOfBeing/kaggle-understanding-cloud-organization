@@ -166,7 +166,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                               activation=None, task="segmentation")
         print(f"enc={encoder_names[i]} weight={weights_names[i]} class_params={class_params_arr[i]}")
         checkpoint = utils.load_checkpoint(os.path.join(weights_path, weights_names[i]))
-      #  models[i].cuda()
+        models[i].cuda()
         utils.unpack_checkpoint(checkpoint, model=models[i])
         runners[i] = SupervisedRunner(model=models[i])
     #loader_valid = {"infer": loaders["valid"]}
@@ -231,7 +231,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                     #prediction_final /= num_models
                     prediction_final[prediction_final < threshold] = 0
                     prediction_final[prediction_final >= threshold] = 1
-                    
+
                     if prediction_final.sum() == 0:
                         encoded_pixels.append('')
                         if convex_hull:

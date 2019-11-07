@@ -184,6 +184,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     encoded_pixels_ch = []
 
     if technique == "averaging":
+        print("Technique = averaging")
         for _, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
             runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits']
                               for i in range(len(runners))]

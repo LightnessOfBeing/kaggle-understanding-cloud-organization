@@ -79,6 +79,7 @@ if __name__ == '__main__':
     parser.add_argument("--loss_smooth", help="smooth parameter", type=float, default=1.)
     parser.add_argument("--ensemble", help="ensemble", type=str, default=None)
     parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
+    parser.add_argument("--threshold_mode", "threshold mode", type=str, default="all")
     args = parser.parse_args()
 
     if args.task == 'classification':
@@ -105,7 +106,7 @@ if __name__ == '__main__':
     if args.ensemble is not None:
         print("Ensembling started")
         get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path,
-                                threshold_mode="all", json_path=args.ensemble_path,
+                                threshold_mode=args.threshold_mode, json_path=args.ensemble_path,
                                 technique=args.ensemble, convex_hull=True, path=args.path)
         print("Ensembling finished")
         exit()

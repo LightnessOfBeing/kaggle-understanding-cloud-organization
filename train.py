@@ -103,9 +103,8 @@ if __name__ == '__main__':
                               train_folder=args.train_folder,
                               train_df_path=args.train_df_path)
     if args.ensemble is not None:
-        preds = get_ensemble_prediction(args.ensemble_path, loaders)
-        aggregate_ensemble_predictions(preds, mode="all",
-                                       json_folder=args.ensemble_path, technique=args.ensemble, convex_hull=True)
+        print("Ensembling started")
+        get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path, threshold_mode="all", json_path=args.ensemble_path, technique=args.ensemble, convex_hull=True)
         print("Ensembling finished")
         exit()
 

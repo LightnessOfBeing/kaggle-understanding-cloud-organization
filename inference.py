@@ -138,7 +138,7 @@ def get_thresholds(threshold_mode, json_path):
     return threshold, mask_size
 
 
-def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold_mode="all", json_path="./ensemble", convex_hull=True):
+def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold_mode="all", json_path="./ensemble", path="./" ,convex_hull=True):
     if technique == "averaging" and threshold_mode == "all":
         raise ValueError(f'technique={technique} and threshold_mode={threshold_mode} cannot be combined')
 
@@ -176,7 +176,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     encoded_pixels = []
     encoded_pixels_ch = []
 
-    for _, test_batch in enumerate(tqdm.tqdm_notebook(loaders['test'])):
+    for _, test_batch in enumerate(tqdm.tqdm(loaders['test'])):
         runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits'] for i in range(len(runners))]
         runner_out_len = len(runner_out_arr)
         batch_len = len(runner_out_arr[0])

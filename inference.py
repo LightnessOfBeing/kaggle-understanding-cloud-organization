@@ -181,7 +181,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
         runner_out_len = len(runner_out_arr)
         batch_len = len(runner_out_arr[0])
         pred_len = len(runner_out_arr[0][0])
-        print(runner_out_len, batch_len, pred_len)
+        #print(runner_out_len, batch_len, pred_len)
         if technique == "averaging":
             for batch_id in range(batch_len):
                 for pred_id in range(pred_len):

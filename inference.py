@@ -164,7 +164,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
         models[i] = get_model(model_type="Unet", encoder=encoder_names[i],
                               encoder_weights="imagenet",
                               activation=None, task="segmentation")
-        print(f"enc={encoder_names[i]} weight={weights_names[i]} class_params={class_params_arr[i]}")
+        print(f"enc={encoder_names[i]} weight={weights_names[i]}")
         checkpoint = utils.load_checkpoint(os.path.join(weights_path, weights_names[i]))
         models[i].cuda()
         utils.unpack_checkpoint(checkpoint, model=models[i])

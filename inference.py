@@ -179,6 +179,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     #    verbose=False
     #)
     iters = 0
+    pred_distr = {-1:0, 0:0, 1:0, 2:0, 3:0}
 
     encoded_pixels = []
     encoded_pixels_ch = []
@@ -189,6 +190,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
             runner_out_arr = [runners[i].predict_batch({"features": test_batch[0].cuda()})['logits']
                               for i in range(len(runners))]
             runner_out_len = len(runner_out_arr)
+            assert runner_out_len == num_models
             batch_len = len(runner_out_arr[0])
             pred_len = len(runner_out_arr[0][0])
             for batch_id in range(batch_len):
@@ -199,15 +201,18 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                         probability_final += sigmoid(probability_model)
+                    iters += 1
                     probability_final /= num_models
                     print(f"probability final = {probability_final}")
                     prediction, num_predict = post_process(probability_final, threshold, mask_size)
                     print(f"prediction = {prediction}")
                     if num_predict == 0:
+                        pred_distr[-1] += 1
                         encoded_pixels.append('')
                         if convex_hull:
                             encoded_pixels_ch.append('')
                     else:
+                        pred_distr[iters % 4] += 1
                         r = mask2rle(prediction)
                         encoded_pixels.append(r)
                         if convex_hull:
@@ -243,10 +248,12 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                     prediction_final = np.where(prediction_final >= threshold, 1, 0)
 
                     if prediction_final.sum() == 0:
+                        pred_distr[-1] += 1
                         encoded_pixels.append('')
                         if convex_hull:
                             encoded_pixels_ch.append('')
                     else:
+                        pred_distr[iters % 4] += 1
                         r = mask2rle(prediction_final)
                         encoded_pixels.append(r)
                         if convex_hull:
@@ -255,6 +262,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                     iters += 1
 
     assert  iters == 14792
+    # {0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
+    print(f"empty={pred_distr[-1]} fish={pred_distr[0]} flower={pred_distr[1]} gravel={pred_distr[2]} sugar={pred_distr[3]}")
     sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['EncodedPixels'] = encoded_pixels
     sub_name = f'{str(datetime.datetime.now().date())}'

@@ -113,7 +113,7 @@ def plot_with_augmentation(image, mask, augment):
     visualize(image_flipped, mask_flipped, original_image=image, original_mask=mask)
 
 
-def post_process(probability: np.array = None, threshold: float = 0.5, min_size: int = 10):
+def post_process(probability: np.array = None, threshold: float = 0.5, min_size: int = 10, use_threshold=True):
     """
     Post processing of each predicted mask, components with lesser number of pixels
     than `min_size` are ignored
@@ -127,7 +127,10 @@ def post_process(probability: np.array = None, threshold: float = 0.5, min_size:
 
     """
     # don't remember where I saw it
-    mask = cv2.threshold(probability, threshold, 1, cv2.THRESH_BINARY)[1]
+    if use_threshold == True:
+        mask = cv2.threshold(probability, threshold, 1, cv2.THRESH_BINARY)[1]
+    else:
+        mask = probability
     num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
     predictions = np.zeros((350, 525), np.float32)
     num = 0

@@ -200,7 +200,9 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                         probability_final += sigmoid(probability_model)
                     probability_final /= num_models
+                    print(f"probability final = {probability_final}")
                     prediction, num_predict = post_process(probability_final, threshold, mask_size)
+                    print(f"prediction = {prediction}")
                     if num_predict == 0:
                         encoded_pixels.append('')
                         if convex_hull:
@@ -231,8 +233,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                       #  print(class_params_arr[run_id])
                         prediction_model, num_predict = post_process(sigmoid(probability_model),
-                                                               class_params_arr[run_id][iters%4][0],
-                                                               class_params_arr[run_id][iters%4][1])
+                                                               class_params_arr[run_id][iters % 4][0],
+                                                               class_params_arr[run_id][iters % 4][1])
                         prediction_final += prediction_model
 
                     #prediction_final /= num_models

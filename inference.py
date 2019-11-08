@@ -272,8 +272,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
     sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['EncodedPixels'] = encoded_pixels
     sub_name = f'{str(datetime.datetime.now().date())}'
-    sub.to_csv(f'submission_{sub_name}_ens.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+    sub.to_csv(f'submission_{sub_name}_{technique}_ens.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
     if convex_hull:
         sub_ch = sub.copy()
         sub_ch["EncodedPixels"] = encoded_pixels_ch
-        sub_ch.to_csv(f'submission_{sub_name}_ch_ens.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+        sub_ch.to_csv(f'submission_{sub_name}_{technique}_ch_ens.csv', columns=['Image_Label', 'EncodedPixels'], index=False)

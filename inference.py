@@ -206,7 +206,6 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                         probability_final += sigmoid(probability_model)
-                    iters += 1
                     probability_final /= num_models
                    # print(f"probability final = {probability_final}")
                     prediction, num_predict = post_process(probability_final, threshold, mask_size)

@@ -250,8 +250,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                     #prediction_final[prediction_final < threshold] = 0
                     #prediction_final[prediction_final >= threshold] = 1
                     prediction_final = np.where(prediction_final >= threshold, 1, 0)
-                    prediction_final, num_predict = post_process(prediction_final, 0.5, 20000, use_threshold=False)
-                    if num_predict == 0:
+                    #prediction_final, num_predict = post_process(prediction_final, 0.5, 20000, use_threshold=False)
+                    if prediction_final.sum() == 0:
                         pred_distr[-1] += 1
                         encoded_pixels.append('')
                         if convex_hull:

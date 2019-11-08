@@ -266,6 +266,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             encoded_pixels_ch.append(r_ch)
                     iters += 1
 
+    print(iters)
     assert  iters == 14792
     # {0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
     print(f"empty={pred_distr[-1]} fish={pred_distr[0]} flower={pred_distr[1]} gravel={pred_distr[2]} sugar={pred_distr[3]}")

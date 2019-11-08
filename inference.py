@@ -203,9 +203,9 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         probability_final += sigmoid(probability_model)
                     iters += 1
                     probability_final /= num_models
-                    print(f"probability final = {probability_final}")
+                   # print(f"probability final = {probability_final}")
                     prediction, num_predict = post_process(probability_final, threshold, mask_size)
-                    print(f"prediction = {prediction}")
+                   # print(f"prediction = {prediction}")
                     if num_predict == 0:
                         pred_distr[-1] += 1
                         encoded_pixels.append('')

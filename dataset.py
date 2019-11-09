@@ -284,7 +284,8 @@ def prepare_loaders(path: str = '',
                     validation_strategy: str = 'stratify',
                     pl_df_path: str = None,
                     train_folder = "train_images",
-                    train_df_path = None):
+                    train_df_path = None,
+                    fold: int = None):
     """
     Prepare dataloaders for catalyst.
 
@@ -316,16 +317,21 @@ def prepare_loaders(path: str = '',
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 
-    if validation_strategy == "stratify":
-        id_mask_count = train.loc[~train['EncodedPixels'].isnull(), 'Image_Label'].apply(
-            lambda x: x.split('_')[0]).value_counts(). \
-            reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'}).sort_values(['count', 'img_id'])
-        assert len(id_mask_count['img_id'].values) == len(id_mask_count['img_id'].unique())
-        train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_state=42,
-                                                stratify=id_mask_count['count'], test_size=0.1)
+    if fold is None:
+        if validation_strategy == "stratify":
+            id_mask_count = train.loc[~train['EncodedPixels'].isnull(), 'Image_Label'].apply(
+                lambda x: x.split('_')[0]).value_counts(). \
+                reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'}).sort_values(['count', 'img_id'])
+            assert len(id_mask_count['img_id'].values) == len(id_mask_count['img_id'].unique())
+            train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_state=42,
+                                                    stratify=id_mask_count['count'], test_size=0.1)
+        else:
+            names_unique = train["im_id"].unique()
+            train_ids, valid_ids = train_test_split(names_unique, random_state=42, test_size=0.1)
     else:
-        names_unique = train["im_id"].unique()
-        train_ids, valid_ids = train_test_split(names_unique, random_state=42, test_size=0.1)
+        print(f"Train on fold {fold}")
+        valid_ids = train[train["fold"] == fold]
+        train_ids = train[train["fold"] != fold]
 
     if task == 'classification':
         train_df = train[~train['EncodedPixels'].isnull()]

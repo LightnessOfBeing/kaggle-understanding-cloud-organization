@@ -80,6 +80,8 @@ if __name__ == '__main__':
     parser.add_argument("--ensemble", help="ensemble", type=str, default=None)
     parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
     parser.add_argument("--threshold_mode", help="threshold mode", type=str, default="all")
+    parser.add_argument("--fold", help="k fold training", type=int, default=None)
+
     args = parser.parse_args()
 
     if args.task == 'classification':
@@ -96,13 +98,16 @@ if __name__ == '__main__':
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
+
     loaders, valid_len = prepare_loaders(path=args.path, bs=args.bs,
                               num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
                               image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
                               validation_strategy=args.valid_split,
                               pl_df_path=args.pl_df_path,
                               train_folder=args.train_folder,
-                              train_df_path=args.train_df_path)
+                              train_df_path=args.train_df_path,
+                              fold=args.fold)
+
     if args.ensemble is not None:
         print("Ensembling started")
         get_ensemble_prediction(loaders=loaders, weights_path=args.ensemble_path,
@@ -257,4 +262,5 @@ if __name__ == '__main__':
         if class_params is None:
             class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
         predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path,
-                sub_name=sub_name, convex_hull=args.convex_hull)
+                sub_name=sub_name, convex_hull=args.convex_hull,
+                add_name="_fold{args.fold}" if args.fold is not None else "")

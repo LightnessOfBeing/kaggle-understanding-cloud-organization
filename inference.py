@@ -27,7 +27,8 @@ def predict(loaders=None,
             class_params: dict = None,
             path: str = '',
             sub_name: str = '',
-            convex_hull: bool = False):
+            convex_hull: bool = False,
+            add_name: str = ""):
     """
 
     Args:
@@ -75,11 +76,11 @@ def predict(loaders=None,
 
     sub = pd.read_csv(f'{path}/sample_submission.csv')
     sub['EncodedPixels'] = encoded_pixels
-    sub.to_csv(f'submission_{sub_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+    sub.to_csv(f'submission_{sub_name}{add_name}.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
     if convex_hull:
         sub_ch = sub.copy()
         sub_ch["EncodedPixels"] = encoded_pixels_ch
-        sub_ch.to_csv(f'submission_{sub_name}_ch.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+        sub_ch.to_csv(f'submission_{sub_name}{add_name}_ch.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
 
 
 def get_class_params(json_path=None, mode="custom"):
@@ -240,7 +241,6 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         probability_model = runner_out_arr[run_id][batch_id][pred_id].cpu().detach().numpy()
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                      #  print(class_params_arr[run_id])
                         prediction_model, num_predict = post_process(sigmoid(probability_model),
                                                                class_params_arr[run_id][iters % 4][0],
                                                                class_params_arr[run_id][iters % 4][1])

@@ -330,8 +330,8 @@ def prepare_loaders(path: str = '',
             train_ids, valid_ids = train_test_split(names_unique, random_state=42, test_size=0.1)
     else:
         print(f"Train on fold {fold}")
-        valid_ids = train[train["fold"] == fold]
-        train_ids = train[train["fold"] != fold]
+        valid_ids = train[train["fold"] == fold]["image_name"].unique()
+        train_ids = train[train["fold"] != fold]["image_name"].unique()
 
     if task == 'classification':
         train_df = train[~train['EncodedPixels'].isnull()]

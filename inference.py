@@ -184,6 +184,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
             ],
             verbose=True
         )
+        gc.collect()
     iters = 0
     pred_distr = {-1:0, 0:0, 1:0, 2:0, 3:0}
 

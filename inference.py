@@ -241,18 +241,20 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         probability_model = runner_out_arr[run_id][batch_id][pred_id].cpu().detach().numpy()
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                        prediction_model, num_predict = post_process(sigmoid(probability_model),
+                        if threshold_mode == "all":
+                            print("kek")
+                            prediction_model, num_predict = post_process(sigmoid(probability_model),
                                                                class_params_arr[run_id][iters % 4][0],
                                                                class_params_arr[run_id][iters % 4][1])
+                        else:
+                            prediction_model, num_predict = post_process(sigmoid(probability_model),
+                                                                         0.6,
+                                                                         20000)
                         prediction_final += prediction_model
 
-                    #prediction_final /= num_models
-                    #prediction_final[prediction_final < threshold] = 0
-                    #prediction_final[prediction_final >= threshold] = 1
                     prediction_final = np.where(prediction_final >= threshold, 1, 0)
-                    prediction_final, num_predict = post_process(prediction_final, 0.5, 20000, use_threshold=False)
-                    #if prediction_final.sum() == 0:
-                    if num_predict == 0:
+                    if prediction_final.sum() == 0:
+                    #if num_predict == 0:
                         pred_distr[-1] += 1
                         encoded_pixels.append('')
                         if convex_hull:

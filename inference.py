@@ -175,16 +175,15 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
         models[i].cuda()
         utils.unpack_checkpoint(checkpoint, model=models[i])
         runners[i] = SupervisedRunner(model=models[i])
-      #  loader_valid = {"infer": loaders["valid"]}
-      #  runners[i].infer(
-      #      model=models[i],
-      #      loaders=loader_valid,
-      #      callbacks=[
-      #          InferCallback()
-      #      ],
-      #      verbose=True
-      #  )
-      #  gc.collect()
+        loader_valid = {"infer": loaders["valid"]}
+        runners[i].infer(
+            model=models[i],
+            loaders=loader_valid,
+            callbacks=[
+                InferCallback()
+            ],
+            verbose=True
+        )
     iters = 0
     pred_distr = {-1:0, 0:0, 1:0, 2:0, 3:0}
 

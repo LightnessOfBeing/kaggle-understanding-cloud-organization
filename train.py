@@ -82,6 +82,8 @@ if __name__ == '__main__':
     parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
     parser.add_argument("--threshold_mode", help="threshold mode", type=str, default="all")
     parser.add_argument("--fold", help="k fold training", type=int, default=None)
+    #parser.add_argument("--second_stage", help="second stage with sym lovasz", )
+    parser.add_argument("--stopping", help="early stopping criteria", type=str, default="loss")
 
     args = parser.parse_args()
 
@@ -101,8 +103,11 @@ if __name__ == '__main__':
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
 
     loaders, valid_len = prepare_loaders(path=args.path, bs=args.bs,
-                              num_workers=args.num_workers, preprocessing_fn=preprocessing_fn, preload=args.preload,
-                              image_size=(args.height, args.width), augmentation=args.augmentation, task=args.task,
+                              num_workers=args.num_workers,
+                              preprocessing_fn=preprocessing_fn,
+                              preload=args.preload,
+                              image_size=(args.height, args.width),
+                              augmentation=args.augmentation, task=args.task,
                               validation_strategy=args.valid_split,
                               pl_df_path=args.pl_df_path,
                               train_folder=args.train_folder,
@@ -162,7 +167,7 @@ if __name__ == '__main__':
                      CustomCheckpointCallback()]
 
     if args.scheduler == "ReduceLROnPlateau":
-        callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.001))
+        callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.001, metric=args.stopping))
 
     print(callbacks)
 

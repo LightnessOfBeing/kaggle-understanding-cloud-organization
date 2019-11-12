@@ -100,7 +100,7 @@ class CustomDiceCallback(MetricCallback):
         self,
         input_key: str = "targets",
         output_key: str = "logits",
-        prefix: str = "custom_dice_kirill",
+        prefix: str = "dice_kirill",
         eps: float = 1e-7,
         threshold: float = None,
         activation: str = "Sigmoid"

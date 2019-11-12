@@ -16,12 +16,13 @@ from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, Crit
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
+from pytorch_toolbelt.losses import FocalLoss
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmRestarts
 
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
 from inference import predict, get_ensemble_prediction
-from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss
+from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss, CustomFocalLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
@@ -144,11 +145,8 @@ if __name__ == '__main__':
         criterion = CustomLovaszLoss()
     elif args.loss == "Lovasz_sym":
         criterion = SymmetricLovaszLoss()
-    elif args.loss == "complex":
-        criterion = {
-            "dice": DiceLoss(),
-            "bce": nn.BCEWithLogitsLoss()
-        }
+    elif args.loss == "Focal":
+        criterion = CustomFocalLoss()
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 
@@ -170,26 +168,6 @@ if __name__ == '__main__':
 
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
-
-    if args.loss == "complex":
-        callbacks += [
-            CriterionCallback(
-                input_key="features",
-                prefix="loss_dice",
-                criterion_key="dice",
-                multiplier=2.0
-            ),
-            CriterionCallback(
-                input_key="features",
-                prefix="loss_bce",
-                criterion_key="bce"
-            ),
-            CriterionAggregatorCallback(
-                prefix="loss",
-                loss_keys=["loss_dice", "loss_bce"],
-                loss_aggregate_fn="sum"
-            )
-        ]
 
     fp16_params = None
     print(args.fp16)

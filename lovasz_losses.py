@@ -7,6 +7,7 @@ from __future__ import print_function, division
 
 import torch
 import torch.nn.functional as F
+from pytorch_toolbelt.losses.functional import focal_loss_with_logits
 from torch.autograd import Variable
 from torch.nn.modules.loss import _Loss
 
@@ -289,3 +290,43 @@ class CustomLovaszLoss(_Loss):
         )
 
         return lovasz_fish + lovasz_flower + lovasz_gravel + lovasz_sugar
+
+
+
+class CustomFocalLoss():
+    def __init__(self, per_image=False, ignore=None):
+        super().__init__()
+        self.ignore = ignore
+        self.per_image = per_image
+
+    def forward(self, logits, target):
+        #{0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
+        # B x C x H x W
+
+        logits_fish = logits[:, 0, :, :]
+        logits_flower = logits[:, 1, :, :]
+        logits_gravel = logits[:, 2, :, :]
+        logits_sugar = logits[:, 3, :, :]
+
+        target_fish = target[:, 0, :, :]
+        target_flower = target[:, 1, :, :]
+        target_gravel = target[:, 2, :, :]
+        target_sugar = target[:, 3, :, :]
+
+        focal_fish = focal_loss_with_logits(
+            logits_fish, target_fish
+        )
+
+        focal_flower = focal_loss_with_logits(
+            logits_flower, target_flower
+        )
+
+        focal_gravel = focal_loss_with_logits(
+            logits_gravel, target_gravel
+        )
+
+        focal_sugar = focal_loss_with_logits(
+            logits_sugar, target_sugar
+        )
+
+        return focal_fish + focal_flower + focal_gravel + focal_sugar

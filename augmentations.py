@@ -94,11 +94,12 @@ def get_training_augmentation2(image_size: tuple = (320, 640)):
     """
     train_transform = [
         #albu.Resize(*image_size),
-        albu.HorizontalFlip(p=0.6),
-        albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.6, border_mode=0),
-        albu.GridDistortion(p=0.6),
-        albu.OpticalDistortion(p=0.6, distort_limit=0.1, shift_limit=0.2),
-        albu.RandomBrightnessContrast(p=0.6)
+        albu.HorizontalFlip(p=0.5),
+        albu.VerticalFlip(p=0.5),
+        albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.5, border_mode=0),
+        albu.GridDistortion(p=0.5),
+        albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.2),
+        albu.RandomBrightnessContrast(p=0.5)
     ]
     return albu.Compose(train_transform)
 

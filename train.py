@@ -161,7 +161,7 @@ if __name__ == '__main__':
 
     if args.task == 'segmentation':
         callbacks = [CustomDiceCallback(), DiceCallback(prefix="dice_default"),
-                     CriterionCallback(), CheckpointCallback(main_metric=args.metric)]
+                     CriterionCallback(), CheckpointCallback()]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
                      EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),

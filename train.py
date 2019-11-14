@@ -10,7 +10,7 @@ import segmentation_models_pytorch as smp
 import torch.nn as nn
 from catalyst import utils
 from catalyst.contrib.criterion import DiceLoss
-from catalyst.dl import DiceCallback
+from catalyst.dl import DiceCallback, CheckpointCallback
 from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
     AUCCallback, CriterionAggregatorCallback
 from catalyst.dl.runner import SupervisedRunner
@@ -84,6 +84,7 @@ if __name__ == '__main__':
     parser.add_argument("--fold", help="k fold training", type=int, default=None)
     #parser.add_argument("--second_stage", help="second stage with sym lovasz", )
     parser.add_argument("--stopping", help="early stopping criteria", type=str, default="loss")
+    #parser.add_argument("--checkpoint", help="checkpoint metric", type=str, default="loss")
 
     args = parser.parse_args()
 
@@ -160,14 +161,14 @@ if __name__ == '__main__':
 
     if args.task == 'segmentation':
         callbacks = [CustomDiceCallback(), DiceCallback(prefix="dice_default"),
-                     CriterionCallback(), CustomCheckpointCallback()]
+                     CriterionCallback(), CheckpointCallback(main_metric=args.metric)]
     elif args.task == 'classification':
         callbacks = [AUCCallback(class_names=['Fish', 'Flower', 'Gravel', 'Sugar'], num_classes=4),
                      EarlyStoppingCallback(patience=5, min_delta=0.001), CriterionCallback(),
                      CustomCheckpointCallback()]
 
     if args.scheduler == "ReduceLROnPlateau":
-        callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.001, metric=args.stopping))
+        callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.0005, metric=args.stopping))
 
     print(callbacks)
 

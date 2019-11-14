@@ -30,7 +30,7 @@ def get_img(x: str = 'img_name', folder: str = 'train_images'):
     return img
 
 
-def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
+def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
     """
     Decode rle encoded mask.
 
@@ -52,7 +52,7 @@ def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
     return img.reshape(shape, order='F')
 
 
-def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320, 640)):
+def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (1400, 2100)):
     """
     Create mask based on df, image name and shape.
 
@@ -130,8 +130,10 @@ class CloudDataset(Dataset):
             self.data_folder = f"{path}/test_images"
         self.img_ids = img_ids
         # list of bad images from discussions
-        self.bad_imgs = ['046586a.jpg', '1588d4c.jpg', '1e40a05.jpg', '41f92e5.jpg', '449b792.jpg', '563fc48.jpg',
-                         '8bd81ce.jpg', 'c0306e5.jpg', 'c26c635.jpg', 'e04fea3.jpg', 'e5f2f24.jpg', 'eda52f2.jpg',
+        self.bad_imgs = ['046586a.jpg', '1588d4c.jpg', '1e40a05.jpg',
+                         '41f92e5.jpg', '449b792.jpg', '563fc48.jpg',
+                         '8bd81ce.jpg', 'c0306e5.jpg', 'c26c635.jpg',
+                         'e04fea3.jpg', 'e5f2f24.jpg', 'eda52f2.jpg',
                          'fa645da.jpg', 'b092cc1.jpg', 'ee0ba55.jpg']
         if filter_bad_images:
             self.img_ids = [i for i in self.img_ids if i not in self.bad_imgs]

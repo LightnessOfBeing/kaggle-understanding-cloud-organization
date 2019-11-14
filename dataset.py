@@ -316,7 +316,7 @@ def prepare_loaders(path: str = '',
     if pl_df_path is not None:
         pl_df = pd.read_csv(pl_df_path)
         train = train.append(pl_df)
-    train = train[:1524]
+    #train = train[:1524]
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 

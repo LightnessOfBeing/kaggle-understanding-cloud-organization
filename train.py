@@ -207,7 +207,8 @@ if __name__ == '__main__':
             logdir=logdir,
             num_epochs=args.num_epochs,
             fp16=fp16_params,
-            verbose=True
+            verbose=True,
+            main_metric=args.stopping
         )
 
         with open(f'{logdir}/args.txt', 'w') as f:

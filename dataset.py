@@ -385,13 +385,15 @@ def prepare_loaders(path: str = '',
     train_loader = DataLoader(train_dataset, batch_size=bs, shuffle=True, num_workers=num_workers, pin_memory=True)
     valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=num_workers, pin_memory=True)
 
-    print(f"Image_shape_train:{type(train_dataset[0][0])}, {train_dataset[0][0].shape}")
-    print(f"Image_shape_test:{type(test_dataset[0][0])}, {test_dataset[0][0].shape}")
 
     test_dataset = CloudDataset(path=path, df=sub, datatype='test', img_ids=test_ids,
                                 transforms=get_validation_augmentation(image_size=image_size),
                                 preprocessing=get_preprocessing(preprocessing_fn), preload=preload,
                                 image_size=image_size)
+    
+    print(f"Image_shape_train:{type(train_dataset[0][0])}, {train_dataset[0][0].shape}")
+    print(f"Image_shape_test:{type(test_dataset[0][0])}, {test_dataset[0][0].shape}")
+
     test_loader = DataLoader(test_dataset, batch_size=bs // 2, shuffle=False, num_workers=num_workers, pin_memory=True)
 
     loaders = {

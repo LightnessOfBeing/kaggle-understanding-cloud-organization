@@ -359,7 +359,7 @@ def prepare_loaders(path: str = '',
         train_dataset = CloudDataset(path=path, df=train, datatype='train', img_ids=train_ids,
                                      transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=image_size, train_folder=train_folder)
+                                     preload=preload, image_size=image_size, train_folder=train_folder)[:64]
         valid_dataset = CloudDataset(path=path, df=train, datatype='valid', img_ids=valid_ids,
                                      transforms=get_validation_augmentation(image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
@@ -390,7 +390,7 @@ def prepare_loaders(path: str = '',
                                 transforms=get_validation_augmentation(image_size=image_size),
                                 preprocessing=get_preprocessing(preprocessing_fn), preload=preload,
                                 image_size=image_size)
-    
+
     print(f"Image_shape_train:{type(train_dataset[0][0])}, {train_dataset[0][0].shape}")
     print(f"Image_shape_test:{type(test_dataset[0][0])}, {test_dataset[0][0].shape}")
 

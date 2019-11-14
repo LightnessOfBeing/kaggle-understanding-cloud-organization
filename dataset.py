@@ -316,6 +316,7 @@ def prepare_loaders(path: str = '',
     if pl_df_path is not None:
         pl_df = pd.read_csv(pl_df_path)
         train = train.append(pl_df)
+    train = train[:64]
     train['label'] = train['Image_Label'].apply(lambda x: x.split('_')[1])
     train['im_id'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
 
@@ -359,7 +360,7 @@ def prepare_loaders(path: str = '',
         train_dataset = CloudDataset(path=path, df=train, datatype='train', img_ids=train_ids,
                                      transforms=get_training_augmentation(augmentation=augmentation, image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),
-                                     preload=preload, image_size=image_size, train_folder=train_folder)[:64]
+                                     preload=preload, image_size=image_size, train_folder=train_folder)
         valid_dataset = CloudDataset(path=path, df=train, datatype='valid', img_ids=valid_ids,
                                      transforms=get_validation_augmentation(image_size=image_size),
                                      preprocessing=get_preprocessing(preprocessing_fn),

@@ -87,7 +87,7 @@ if __name__ == '__main__':
     #parser.add_argument("--checkpoint", help="checkpoint metric", type=str, default="loss")
 
     args = parser.parse_args()
-
+    print(f"path = {args.path}")
     if args.task == 'classification':
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 

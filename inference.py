@@ -131,7 +131,7 @@ def get_thresholds(threshold_mode, json_path):
         return class_params_arr
     elif threshold_mode == "simple":
         threshold = 0.5
-        mask_size = 20000
+        mask_size = 5000
     elif threshold_mode == "custom":
         threshold, mask_size = get_class_params(json_path=json_path, mode="custom")
     elif threshold_mode == "average":

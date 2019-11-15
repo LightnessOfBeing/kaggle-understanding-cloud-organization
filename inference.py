@@ -248,8 +248,8 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                                                                class_params_arr[run_id][iters % 4][1])
                         else:
                             prediction_model, num_predict = post_process(sigmoid(probability_model),
-                                                                         0.6,
-                                                                         20000)
+                                                                         0.5,
+                                                                         5000)
                         prediction_final += prediction_model
 
                     prediction_final = np.where(prediction_final >= threshold, 1, 0)

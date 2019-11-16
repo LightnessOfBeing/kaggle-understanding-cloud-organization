@@ -173,9 +173,9 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                               activation=None, task="segmentation")
         print(f"enc={encoder_names[i]} weight={weights_names[i]}")
         checkpoint = utils.load_checkpoint(os.path.join(weights_path, weights_names[i]))
+        utils.unpack_checkpoint(checkpoint, model=models[i])
         models[i] = TTAWrapper(models[i], fliplr_image2mask)
         models[i].cuda()
-        utils.unpack_checkpoint(checkpoint, model=models[i])
         runners[i] = SupervisedRunner(model=models[i])
         loader_valid = {"infer": loaders["valid"]}
         runners[i].infer(

@@ -133,7 +133,7 @@ def get_training_augmentation_none(image_size: tuple = (320, 640)):
 
     """
     train_transform = [
-      #  albu.Resize(*image_size),
+        albu.Resize(*image_size),
         albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.6, border_mode=0),
         albu.GridDistortion(p=0.6),
         albu.OpticalDistortion(p=0.6, distort_limit=0.1, shift_limit=0.2),
@@ -175,7 +175,7 @@ def get_validation_augmentation(image_size: tuple = (320, 640)):
 
     """
     test_transform = [
-       # albu.Resize(*image_size)
+        albu.Resize(*image_size)
     ]
     return albu.Compose(test_transform)
 

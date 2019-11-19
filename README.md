@@ -52,3 +52,10 @@ We took in our final blend the following 5 submissions:
 
 After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800
 0.67007.
+
+## Credits
+
+* My teammates
+* [segmentation_models.pytorch](https://github.com/qubvel/segmentation_models.pytorch)
+* [albumentations library for augmentations](https://github.com/albumentations-team/albumentations)
+* [Andrew Lukyanenko](https://www.kaggle.com/artgor) for sharing [this](https://www.kaggle.com/artgor/segmentation-in-pytorch-using-convenient-tools) kernel and [pipeline](https://github.com/Erlemar/Understanding-Clouds-from-Satellite-Images)

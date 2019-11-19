@@ -41,7 +41,7 @@ We took in our final blend the following 5 submissions:
 2. EfficientNet-B0 2 stage best epoch
 3. EfficientNet-B2 2 stage best epoch
 4. EfficientNet-B5 2 stage best epoch
-5. One artificial blend submission.
+5. One artificial blend submission: w
  We took submissions from the following single fold models:
   * B0 2stage last epoch
   * B0 2 stage best epoch

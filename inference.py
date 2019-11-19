@@ -151,26 +151,20 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
         raise ValueError(f'technique={technique} and threshold_mode={threshold_mode} cannot be combined')
 
     if threshold_mode == "all":
-        print("getting class_params")
         class_params_arr = get_thresholds(threshold_mode, json_path)
-        print(f"class_params_arr={class_params_arr}")
     else:
         threshold, mask_size = get_thresholds(threshold_mode, json_path)
 
     weights_names = sorted(list(filter(lambda x: "pth" in x, os.listdir(weights_path))))
-    print(f"weights_names {weights_names}")
     num_models = len(weights_names)
     print(f"Num models={num_models}")
     models = [None] * num_models
     runners = [None] * num_models
     encoder_names = get_encoder_names(weights_names)
-
-    print("loading weights")
     for i in range(num_models):
         models[i] = get_model(model_type="Unet", encoder=encoder_names[i],
                               encoder_weights="imagenet",
                               activation=None, task="segmentation")
-        print(f"enc={encoder_names[i]} weight={weights_names[i]}")
         checkpoint = utils.load_checkpoint(os.path.join(weights_path, weights_names[i]))
         models[i].cuda()
         utils.unpack_checkpoint(checkpoint, model=models[i])
@@ -240,7 +234,6 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                         if probability_model.shape != (350, 525):
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                         if threshold_mode == "all":
-                            print("kek")
                             prediction_model, num_predict = post_process(sigmoid(probability_model),
                                                                class_params_arr[run_id][iters % 4][0],
                                                                class_params_arr[run_id][iters % 4][1])

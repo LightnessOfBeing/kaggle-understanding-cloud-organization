@@ -2,7 +2,9 @@
 # Kaggle Understanding cloud organization
 https://www.kaggle.com/c/understanding_cloud_organization
 
-95th place solution
+95th place solution 
+
+private/public score of 0.65800/0.67007
 
 ## Preprocessing
 1. Removing bad images
@@ -51,8 +53,7 @@ We took in our final blend the following 5 submissions:
   * se_resnext50 best epoch. 
  Then we performed voting blend on them with vote threshold t = 2 and generated this submission.
 
-After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800
-0.67007.
+After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800/0.67007.
 
 ## Credits
 

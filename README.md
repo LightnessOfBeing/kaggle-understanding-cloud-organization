@@ -41,6 +41,14 @@ We took in our final blend the following 5 submissions:
 2. EfficientNet-B0 2 stage best epoch
 3. EfficientNet-B2 2 stage best epoch
 4. EfficientNet-B5 2 stage best epoch
-5. One artificial blend submission: B0 2stage last epoch, B0 2 stage best epoch, B1 2 stage best epoch , B5 2 stage best epoch, se_resnext50 best epoch. The we performed voting blend on them with vote threshold t = 2 and generated this submission.
+5. One artificial blend submission.
+ We took submissions from the following single fold models:
+  * B0 2stage last epoch
+  * B0 2 stage best epoch
+  * B1 2 stage best epoch
+  * B5 2 stage best epoch
+  * se_resnext50 best epoch. 
+ Then we performed voting blend on them with vote threshold t = 2 and generated this submission.
 
-After blending the 5 submissions from above with voting method 
+After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800
+0.67007.

@@ -12,7 +12,7 @@ Our training phase consists of 2 stages.
 
 ### First stage
 1. Train on 320x640 image resolution with pseudo-labels.
-2. Pseudo-labels which were generated the following way: pick an image if there are at least 80% of high-confidance pixels, i.e its values are either < 0.2 or > 0.8. 
+2. Pseudo-labels were generated the following way: pick an image if there are at least 80% of high-confidance pixels, i.e its values are either < 0.2 or > 0.8. 
 3. Optimizer Adam encoder lr = 1e-4, decoder lr = 1e-3
 4. Augmentaions: 
   * albu.HorizontalFlip(p=0.5),

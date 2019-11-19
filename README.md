@@ -26,8 +26,21 @@ Our training phase consists of 2 stages.
 ### Second stage
 0. Upload weights with best valid loss from the first stage. 
 1. Train on 512x768 image resolutions only on train data.
-2. Optimizer Adam encoder lr = 1e-4, decoder lr = 5e-4
+2. Optimizer Adam encoder lr = 1e-4, decoder lr = 5e-4.
 3. Same augmentaions from the first stage.
-4. Loss function sum of Symmetric Lovasz Losses for each of the channels
+4. Loss function sum of Symmetric Lovasz Losses for each of the channels.
+
+## Postprocessing
+
+We used threshold 0.5 and removed all masks that were smaller than 5000 pixels. 
 
 ## Inference and blending
+
+We took in our final blend the following 5 submissions:
+1. EfficientNet-B0 2 stage last epoch 
+2. EfficientNet-B0 2 stage best epoch
+3. EfficientNet-B2 2 stage best epoch
+4. EfficientNet-B5 2 stage best epoch
+5. One artificial blend submission: B0 2stage last epoch, B0 2 stage best epoch, B1 2 stage best epoch , B5 2 stage best epoch, se_resnext50 best epoch. The we performed voting blend on them with vote threshold t = 2 and generated this submission.
+
+After blending the 5 submissions from above with voting method 

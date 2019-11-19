@@ -43,7 +43,6 @@ def predict(loaders=None,
     """
     encoded_pixels = []
     if convex_hull:
-        print("convex hull is enabled")
         encoded_pixels_ch = []
     image_id = 0
     torch.cuda.empty_cache()

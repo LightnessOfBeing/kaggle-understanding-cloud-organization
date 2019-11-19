@@ -2,44 +2,37 @@ import argparse
 import datetime
 import gc
 import json
-import os
-import torch
 import warnings
 
 import segmentation_models_pytorch as smp
+import torch
 import torch.nn as nn
 from catalyst import utils
-from catalyst.contrib.criterion import DiceLoss
 from catalyst.dl import DiceCallback, CheckpointCallback
 from catalyst.dl.callbacks import EarlyStoppingCallback, OptimizerCallback, CriterionCallback, \
-    AUCCallback, CriterionAggregatorCallback
+    AUCCallback
 from catalyst.dl.runner import SupervisedRunner
 from catalyst.utils import set_global_seed, prepare_cudnn
 from pytorch_toolbelt.inference.tta import TTAWrapper, fliplr_image2mask
-from pytorch_toolbelt.losses import FocalLoss
 from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingWarmRestarts
 
 from callbacks import CustomCheckpointCallback, CustomDiceCallback
 from dataset import prepare_loaders
 from inference import predict, get_ensemble_prediction
-from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss, CustomFocalLoss
+from lovasz_losses import CustomLovaszLoss, SymmetricLovaszLoss
 from models import get_model
 from optimizers import get_optimizer
 from utils import get_optimal_postprocess, NumpyEncoder
 
 warnings.filterwarnings("once")
 
+# https://github.com/qubvel/segmentation_models.pytorch
+
 if __name__ == '__main__':
     print(torch.__version__)
-    """
-    Example of usage:
-    >>> python train.py --chunk_size=10000 --n_jobs=10
-
-    """
 
     parser = argparse.ArgumentParser(description="Train model for understanding_cloud_organization competition")
     parser.add_argument("--path", help="path to files", type=str, default='f:/clouds')
-    # https://github.com/qubvel/segmentation_models.pytorch
     parser.add_argument("--encoder", help="u-net encoder", type=str, default='resnet50')
     parser.add_argument("--encoder_weights", help="pre-training dataset", type=str, default='imagenet')
     parser.add_argument("--DEVICE", help="device", type=str, default='CUDA')
@@ -96,16 +89,16 @@ if __name__ == '__main__':
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
 
     loaders, valid_len = prepare_loaders(path=args.path, bs=args.bs,
-                              num_workers=args.num_workers,
-                              preprocessing_fn=preprocessing_fn,
-                              preload=args.preload,
-                              image_size=(args.height, args.width),
-                              augmentation=args.augmentation, task=args.task,
-                              validation_strategy=args.valid_split,
-                              pl_df_path=args.pl_df_path,
-                              train_folder=args.train_folder,
-                              train_df_path=args.train_df_path,
-                              fold=args.fold)
+                                         num_workers=args.num_workers,
+                                         preprocessing_fn=preprocessing_fn,
+                                         preload=args.preload,
+                                         image_size=(args.height, args.width),
+                                         augmentation=args.augmentation, task=args.task,
+                                         validation_strategy=args.valid_split,
+                                         pl_df_path=args.pl_df_path,
+                                         train_folder=args.train_folder,
+                                         train_df_path=args.train_df_path,
+                                         fold=args.fold)
 
     if args.ensemble is not None:
         print("Ensembling started")
@@ -139,8 +132,6 @@ if __name__ == '__main__':
         criterion = CustomLovaszLoss()
     elif args.loss == "Lovasz_sym":
         criterion = SymmetricLovaszLoss()
-    elif args.loss == "Focal":
-        criterion = CustomFocalLoss()
     else:
         criterion = smp.utils.losses.BCEDiceLoss(eps=1.)
 

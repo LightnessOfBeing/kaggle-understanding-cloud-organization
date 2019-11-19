@@ -208,9 +208,7 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             probability_model = cv2.resize(probability_model, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                         probability_final += sigmoid(probability_model)
                     probability_final /= num_models
-                   # print(f"probability final = {probability_final}")
                     prediction, num_predict = post_process(probability_final, threshold, mask_size)
-                   # print(f"prediction = {prediction}")
                     if num_predict == 0:
                         pred_distr[-1] += 1
                         encoded_pixels.append('')
@@ -254,7 +252,6 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
 
                     prediction_final = np.where(prediction_final >= threshold, 1, 0)
                     if prediction_final.sum() == 0:
-                    #if num_predict == 0:
                         pred_distr[-1] += 1
                         encoded_pixels.append('')
                         if convex_hull:
@@ -268,7 +265,6 @@ def get_ensemble_prediction(loaders, weights_path, technique="voting", threshold
                             encoded_pixels_ch.append(r_ch)
                     iters += 1
 
-    print(iters)
     assert  iters == 14792
     # {0: 'Fish', 1: 'Flower', 2: 'Gravel', 3: 'Sugar'}
     print(f"empty={pred_distr[-1]} fish={pred_distr[0]} flower={pred_distr[1]} gravel={pred_distr[2]} sugar={pred_distr[3]}")

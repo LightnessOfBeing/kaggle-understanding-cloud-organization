@@ -82,23 +82,15 @@ if __name__ == '__main__':
     parser.add_argument("--ensemble_path", help="ensemble folder contains weight and other parameters", type=str, default=None)
     parser.add_argument("--threshold_mode", help="threshold mode", type=str, default="all")
     parser.add_argument("--fold", help="k fold training", type=int, default=None)
-    #parser.add_argument("--second_stage", help="second stage with sym lovasz", )
     parser.add_argument("--stopping", help="early stopping criteria", type=str, default="loss")
-    #parser.add_argument("--checkpoint", help="checkpoint metric", type=str, default="loss")
 
     args = parser.parse_args()
-    print(f"path = {args.path}")
-    if args.task == 'classification':
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
     set_global_seed(args.seed)
     prepare_cudnn(deterministic=True)
 
     sub_name = f'{args.segm_type}_aug_{args.augmentation}_{args.encoder}_bs_{args.bs}_{str(datetime.datetime.now().date())}'
 
-    print(f'submission_{sub_name}.csv')
-
-    print(f"Height : {args.height} Width {args.width}")
     logdir = f"./logs/{sub_name}" if args.logdir is None else args.logdir
 
     preprocessing_fn = smp.encoders.get_preprocessing_fn(args.encoder, args.encoder_weights)
@@ -129,19 +121,15 @@ if __name__ == '__main__':
     model = get_model(model_type=args.segm_type, encoder=args.encoder, encoder_weights=args.encoder_weights,
                       activation=None, task=args.task)
 
-    print(model.activation)
     optimizer = get_optimizer(optimizer=args.optimizer, lookahead=args.lookahead, model=model,
                               separate_decoder=args.separate_decoder, lr=args.lr, lr_e=args.lr_e)
 
     if args.scheduler == 'ReduceLROnPlateau':
-        print(f"Patience = {args.patience}")
         scheduler = ReduceLROnPlateau(optimizer, factor=0.2, patience=args.patience)
     elif args.scheduler == 'cosine_anneal':
-        print(f"Cosine Annealing")
         scheduler = CosineAnnealingWarmRestarts(optimizer, T_0=2, T_mult=2)
 
     if args.loss == 'BCEDiceLoss':
-        print(f"Loss smooth is {args.loss_smooth}")
         criterion = smp.utils.losses.BCEDiceLoss(eps=args.loss_smooth)
     elif args.loss == 'BCEJaccardLoss':
         criterion = smp.utils.losses.BCEJaccardLoss(eps=args.loss_smooth)
@@ -170,29 +158,23 @@ if __name__ == '__main__':
     if args.scheduler == "ReduceLROnPlateau":
         callbacks.append(EarlyStoppingCallback(patience=5, min_delta=0.0005, metric=args.stopping))
 
-    print(callbacks)
-
     if args.gradient_accumulation:
         callbacks.append(OptimizerCallback(accumulation_steps=args.gradient_accumulation))
 
     fp16_params = None
-    print(args.fp16)
     if args.fp16:
-        print("FP16 is used")
         fp16_params = dict(opt_level="O1")
 
     if args.resume_train is not None:
-        print("-------------------")
         print(f"resume weights path = {args.resume_train}")
-        print("-------------------")
         checkpoint = utils.load_checkpoint(args.resume_train)
         model.cuda()
         utils.unpack_checkpoint(checkpoint, model=model)
 
     if args.use_tta:
         print("TTA model created")
-        #model = tta.SegmentationTTAWrapper(model, tta.aliases.flip_transform(), merge_mode='tsharpen')
         model = TTAWrapper(model, fliplr_image2mask)
+
     model.cuda()
     runner = SupervisedRunner()
 
@@ -221,7 +203,6 @@ if __name__ == '__main__':
 
     weights_path = f'{logdir}/checkpoints/best.pth'
     if args.resume_inference is not None:
-        print("resume_inference")
         weights_path = args.resume_inference
 
     del loaders['train']
@@ -245,7 +226,7 @@ if __name__ == '__main__':
         loaders['test'] = test_loader
         del test_loader
         if class_params is None:
-            class_params = {0: (0.3, 23000), 1: (0.5, 15000), 2: (0.5, 11000), 3: (0.6, 16000)}
+            class_params = {0: (0.5, 5000), 1: (0.5, 5000), 2: (0.5, 5000), 3: (0.5, 5000)}
         predict(loaders=loaders, runner=runner, class_params=class_params, path=args.path,
                 sub_name=sub_name, convex_hull=args.convex_hull,
                 add_name="_fold{args.fold}" if args.fold is not None else "")

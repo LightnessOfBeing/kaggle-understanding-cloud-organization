@@ -77,6 +77,12 @@ After adding an artificial submission to ensemble the % of non-empty masks rose 
 * Independent Symmetric Lovasz Loss for each channel.
 * Adding one artificial submission to lower the number of false negatives, whist keeping threshold high enough to reduce the number of false positives.
 
+## What could be done
+* Adding a classifier and lowering a pixel thresold.
+* Removing images with 3 and 4 overlapping masks from train.
+* Weights averaging.
+* Ensembling bigger number of models.
+
 ## Credits
 
 * My teammates

@@ -80,7 +80,8 @@ After adding an artificial submission to ensemble the % of non-empty masks rose 
 ## What could be done
 * Adding a classifier and lowering a pixel thresold.
 * Removing images with 3 and 4 overlapping masks from train.
-* Weights averaging.
+* Weights averaging between folds.
+* Weights averaging between k best scores of a single fold model.
 * Ensembling bigger number of models.
 
 ## Credits

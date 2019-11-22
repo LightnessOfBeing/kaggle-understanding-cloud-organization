@@ -70,6 +70,12 @@ We needed this artificial submission as we wanted to push % of non-empty masks c
 
 After adding artificial subission to ensemble the % of non-empty masks rose from 36.5% to 37.45%. After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800/0.67007 (our highest public lb score).
 
+## Why we thought it will work
+* Two stage training with different on images with aspect ratio (320x640 and 512x768).
+* Second stage trained only on training data.
+* Independant Symmetric Lovasz Loss for each channel.
+* Adding one artificial submission to lower the number of false negatives, whist keeping threshold enough high to reduce the number of false positives.
+
 ## Credits
 
 * My teammates

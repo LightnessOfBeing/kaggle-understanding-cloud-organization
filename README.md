@@ -75,7 +75,7 @@ After adding an artificial submission to ensemble the % of non-empty masks rose 
 * Two-stage training with on images with different aspect ratios (320x640 and 512x768).
 * Second stage trained only on training data.
 * Independent Symmetric Lovasz Loss for each channel.
-* Adding one artificial submission to lower the number of false negatives, whist keeping threshold enough high to reduce the number of false positives.
+* Adding one artificial submission to lower the number of false negatives, whist keeping threshold high enough to reduce the number of false positives.
 
 ## Credits
 

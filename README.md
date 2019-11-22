@@ -19,7 +19,7 @@ Our training phase consists of 2 stages.
 4. Augmentaions: 
 
  We tried a big set of non-geometric augmentations:
-  Blur, CLAHE, GaussNoise, GaussianBlur, HueSaturationValue, RGBShift, IAAAdditiveGaussianNoise, MedianBlur, MotionBlur. We thought these augmentations could mimic different weather conditions and add different sunlight effects. However, the LB was very bad, so we decided to lower the number of different augmentations and went with the following.
+  Blur, CLAHE, GaussNoise, GaussianBlur, HueSaturationValue, RGBShift, IAAAdditiveGaussianNoise, MedianBlur, MotionBlur. We thought these augmentations could mimic different weather conditions and add different sunlight effects. However, the LB was very bad, so we decided to remove most of non-geometric augs and went with the following.
 
   * albu.HorizontalFlip(p=0.5),
   * albu.VerticalFlip(p=0.5),
@@ -31,9 +31,12 @@ Our training phase consists of 2 stages.
  5. Loss function BceDiceLoss with eps=10. 
   We grid-searched on eps value and it gave +0.003 LB.
  
- 6. Scheduler ReduceLrOnPlateu
+ 6. Scheduler ReduceLrOnPlateu, with patience=2.
+ 
+ Typically, models from the first stage were overfitting after 21-22 epochs.
 
 ### Second stage
+
 0. Upload weights with best valid loss from the first stage. 
 1. Train on 512x768 image resolutions only on train data.
 2. Optimizer Adam encoder lr = 1e-4, decoder lr = 5e-4.
@@ -47,6 +50,8 @@ We used threshold 0.5 and removed all masks that were smaller than 5000 pixels.
 
 ## Inference and blending
 
+Two days before the competition I read a message on forum which was indicating the following: as our predictions approach 38.5% of non-empty mask the score exceeds 0.670 public lb. Our best submissions at that moment were generating 36.2 - 36.6% of non-empty masks, so we needed to lower the number of false negatives. At the same time we were scared of the risk of generating bigger number of false positives. 
+
 We took in our final blend the following 5 submissions:
 1. EfficientNet-B0 2 stage last epoch 
 2. EfficientNet-B0 2 stage best epoch
@@ -54,15 +59,16 @@ We took in our final blend the following 5 submissions:
 4. EfficientNet-B5 2 stage best epoch
 5. One artificial blend submission:
 
+We needed this artificial submission as we wanted to push % of non-empty masks closer to 38.5%.
  We took submissions from the following single fold models:
   * B0 2stage last epoch
   * B0 2 stage best epoch
   * B1 2 stage best epoch
   * B5 2 stage best epoch
   * se_resnext50 best epoch. 
- Then we performed voting blend on them with vote threshold t = 2 and generated this submission.
+ Then we performed voting blend on them with vote threshold t = 2 and generated this submission. This submission produced 38.91% of non-empty masks. 
 
-After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800/0.67007.
+After adding artificial subission to ensemble the % of non-empty masks rose from 36.5% to 37.45%. After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800/0.67007 (our highest public lb score).
 
 ## Credits
 

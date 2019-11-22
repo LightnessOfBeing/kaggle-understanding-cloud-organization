@@ -66,6 +66,7 @@ We needed this artificial submission as we wanted to push % of non-empty masks c
   * B1 2 stage best epoch
   * B5 2 stage best epoch
   * se_resnext50 best epoch. 
+ 
  Then we performed a voting blend on them with vote threshold t = 2 and generated this submission. This submission produced 38.91% of non-empty masks. 
 
 After adding an artificial submission to ensemble the % of non-empty masks rose from 36.5% to 37.45%. After blending the 5 submissions from above with voting threshold t = 3 we got a submission with private/public score of 0.65800/0.67007 (our highest public lb score).

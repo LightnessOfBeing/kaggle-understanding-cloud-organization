@@ -14,16 +14,24 @@ Our training phase consists of 2 stages.
 
 ### First stage
 1. Train on 320x640 image resolution with pseudo-labels.
-2. Pseudo-labels were generated the following way: pick an image if there are at least 80% of high-confidance pixels, i.e its values are either < 0.2 or > 0.8. 
+2. Pseudo-labels were generated the following way: pick an image if there are at least 80% of high-confidence pixels, i.e its values are either < 0.2 or > 0.8. 
 3. Optimizer Adam encoder lr = 1e-4, decoder lr = 1e-3
 4. Augmentaions: 
+
+ We tried a big set of non-geometric augmentations:
+  Blur, CLAHE, GaussNoise, GaussianBlur, HueSaturationValue, RGBShift, IAAAdditiveGaussianNoise, MedianBlur, MotionBlur. We thought these augmentations could mimic different weather conditions and add different sunlight effects. However, the LB was very bad, so we decided to lower the number of different augmentations and went with the following.
+
   * albu.HorizontalFlip(p=0.5),
   * albu.VerticalFlip(p=0.5),
   * albu.ShiftScaleRotate(scale_limit=0.3, rotate_limit=15, shift_limit=0.1, p=0.5, border_mode=0),
   * albu.GridDistortion(p=0.5),
   * albu.OpticalDistortion(p=0.5, distort_limit=0.1, shift_limit=0.2),
   * albu.RandomBrightnessContrast(p=0.5)
- 5. Loss function BceDiceLoss with eps=10.
+  
+ 5. Loss function BceDiceLoss with eps=10. 
+  We grid-searched on eps value and it gave +0.003 LB.
+ 
+ 6. Scheduler ReduceLrOnPlateu
 
 ### Second stage
 0. Upload weights with best valid loss from the first stage. 
@@ -31,6 +39,7 @@ Our training phase consists of 2 stages.
 2. Optimizer Adam encoder lr = 1e-4, decoder lr = 5e-4.
 3. Same augmentaions from the first stage.
 4. Loss function sum of Symmetric Lovasz Losses for each of the channels.
+5. Scheduler ReduceLrOnPlateu
 
 ## Postprocessing
 

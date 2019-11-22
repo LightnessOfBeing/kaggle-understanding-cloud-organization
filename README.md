@@ -16,10 +16,10 @@ Our training phase consists of 2 stages.
 1. Train on 320x640 image resolution with pseudo-labels.
 2. Pseudo-labels were generated the following way: pick an image if there are at least 80% of high-confidence pixels, i.e its values are either < 0.2 or > 0.8. 
 3. Optimizer Adam encoder lr = 1e-4, decoder lr = 1e-3
-4. Augmentaions: 
+4. Augmentations: 
 
  We tried a big set of non-geometric augmentations:
-  Blur, CLAHE, GaussNoise, GaussianBlur, HueSaturationValue, RGBShift, IAAAdditiveGaussianNoise, MedianBlur, MotionBlur. We thought these augmentations could mimic different weather conditions and add different sunlight effects. However, the LB was very bad, so we decided to remove most of non-geometric augs and went with the following.
+  Blur, CLAHE, GaussNoise, GaussianBlur, HueSaturationValue, RGBShift, IAAAdditiveGaussianNoise, MedianBlur, MotionBlur. We thought these augmentations could mimic different weather conditions and add different sunlight effects. However, the LB was very bad, so we decided to remove most of the non-geometric augs and went with the following.
 
   * albu.HorizontalFlip(p=0.5),
   * albu.VerticalFlip(p=0.5),
@@ -37,20 +37,20 @@ Our training phase consists of 2 stages.
 
 ### Second stage
 
-0. Upload weights with best valid loss from the first stage. 
+0. Upload weights with the best valid loss from the first stage. 
 1. Train on 512x768 image resolutions only on train data.
 2. Optimizer Adam encoder lr = 1e-4, decoder lr = 5e-4.
-3. Same augmentaions from the first stage.
+3. Same augmentations from the first stage.
 4. Loss function sum of Symmetric Lovasz Losses for each of the channels.
 5. Scheduler ReduceLrOnPlateu
 
 ## Postprocessing
 
-We used threshold 0.5 and removed all masks that were smaller than 5000 pixels. 
+We used the threshold of 0.5 and removed all masks that were smaller than 5000 pixels. 
 
 ## Inference and blending
 
-Two days before the competition I read a message on forum which was indicating the following: as our predictions approach 38.5% of non-empty mask the score exceeds 0.670 public lb. Our best submissions at that moment were generating 36.2 - 36.6% of non-empty masks, so we needed to lower the number of false negatives. At the same time we were scared of the risk of generating bigger number of false positives. 
+Two days before the competition I read a message on the forum which was indicating the following: as our predictions approach 38.5% of non-empty mask the score exceeds 0.670 public lb. Our best submissions at that moment were generating 36.2 - 36.6% of non-empty masks, so we needed to lower the number of false negatives. At the same time, we were scared of the risk of generating a bigger number of false positives. 
 
 We took in our final blend the following 5 submissions:
 1. EfficientNet-B0 2 stage last epoch 
@@ -60,20 +60,20 @@ We took in our final blend the following 5 submissions:
 5. One artificial blend submission:
 
 We needed this artificial submission as we wanted to push % of non-empty masks closer to 38.5%.
- We took submissions from the following single fold models:
+ We took submissions from the following single-fold models:
   * B0 2stage last epoch
   * B0 2 stage best epoch
   * B1 2 stage best epoch
   * B5 2 stage best epoch
   * se_resnext50 best epoch. 
- Then we performed voting blend on them with vote threshold t = 2 and generated this submission. This submission produced 38.91% of non-empty masks. 
+ Then we performed a voting blend on them with vote threshold t = 2 and generated this submission. This submission produced 38.91% of non-empty masks. 
 
-After adding artificial subission to ensemble the % of non-empty masks rose from 36.5% to 37.45%. After blending the 5 submissions from above with voting threshold t = 3 we got submission with private/public score of 0.65800/0.67007 (our highest public lb score).
+After adding an artificial submission to ensemble the % of non-empty masks rose from 36.5% to 37.45%. After blending the 5 submissions from above with voting threshold t = 3 we got a submission with private/public score of 0.65800/0.67007 (our highest public lb score).
 
 ## Why we thought it will work
-* Two stage training with different on images with aspect ratio (320x640 and 512x768).
+* Two-stage training with on images with different aspect ratios (320x640 and 512x768).
 * Second stage trained only on training data.
-* Independant Symmetric Lovasz Loss for each channel.
+* Independent Symmetric Lovasz Loss for each channel.
 * Adding one artificial submission to lower the number of false negatives, whist keeping threshold enough high to reduce the number of false positives.
 
 ## Credits

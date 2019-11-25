@@ -2,7 +2,7 @@
 # Kaggle Understanding cloud organization
 https://www.kaggle.com/c/understanding_cloud_organization
 
-95th place solution 
+95th place solution (out of 1,538 teams Top 6.2%)
 
 private/public score of 0.65800/0.67007
 

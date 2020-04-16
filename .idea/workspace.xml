@@ -2,28 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69eb280a-6eda-46ee-8b7a-0838b9775472" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/configs/config.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/experiment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/init.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Understanding Clouds.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Understanding Clouds.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/augmentations.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/augmentations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/blending/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/blending/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/callbacks.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/callbacks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/dataset.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ensemble/class_params_efficientnet-b0_enc_659_v27_320x640_ch.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ensemble/class_params_efficientnet-b2_enc_654_v5_320x640.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ensemble/class_params_se_resnext101_32x4d_enc_655_v13_320x640.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ensemble/class_params_se_resnext50_32x4d_enc_658_v12_320x640.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fpn.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/get-pip.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/inference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lovasz_losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/symmetric_lovasz_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/optimizers.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +54,7 @@
       <workItem from="1586859604350" duration="6699000" />
       <workItem from="1586922251872" duration="4998000" />
       <workItem from="1586932908787" duration="1874000" />
-      <workItem from="1587000214573" duration="5080000" />
+      <workItem from="1587000214573" duration="5652000" />
     </task>
     <servers />
   </component>
@@ -95,10 +74,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="279" y="58" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1586654150276" />
-    <state x="477" y="240" key="com.intellij.ide.util.TipDialog" timestamp="1586932956051">
+    <state x="477" y="240" key="com.intellij.ide.util.TipDialog" timestamp="1587010889650">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="477" y="240" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1586932956051" />
+    <state x="477" y="240" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1587010889650" />
     <state x="510" y="61" key="refactoring.ChangeSignatureDialog" timestamp="1586488643968">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

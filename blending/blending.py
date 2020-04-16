@@ -10,7 +10,7 @@ from src.utils import rle_decode, mask2rle
 if __name__ == "__main__":
     '''
     Used for blending submissions
-    !python main.py --path my_path
+    !python blending.py --path my_path
     '''
 
     parser = argparse.ArgumentParser(description="blend submissions")

@@ -44,7 +44,7 @@ stages:
 
   stage1:
     state_params:
-      num_epochs: 30
+      num_epochs: 1
 
     criterion_params:
       criterion: BCEDiceLoss
@@ -63,7 +63,7 @@ stages:
 
   stage2:
     state_params:
-      num_epochs: 30
+      num_epochs: 1
 
     criterion_params:
       criterion: SymmetricLovaszLoss

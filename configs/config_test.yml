@@ -1,5 +1,5 @@
 model_params:
-  model: Unet
+  model: smp.Unet
   encoder_name: efficientnet-b2
   classes: 4
   activation: null

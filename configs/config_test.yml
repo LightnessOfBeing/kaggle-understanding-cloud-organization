@@ -2,7 +2,7 @@ model_params:
   model: Unet
   encoder_name: efficientnet-b2
   classes: 4
-  activation: None
+  activation: null
 
 args:
   logdir: "./logs/clouds_logs"

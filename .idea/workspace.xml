@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69eb280a-6eda-46ee-8b7a-0838b9775472" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/configs/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/config_test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/config_test.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -56,7 +57,7 @@
       <workItem from="1586922251872" duration="4998000" />
       <workItem from="1586932908787" duration="1874000" />
       <workItem from="1587000214573" duration="5652000" />
-      <workItem from="1587012773667" duration="2480000" />
+      <workItem from="1587012773667" duration="3197000" />
     </task>
     <servers />
   </component>
@@ -68,6 +69,10 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="499" y="162" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1536.824@0.0.1536.824" timestamp="1586658486656" />
+    <state x="22" y="14" key="CommitChangelistDialog2" timestamp="1587018244318">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="22" y="14" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1587018244318" />
     <state x="549" y="170" key="FileChooserDialogImpl" timestamp="1586940310254">
       <screen x="0" y="0" width="1536" height="824" />
     </state>

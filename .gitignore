@@ -128,5 +128,11 @@ dmypy.json
 /.idea/workspace.xml
 /.idea/
 /.idea/*
+./.idea/workspace.xml
+./.idea/
+./.idea/*
+.idea/workspace.xml
+.idea/
+.idea/*
 ./logs/*
 logs/*

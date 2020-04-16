@@ -1,0 +1,75 @@
+model_params:
+  model: smp.Unet
+  encoder_name: "efficientnet-b2"
+  classes: 4
+  activation: None
+
+args:
+  logdir: "./logs/clouds_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+stages:
+  data_params:
+    batch_size: 32
+    num_workers: 4
+    df_train_name: "train.csv"
+    path: "../input/cloudsresizedall/dataset_320x640"
+    image_folder: "train_images"
+
+  state_params:
+    main_metric: dice_kirill
+    minimize_metric: False
+
+  callbacks_params:
+    dice_metric:
+      callback: CustomDiceCallback
+
+    optimizer:
+      callback: OptimizerCallback
+
+    scheduler:
+      callback: SchedulerCallback
+
+    saver:
+      callback: CheckpointCallback
+      save_n_best: 2
+
+    early_stop:
+      callback: EarlyStoppingCallback
+      patience: 5
+      min_delta: 0.0005
+      metric: loss
+
+  stage1:
+    criterion_params:
+      criterion: BCEDiceLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+          lr: 0.0001
+        decoder.*:
+          lr: 0.001
+
+    scheduler_params:
+      scheduler: ReduceLROnPlateau
+      patience: 2
+
+  stage2:
+    criterion_params:
+      criterion: SymmetricLovaszLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+          lr: 0.0001
+        decoder.*:
+          lr: 0.0005
+
+    scheduler_params:
+      scheduler: ReduceLROnPlateau
+      patience: 2

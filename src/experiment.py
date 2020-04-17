@@ -50,6 +50,6 @@ class Experiment(ConfigExperiment):
         datasets = collections.OrderedDict()
         datasets["train"] = train_dataset
         datasets["valid"] = valid_dataset
-        datasets["infer"] = valid_dataset
+        # datasets["infer"] = valid_dataset
 
         return datasets

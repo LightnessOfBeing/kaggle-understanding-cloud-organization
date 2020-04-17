@@ -36,6 +36,7 @@ class CloudDataset(Dataset):
         augmented = self.transforms(image=img, mask=mask)
         image = to_tensor(self.preprocessing_fn(augmented['image'])),
         mask = to_tensor(augmented['mask'])
+        print(image.size(), mask.size())
         return image, mask
 
     def __len__(self):

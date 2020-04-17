@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import pandas as pd
-from catalyst.core import _State
+from catalyst.core import State
 from catalyst.dl import Callback, CallbackOrder, MetricCallback
 
 from src.utils import mean_dice_coef, post_process, sigmoid, dice
@@ -13,9 +13,9 @@ class CustomSegmentationInferCallback(Callback):
         self.valid_masks = []
         self.probabilities = np.zeros((2220, 350, 525))
 
-    def on_batch_end(self, state: _State):
-        image, mask = state.input
-        output = state.output["logits"]
+    def on_batch_end(self, state: "State"):
+        image, mask = state.batch_in
+        output = state.batch_out["logits"]
         for m in mask:
             if m.shape != (350, 525):
                 m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
@@ -26,7 +26,7 @@ class CustomSegmentationInferCallback(Callback):
                 probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
             self.probabilities[j, :, :] = probability
 
-    def on_stage_end(self, state: _State):
+    def on_stage_end(self, state: "State"):
         class_params = {}
         for class_id in range(4):
             print(class_id)

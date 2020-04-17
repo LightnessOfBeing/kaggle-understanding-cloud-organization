@@ -24,12 +24,12 @@ stages:
     test_mode: true
 
   state_params:
-    main_metric: dice_kirill
-    minimize_metric: false
+    main_metric: loss
+    minimize_metric: true
 
   stage1:
 
-    callbacks_params:
+    callbacks_params: &callbacks_params
       dice_metric:
         callback: CustomDiceCallback
 
@@ -69,25 +69,7 @@ stages:
 
   stage2:
 
-    callback_params:
-      dice_metric:
-        callback: CustomDiceCallback
-
-      optimizer:
-        callback: OptimizerCallback
-
-      scheduler:
-        callback: SchedulerCallback
-
-      saver:
-        callback: CheckpointCallback
-        save_n_best: 2
-
-      early_stop:
-        callback: EarlyStoppingCallback
-        patience: 5
-        min_delta: 0.0005
-        metric: loss
+    callback_params: *callbacks_params
 
     state_params:
       num_epochs: 1

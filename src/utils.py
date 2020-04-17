@@ -105,7 +105,7 @@ def get_img(x: str = 'img_name', folder: str = 'train_images'):
     return img
 
 
-def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
+def rle_decode(mask_rle: str = '', shape: tuple = (320, 640)):
     s = mask_rle.split()
     starts, lengths = [np.asarray(x, dtype=int) for x in (s[0:][::2], s[1:][::2])]
     starts -= 1

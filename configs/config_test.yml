@@ -24,8 +24,8 @@ stages:
     test_mode: true
 
   state_params:
-    main_metric: dice_kirill
-    minimize_metric: False
+    main_metric: loss
+    minimize_metric: true
 
   stage1:
 
@@ -68,6 +68,7 @@ stages:
       patience: 2
 
   stage2:
+
     callback_params:
       dice_metric:
         callback: CustomDiceCallback

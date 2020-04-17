@@ -16,7 +16,7 @@ class Experiment(ConfigExperiment):
         df_pl_name = kwargs.get('df_pl_name', None)
         path = kwargs.get('path', None)
         image_folder = kwargs.get('image_folder', None)
-        encoder_name = kwargs.get('encoder_name', None)
+        encoder_name = kwargs.get('model_name', None)
 
         df_train = pd.read_csv(os.path.join(path, df_train_name))
         if df_pl_name is not None:

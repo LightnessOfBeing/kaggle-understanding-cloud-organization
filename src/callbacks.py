@@ -69,7 +69,7 @@ class CustomDiceCallback(Callback):
         self.input_key = input_key
         self.output_key = output_key
         self.prefix = prefix
-        super().__init__(CallbackOrder.Metric)
+        super().__init__(CallbackOrder.Internal)
 
     def on_batch_end(self, state: State) -> None:
         state.batch_metrics[self.prefix] = mean_dice_coef(state.batch_out[self.output_key], state.batch_in[self.input_key])

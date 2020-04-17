@@ -18,7 +18,7 @@ stages:
     batch_size: 32
     num_workers: 4
     df_train_name: "train.csv"
-    path: "../../input/dataset_320x640"
+    path: "../input/dataset_320x640"
     image_folder: "train_images"
     model_name: efficientnet-b2
 

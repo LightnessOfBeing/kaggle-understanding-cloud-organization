@@ -24,8 +24,8 @@ stages:
     test_mode: true
 
   state_params:
-    main_metric: loss
-    minimize_metric: true
+    main_metric: dice_kirill
+    minimize_metric: false
 
   stage1:
 

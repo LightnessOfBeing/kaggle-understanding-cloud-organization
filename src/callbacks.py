@@ -64,28 +64,15 @@ class CustomSegmentationInferCallback(Callback):
             np.save('./logs/class_params.npy', class_params)
 
 
-class CustomDiceCallback(MetricCallback):
-    """
-    Dice metric callback.
-    """
-    def __init__(
-        self,
-        input_key: str = "targets",
-        output_key: str = "logits",
-        prefix: str = "dice_kirill",
-        eps: float = 1e-7,
-        threshold: float = None,
-        activation: str = "Sigmoid"
-    ):
-        super().__init__(
-            prefix=prefix,
-            metric_fn=mean_dice_coef,
-            input_key=input_key,
-            output_key=output_key,
-            eps=eps,
-            threshold=threshold,
-            activation=activation
-        )
+class CustomDiceCallback(Callback):
+    def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "dice_kirill"):
+        self.input_key = input_key
+        self.output_key = output_key
+        self.prefix = prefix
+        super().__init__(CallbackOrder.Metric)
+
+    def on_batch_end(self, state: State) -> None:
+        state.batch_metrics[self.prefix] = mean_dice_coef(state.batch_out[self.output_key], state.batch_in[self.input_key])
 
 '''
 class CustomDiceCallback(MetricCallback):

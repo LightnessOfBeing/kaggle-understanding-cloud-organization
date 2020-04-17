@@ -160,3 +160,7 @@ def mask2rle(img):
     runs = np.where(pixels[1:] != pixels[:-1])[0] + 1
     runs[1::2] -= runs[::2]
     return ' '.join(str(x) for x in runs)
+
+
+def to_tensor(x):
+    return x.transpose(2, 0, 1).astype('float32')

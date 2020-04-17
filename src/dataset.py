@@ -3,7 +3,7 @@ import cv2
 from torch.utils.data import Dataset
 from albumentations.pytorch import ToTensorV2
 
-from src.utils import make_mask
+from src.utils import make_mask, to_tensor
 
 
 class CloudDataset(Dataset):
@@ -34,8 +34,9 @@ class CloudDataset(Dataset):
         img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         augmented = self.transforms(image=img, mask=mask)
-        augmented = ToTensorV2()(image=self.preprocessing_fn(augmented['image']), mask=augmented['mask'])
-        return augmented['image'], augmented['mask']
+        image = to_tensor(self.preprocessing_fn(augmented['image'])),
+        mask = to_tensor(augmented['mask'])
+        return image, mask
 
     def __len__(self):
         return len(self.img_ids)

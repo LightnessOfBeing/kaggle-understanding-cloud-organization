@@ -65,6 +65,30 @@ class CustomSegmentationInferCallback(Callback):
 
 
 class CustomDiceCallback(MetricCallback):
+    """
+    Dice metric callback.
+    """
+    def __init__(
+        self,
+        input_key: str = "targets",
+        output_key: str = "logits",
+        prefix: str = "dice_kirill",
+        eps: float = 1e-7,
+        threshold: float = None,
+        activation: str = "Sigmoid"
+    ):
+        super().__init__(
+            prefix=prefix,
+            metric_fn=dice,
+            input_key=input_key,
+            output_key=output_key,
+            eps=eps,
+            threshold=threshold,
+            activation=activation
+        )
+
+'''
+class CustomDiceCallback(MetricCallback):
     def __init__(
             self,
             input_key: str = "targets",
@@ -82,3 +106,4 @@ class CustomDiceCallback(MetricCallback):
             threshold=threshold,
             activation=activation
         )
+'''

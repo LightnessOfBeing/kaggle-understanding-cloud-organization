@@ -34,10 +34,7 @@ class CloudDataset(Dataset):
         img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         augmented = self.transforms(image=img, mask=mask)
-        image = self.preprocessing_fn(augmented['image'])
-        print(type(image))
-        image = to_tensor(image)
-        print(type(image))
+        image = to_tensor(self.preprocessing_fn(augmented['image']))
         mask = to_tensor(augmented['mask'])
         return image, mask
 

@@ -9,7 +9,7 @@ from src.utils import mean_dice_coef, post_process, sigmoid, dice
 
 class CustomSegmentationInferCallback(Callback):
     def __init__(self):
-        super().__init__(CallbackOrder.External)
+        super().__init__(CallbackOrder.Internal)
         self.valid_masks = []
         self.probabilities = np.zeros((2220, 350, 525))
 

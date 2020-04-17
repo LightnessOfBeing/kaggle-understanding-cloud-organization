@@ -24,14 +24,14 @@ stages:
     test_mode: true
 
   state_params:
-    main_metric: dice
-    minimize_metric: false
+    main_metric: loss
+    minimize_metric: true
 
   stage1:
 
     callbacks_params: &callbacks_params
       dice_metric:
-        callback: DiceCallback
+        callback: CustomDiceCallback
 
       optimizer:
         callback: OptimizerCallback

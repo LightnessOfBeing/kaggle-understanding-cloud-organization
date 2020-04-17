@@ -79,7 +79,7 @@ class CustomDiceCallback(MetricCallback):
     ):
         super().__init__(
             prefix=prefix,
-            metric_fn=dice,
+            metric_fn=mean_dice_coef,
             input_key=input_key,
             output_key=output_key,
             eps=eps,

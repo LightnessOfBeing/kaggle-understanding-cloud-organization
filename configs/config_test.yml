@@ -10,6 +10,9 @@ args:
   check: False
   verbose: True
 
+distributed_params:
+  opt_level: O2
+
 stages:
   data_params:
     batch_size: 32

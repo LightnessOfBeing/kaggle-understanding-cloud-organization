@@ -7,7 +7,7 @@ def get_transforms(aug_name, image_size=None):
     OPTIONS = {
         'default': get_training_augmentation0,
         '1': get_training_augmentation1,
-        '2': get_training_augmentation2,
+        'train': get_training_augmentation2,
         '3': get_training_augmentation3,
         'both': get_training_augmentation_both,
         'none': get_training_augmentation_none
@@ -39,7 +39,7 @@ def get_training_augmentation1():
     return train_transform
 
 
-def get_training_augmentation2(image_size=None):
+def get_training_augmentation2():
     train_transform = [
         albu.HorizontalFlip(p=0.5),
         albu.VerticalFlip(p=0.5),

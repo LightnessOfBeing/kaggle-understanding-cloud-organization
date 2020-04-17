@@ -9,9 +9,12 @@ from src.utils import mean_dice_coef, post_process, sigmoid, dice
 
 class CustomSegmentationInferCallback(Callback):
     def __init__(self):
-        super().__init__(CallbackOrder.Internal)
+        super().__init__(CallbackOrder.External)
         self.valid_masks = []
         self.probabilities = np.zeros((2220, 350, 525))
+
+    def on_stage_start(self, state: "State"):
+        print("Stage 3 started!")
 
     def on_batch_end(self, state: "State"):
         image, mask = state.batch_in

@@ -21,6 +21,7 @@ stages:
     path: "../input/cloudsresizedall/dataset_320x640"
     image_folder: "train_images"
     model_name: *encoder_name
+    test_mode: true
 
   state_params:
     main_metric: dice_kirill
@@ -66,26 +67,26 @@ stages:
       scheduler: ReduceLROnPlateau
       patience: 2
 
-  stage2:
-    callback_params: *callback_params
+ # stage2:
+ #   callback_params: *callback_params
 
-    state_params:
-      num_epochs: 1
+ #   state_params:
+ #     num_epochs: 1
 
-    criterion_params:
-      criterion: SymmetricLovaszLoss
+#    criterion_params:
+#      criterion: SymmetricLovaszLoss
 
-    optimizer_params:
-      optimizer: Adam
-      layerwise_params:
-        encoder.*:
-          lr: 0.0001
-        decoder.*:
-          lr: 0.0005
+#    optimizer_params:
+#      optimizer: Adam
+#      layerwise_params:
+#        encoder.*:
+#          lr: 0.0001
+#        decoder.*:
+#          lr: 0.0005
 
-    scheduler_params:
-      scheduler: ReduceLROnPlateau
-      patience: 2
+#    scheduler_params:
+#      scheduler: ReduceLROnPlateau
+#      patience: 2
 
     stage3:
       callbacks_params:

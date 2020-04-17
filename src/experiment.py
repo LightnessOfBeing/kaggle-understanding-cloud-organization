@@ -17,11 +17,15 @@ class Experiment(ConfigExperiment):
         path = kwargs.get('path', None)
         image_folder = kwargs.get('image_folder', None)
         encoder_name = kwargs.get('model_name', None)
+        test_mode = kwargs.get('test_mode', None)
 
         df_train = pd.read_csv(os.path.join(path, df_train_name))
         if df_pl_name is not None:
             df_pl = pd.read_csv(df_pl_name)
             df_train = df_train.append(os.path.join(path, df_pl))
+
+        if test_mode:
+            df_train = df_train[:300]
 
         df_train['label'] = df_train['Image_Label'].apply(lambda x: x.split('_')[1])
         df_train['im_id'] = df_train['Image_Label'].apply(lambda x: x.split('_')[0])

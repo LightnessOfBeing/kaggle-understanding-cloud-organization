@@ -15,7 +15,7 @@ distributed_params:
 
 stages:
   data_params:
-    batch_size: 32
+    batch_size: 8
     num_workers: 4
     df_train_name: "train.csv"
     path: "../input/cloudsresizedall/dataset_320x640"

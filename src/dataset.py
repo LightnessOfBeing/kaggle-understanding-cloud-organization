@@ -17,7 +17,7 @@ class CloudDataset(Dataset):
         self.df = df
         self.img_ids = img_ids
         self.path = path
-        self.image_folder = image_folder
+        self.image_folder = os.path.join(self.path, image_folder)
         bad_imgs = ['046586a.jpg', '1588d4c.jpg', '1e40a05.jpg',
                     '41f92e5.jpg', '449b792.jpg', '563fc48.jpg',
                     '8bd81ce.jpg', 'c0306e5.jpg', 'c26c635.jpg',

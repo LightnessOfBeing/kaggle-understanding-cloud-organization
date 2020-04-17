@@ -4,6 +4,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import torch
 from catalyst.utils import get_activation_fn
 
 
@@ -163,4 +164,4 @@ def mask2rle(img):
 
 
 def to_tensor(x):
-    return x.transpose(2, 0, 1).astype('float32')
+    return torch.from_numpy(x.transpose(2, 0, 1).astype('float32'))

@@ -105,8 +105,3 @@ stages:
     scheduler_params:
       scheduler: ReduceLROnPlateau
       patience: 2
-
-    stage3:
-      callbacks_params:
-        post_processing:
-          callback: CustomSegmentationInferCallback

@@ -116,7 +116,7 @@ def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
     return img.reshape(shape, order='F')
 
 
-def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (1400, 2100)):
+def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320, 640)):
     encoded_masks = df.loc[df['im_id'] == image_name, 'EncodedPixels']
     masks = np.zeros((shape[0], shape[1], 4), dtype=np.float32)
 

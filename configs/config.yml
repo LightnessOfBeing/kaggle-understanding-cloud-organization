@@ -11,7 +11,7 @@ args:
   verbose: True
 
 distributed_params:
-  opt_level: O2
+  opt_level: O1
 
 stages:
   data_params:
@@ -28,8 +28,11 @@ stages:
 
   stage1:
     callbacks_params: &callback_params
-      dice_metric:
+      custom_dice_metric:
         callback: CustomDiceCallback
+
+      dice_metric:
+        callback: DiceCallback
 
       optimizer:
         callback: OptimizerCallback

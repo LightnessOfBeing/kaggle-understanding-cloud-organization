@@ -7,8 +7,7 @@ from src.utils import to_tensor
 
 def get_preprocessing(preprocessing_fn):
     _transform = [
-        albu.Lambda(image=preprocessing_fn),
-        albu.Lambda(image=to_tensor, mask=to_tensor),
+        albu.Lambda(image=preprocessing_fn)
     ]
     return albu.Compose(_transform)
 

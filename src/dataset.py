@@ -40,8 +40,8 @@ class CloudDataset(Dataset):
         print(type(img), type(mask))
         if self.preprocessing:
             preprocessed = self.preprocessing(image=img, mask=mask)
-            img = preprocessed['image']
-            mask = preprocessed['mask']
+            img = to_tensor(preprocessed['image'])
+            mask = to_tensor(preprocessed['mask'])
         return img, mask
 
     '''

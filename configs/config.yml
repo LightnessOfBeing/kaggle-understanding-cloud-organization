@@ -54,7 +54,7 @@ stages:
       num_epochs: 30
 
     criterion_params:
-      criterion: BCEDiceLoss
+      criterion: BCEDiceLossCustom
       eps: 10
 
     optimizer_params:

@@ -52,7 +52,7 @@ class DiceLoss(nn.Module):
         return 1 - f_score(y_pr, y_gt, beta=1., eps=self.eps, threshold=None, activation=self.activation)
 
 
-class BCEDiceLoss(DiceLoss):
+class BCEDiceLossCustom(DiceLoss):
     __name__ = 'bce_dice_loss'
 
     def __init__(self, eps=1e-7, activation='sigmoid'):

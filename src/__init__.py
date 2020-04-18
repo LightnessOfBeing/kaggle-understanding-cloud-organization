@@ -5,9 +5,9 @@ from .callbacks import CustomDiceCallback, CustomSegmentationInferCallback
 from .experiment import Experiment
 
 from src.symmetric_lovasz_loss import SymmetricLovaszLoss
-from .losses import BCEDiceLoss
+from .losses import BCEDiceLossCustom
 
-registry.Criterion(BCEDiceLoss)
+registry.Criterion(BCEDiceLossCustom)
 registry.Criterion(SymmetricLovaszLoss)
 
 registry.Callback(CustomDiceCallback)

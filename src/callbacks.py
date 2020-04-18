@@ -74,8 +74,8 @@ class DiceLossCallback(Callback):
         super().__init__(CallbackOrder.Metric)
 
     def on_batch_end(self, state: State) -> None:
-        outputs = sigmoid(state.batch_out[self.output_key])
-        inputs = state.batch_in[self.input_key]
+        outputs = sigmoid(state.batch_out[self.output_key].detach().cpu().numpy())
+        inputs = state.batch_in[self.input_key].detach().cpu().numpy()
         state.batch_metrics[self.prefix + "_10"] = f_score(outputs, inputs, beta=1., eps=10, threshold=0.5,
                                                    activation='sigmoid')
         state.batch_metrics[self.prefix + "_1e7"] = f_score(outputs, inputs, beta=1., eps=1e-7, threshold=0.5,

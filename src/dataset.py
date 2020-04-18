@@ -37,7 +37,6 @@ class CloudDataset(Dataset):
         augmented = self.transforms(image=img, mask=mask)
         img = augmented['image']
         mask = augmented['mask']
-        print(type(img), type(mask))
         if self.preprocessing:
             preprocessed = self.preprocessing(image=img, mask=mask)
             img = to_tensor(preprocessed['image'])

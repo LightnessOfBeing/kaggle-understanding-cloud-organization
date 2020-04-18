@@ -164,6 +164,4 @@ def mask2rle(img):
 
 
 def to_tensor(x):
-    print(type(x))
-    print(x)
     return x.transpose(2, 0, 1).astype('float32')

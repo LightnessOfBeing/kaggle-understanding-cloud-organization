@@ -55,6 +55,7 @@ stages:
 
     criterion_params:
       criterion: BCEDiceLoss
+      eps: 10
 
     optimizer_params:
       optimizer: Adam

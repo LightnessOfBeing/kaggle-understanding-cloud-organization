@@ -164,4 +164,4 @@ def mask2rle(img):
 
 
 def to_tensor(x):
-    return torch.from_numpy(x.transpose(2, 0, 1).astype('float32'))
+    return x.transpose(2, 0, 1).astype('float32')

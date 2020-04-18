@@ -1,6 +1,7 @@
 model_params:
   model: smp.Unet
   encoder_name: &encoder_name efficientnet-b2
+  encoder_weights: imagenet
   classes: 4
   activation: null
 

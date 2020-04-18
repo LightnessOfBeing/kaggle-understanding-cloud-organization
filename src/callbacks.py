@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
 import pandas as pd
+import torch
 from catalyst.core import State
 from catalyst.dl import Callback, CallbackOrder, MetricCallback
 
+from src.losses import f_score
 from src.utils import mean_dice_coef, post_process, sigmoid, dice
 
 
@@ -63,18 +65,23 @@ class CustomSegmentationInferCallback(Callback):
             class_params[class_id] = (best_threshold, best_size)
             np.save('./logs/class_params.npy', class_params)
 
-'''
-class CustomDiceCallback(Callback):
-    def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "dice_kirill"):
+
+class DiceLossCallback(Callback):
+    def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "fscore"):
         self.input_key = input_key
         self.output_key = output_key
         self.prefix = prefix
         super().__init__(CallbackOrder.Metric)
 
     def on_batch_end(self, state: State) -> None:
-        state.batch_metrics[self.prefix] = mean_dice_coef(state.batch_out[self.output_key], state.batch_in[self.input_key])
+        outputs = sigmoid(state.batch_out[self.output_key])
+        inputs = state.batch_in[self.input_key]
+        state.batch_metrics[self.prefix + "_10"] = f_score(outputs, inputs, beta=1., eps=10, threshold=0.5,
+                                                   activation='sigmoid')
+        state.batch_metrics[self.prefix + "_1e7"] = f_score(outputs, inputs, beta=1., eps=1e-7, threshold=0.5,
+                                                   activation='sigmoid')
 
-'''
+
 class CustomDiceCallback(MetricCallback):
     def __init__(
             self,

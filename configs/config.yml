@@ -29,8 +29,16 @@ stages:
 
   stage1:
     callbacks_params:
-      custom_dice_metric:
+      custom_dice_10:
         callback: CustomDiceCallback
+        eps: 10
+
+      custom_dice_1e7:
+        callback: CustomDiceCallback
+        eps: 1e7
+
+      dice_loss:
+        callback: DiceLossCallback
 
       dice_metric:
         callback: DiceCallback
@@ -72,28 +80,36 @@ stages:
       patience: 2
 
   stage2:
-    callback_params:
-      custom_dice_metric:
+    callbacks_params:
+      custom_dice_10:
         callback: CustomDiceCallback
+        eps: 10
 
-        dice_metric:
-          callback: DiceCallback
+      custom_dice_1e7:
+        callback: CustomDiceCallback
+        eps: 1e-7
 
-        optimizer:
-          callback: OptimizerCallback
+      dice_loss:
+        callback: DiceLossCallback
 
-        scheduler:
-          callback: SchedulerCallback
+      dice_metric:
+        callback: DiceCallback
 
-        saver:
-          callback: CheckpointCallback
-          save_n_best: 2
+      optimizer:
+        callback: OptimizerCallback
 
-        early_stop:
-          callback: EarlyStoppingCallback
-          patience: 5
-          min_delta: 0.0005
-          metric: loss
+      scheduler:
+        callback: SchedulerCallback
+
+      saver:
+        callback: CheckpointCallback
+        save_n_best: 2
+
+      early_stop:
+        callback: EarlyStoppingCallback
+        patience: 5
+        min_delta: 0.0005
+        metric: loss
 
     state_params:
       num_epochs: 30

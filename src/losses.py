@@ -49,7 +49,7 @@ class DiceLoss(nn.Module):
         self.eps = eps
 
     def forward(self, y_pr, y_gt):
-        return 1 - f_score(y_pr, y_gt, beta=1., eps=self.eps, threshold=None, activation=self.activation)
+        return 1 - f_score(y_pr, y_gt, beta=1., eps=self.eps, threshold=0.5, activation=self.activation)
 
 
 class BCEDiceLossCustom(DiceLoss):

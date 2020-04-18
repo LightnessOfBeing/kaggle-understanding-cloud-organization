@@ -1,6 +1,6 @@
 model_params:
   model: smp.Unet
-  encoder_name: &encoder_name efficientnet-b2
+  encoder_name: efficientnet-b0
   encoder_weights: imagenet
   classes: 4
   activation: null
@@ -21,14 +21,14 @@ stages:
     df_train_name: "train.csv"
     path: "../../input/dataset_320x640"
     image_folder: "train_images"
-    model_name: *encoder_name
+    model_name: efficientnet-b0
 
   state_params:
     main_metric: loss
     minimize_metric: true
 
   stage1:
-    callbacks_params: &callback_params
+    callbacks_params:
       custom_dice_metric:
         callback: CustomDiceCallback
 
@@ -68,10 +68,32 @@ stages:
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
+      factor: 0.5
       patience: 2
 
   stage2:
-    callback_params: *callback_params
+    callback_params:
+      custom_dice_metric:
+        callback: CustomDiceCallback
+
+        dice_metric:
+          callback: DiceCallback
+
+        optimizer:
+          callback: OptimizerCallback
+
+        scheduler:
+          callback: SchedulerCallback
+
+        saver:
+          callback: CheckpointCallback
+          save_n_best: 2
+
+        early_stop:
+          callback: EarlyStoppingCallback
+          patience: 5
+          min_delta: 0.0005
+          metric: loss
 
     state_params:
       num_epochs: 30
@@ -89,6 +111,7 @@ stages:
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
+      factor: 0.5
       patience: 2
 
   stage3:

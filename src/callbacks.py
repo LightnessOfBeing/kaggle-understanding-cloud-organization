@@ -63,7 +63,7 @@ class CustomSegmentationInferCallback(Callback):
             class_params[class_id] = (best_threshold, best_size)
             np.save('./logs/class_params.npy', class_params)
 
-
+'''
 class CustomDiceCallback(Callback):
     def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "dice_kirill"):
         self.input_key = input_key
@@ -93,4 +93,3 @@ class CustomDiceCallback(MetricCallback):
             threshold=threshold,
             activation=activation
         )
-'''

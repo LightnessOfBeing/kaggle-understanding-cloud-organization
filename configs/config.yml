@@ -15,16 +15,16 @@ distributed_params:
 
 stages:
   data_params:
-    batch_size: 8
+    batch_size: 16
     num_workers: 4
     df_train_name: "train.csv"
-    path: "../input/cloudsresizedall/dataset_320x640"
+    path: "../../input/cloudsresizedall/dataset_320x640"
     image_folder: "train_images"
     model_name: *encoder_name
 
   state_params:
-    main_metric: dice_kirill
-    minimize_metric: False
+    main_metric: loss
+    minimize_metric: true
 
   stage1:
     callbacks_params: &callback_params

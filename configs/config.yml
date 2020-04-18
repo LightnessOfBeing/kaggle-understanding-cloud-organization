@@ -11,7 +11,7 @@ args:
   verbose: True
 
 distributed_params:
-  opt_level: O2
+  opt_level: O1
 
 stages:
   data_params:

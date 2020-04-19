@@ -140,7 +140,7 @@ def single_dice_coef(y_pred_bin, y_true):
     return (2 * intersection) / (np.sum(y_true) + np.sum(y_pred_bin))
 
 
-def mean_dice_coef(y_pred_bin, y_true):
+def mean_dice_coef(y_pred_bin, y_true, **kwargs):
     # shape of y_true and y_pred_bin: (n_samples, height, width, n_channels)
     # actual shape (Batch, channels, height, width)
     batch_size = y_true.shape[0]

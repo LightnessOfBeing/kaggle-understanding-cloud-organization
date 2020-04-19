@@ -8,8 +8,7 @@ import torch
 from catalyst.utils import get_activation_fn
 
 
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+sigmoid = torch.nn.Sigmoid()
 
 
 def visualize(image, mask, original_image=None, original_mask=None, fontsize: int = 14):
@@ -130,8 +129,8 @@ def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320
 
 def single_dice_coef(y_pred_bin, y_true):
     # shape of y_true and y_pred_bin: (height, width)
-    activation_fn = get_activation_fn("Sigmoid")
-    y_pred_bin = activation_fn(y_pred_bin)
+    # activation_fn = sigmoid("Sigmoid")
+    y_pred_bin = sigmoid(y_pred_bin)
     y_pred_bin = y_pred_bin.cpu().detach().numpy()
     y_pred_bin = (y_pred_bin > 0.5)
     y_true = y_true.cpu().detach().numpy()
@@ -141,7 +140,7 @@ def single_dice_coef(y_pred_bin, y_true):
     return (2 * intersection) / (np.sum(y_true) + np.sum(y_pred_bin))
 
 
-def mean_dice_coef(y_pred_bin, y_true, **kwargs):
+def mean_dice_coef(y_pred_bin, y_true):
     # shape of y_true and y_pred_bin: (n_samples, height, width, n_channels)
     # actual shape (Batch, channels, height, width)
     batch_size = y_true.shape[0]

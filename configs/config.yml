@@ -31,14 +31,6 @@ stages:
     callbacks_params:
       custom_dice_10:
         callback: CustomDiceCallback
-        eps: 10
-
-      custom_dice_1e7:
-        callback: CustomDiceCallback
-        eps: 1e7
-
-      dice_loss:
-        callback: DiceLossCallback
 
       dice_metric:
         callback: DiceCallback
@@ -64,33 +56,24 @@ stages:
 
     criterion_params:
       criterion: BCEDiceLossCustom
-      eps: 10
 
     optimizer_params:
       optimizer: Adam
       layerwise_params:
         encoder.*:
-          lr: 0.0001
+          lr: 0.0002
         decoder.*:
-          lr: 0.001
+          lr: 0.002
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
       factor: 0.5
-      patience: 2
+      patience: 1
 
   stage2:
     callbacks_params:
-      custom_dice_10:
+      custom_dice:
         callback: CustomDiceCallback
-        eps: 10
-
-      custom_dice_1e7:
-        callback: CustomDiceCallback
-        eps: 1e-7
-
-      dice_loss:
-        callback: DiceLossCallback
 
       dice_metric:
         callback: DiceCallback
@@ -121,16 +104,19 @@ stages:
       optimizer: Adam
       layerwise_params:
         encoder.*:
-          lr: 0.0001
+          lr: 0.0002
         decoder.*:
-          lr: 0.0005
+          lr: 0.0008
 
     scheduler_params:
       scheduler: ReduceLROnPlateau
       factor: 0.5
-      patience: 2
+      patience: 1
 
   stage3:
+    state_params:
+      num_epochs: 1
+
     callbacks_params:
       post_processing:
         callback: CustomSegmentationInferCallback

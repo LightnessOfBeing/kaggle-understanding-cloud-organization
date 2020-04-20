@@ -1,6 +1,6 @@
 model_params:
   model: smp.Unet
-  encoder_name: efficientnet-b0
+  encoder_name: efficientnet-b3
   encoder_weights: imagenet
   classes: 4
   activation: null
@@ -112,11 +112,3 @@ stages:
       scheduler: ReduceLROnPlateau
       factor: 0.5
       patience: 1
-
-  stage3:
-    state_params:
-      num_epochs: 1
-
-    callbacks_params:
-      post_processing:
-        callback: CustomSegmentationInferCallback

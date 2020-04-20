@@ -67,7 +67,7 @@ stages:
       scheduler: ReduceLROnPlateau
       patience: 2
 
-  stage3:
+  infer:
     state_params:
       num_epochs: 1
 

@@ -21,12 +21,12 @@ class CustomSegmentationInferCallback(InferCallback):
     def on_batch_end(self, state: "State"):
         image, mask = state.batch_in
         output = state.batch_out["logits"]
-        print(output.shape)
+      #  print(output.shape)
         for mask in output:
             for m in mask:
                 if m.shape != (350, 525):
                     m = m.cpu().detach().numpy()
-                    print(type(m), m.shape)
+                  #  print(type(m), m.shape)
                     m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.valid_masks.append(m)
         '''

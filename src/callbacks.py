@@ -3,15 +3,15 @@ import numpy as np
 import pandas as pd
 import torch
 from catalyst.core import State
-from catalyst.dl import Callback, CallbackOrder, MetricCallback
+from catalyst.dl import Callback, CallbackOrder, MetricCallback, InferCallback
 
 from src.losses import f_score
 from src.utils import mean_dice_coef, post_process, sigmoid, dice
 
 
-class CustomSegmentationInferCallback(Callback):
+class CustomSegmentationInferCallback(InferCallback):
     def __init__(self):
-        super().__init__(CallbackOrder.External)
+        super().__init__()
         self.valid_masks = []
         self.probabilities = np.zeros((2220, 350, 525))
 

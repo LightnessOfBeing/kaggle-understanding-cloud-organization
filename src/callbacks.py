@@ -22,18 +22,19 @@ class CustomSegmentationInferCallback(InferCallback):
         image, mask = state.batch_in
         output = state.batch_out["logits"]
         print(output.shape)
-        for m in output:
-            if m.shape != (350, 525):
-                m = m.cpu().detach().numpy()
-                print(type(m), m.shape)
-                m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-            self.valid_masks.append(m)
-
+        for mask in output:
+            for m in mask:
+                if m.shape != (350, 525):
+                    m = m.cpu().detach().numpy()
+                    print(type(m), m.shape)
+                    m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+                self.valid_masks.append(m)
+        '''
         for j, probability in enumerate(output):
             if probability.shape != (350, 525):
                 probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
             self.probabilities[j, :, :] = probability
-
+        '''
     def on_stage_end(self, state: "State"):
         class_params = {}
         for class_id in range(4):

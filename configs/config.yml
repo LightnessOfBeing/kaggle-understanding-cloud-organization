@@ -1,6 +1,6 @@
 model_params:
   model: smp.Unet
-  encoder_name: efficientnet-b2
+  encoder_name: efficientnet-b1
   encoder_weights: imagenet
   classes: 4
   activation: null
@@ -21,7 +21,7 @@ stages:
     df_train_name: "train.csv"
     path: "../../input/dataset_320x640"
     image_folder: "train_images"
-    model_name: efficientnet-b2
+    model_name: efficientnet-b1
 
   state_params:
     main_metric: loss

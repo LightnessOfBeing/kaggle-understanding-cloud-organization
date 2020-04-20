@@ -12,7 +12,7 @@ args:
   verbose: True
 
 distributed_params:
-  opt_level: O1
+  opt_level: O2
 
 stages:
   data_params:

@@ -25,7 +25,7 @@ class Experiment(ConfigExperiment):
             df_train = df_train.append(os.path.join(path, df_pl))
 
         if test_mode:
-            df_train = df_train[:150]
+            df_train = df_train[:300]
 
         df_train['label'] = df_train['Image_Label'].apply(lambda x: x.split('_')[1])
         df_train['im_id'] = df_train['Image_Label'].apply(lambda x: x.split('_')[0])
@@ -54,6 +54,6 @@ class Experiment(ConfigExperiment):
         datasets = collections.OrderedDict()
         datasets["train"] = train_dataset
         datasets["valid"] = valid_dataset
-        # datasets["infer"] = valid_dataset
+        datasets["infer"] = valid_dataset
 
         return datasets

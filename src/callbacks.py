@@ -25,7 +25,7 @@ class CustomSegmentationInferCallback(Callback):
         for m in output:
             print(type(m))
             if m.shape != (350, 525):
-                m = cv2.resize(m.numpy(), dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+                m = cv2.resize(m.cpu().detach().numpy(), dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
             self.valid_masks.append(m)
 
         for j, probability in enumerate(output):

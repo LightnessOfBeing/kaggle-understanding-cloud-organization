@@ -23,9 +23,10 @@ class CustomSegmentationInferCallback(Callback):
         output = state.batch_out["logits"]
         print(output.shape)
         for m in output:
-            print(type(m))
             if m.shape != (350, 525):
-                m = cv2.resize(m.cpu().detach().numpy(), dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+                m = m.cpu().detach().numpy()
+                print(type(m), m.shape)
+                m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
             self.valid_masks.append(m)
 
         for j, probability in enumerate(output):

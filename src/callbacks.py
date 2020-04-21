@@ -6,31 +6,24 @@ from catalyst.core import State
 from catalyst.dl import Callback, CallbackOrder, MetricCallback, InferCallback
 
 from src.losses import f_score
-from src.utils import mean_dice_coef, post_process, sigmoid, dice
+from src.utils import mean_dice_coef, post_process, sigmoid, dice, single_dice_coef
 
 
 class CustomSegmentationInferCallback(InferCallback):
     def __init__(self):
         super().__init__()
         self.valid_masks = []
-        self.probabilities = np.zeros((2220, 350, 525))
-        self.index = 0
+        self.probabilities = []
 
     def on_stage_start(self, state: "State"):
         print("Stage 3 started!")
 
     def on_batch_end(self, state: "State"):
-        inputs = state.batch_in
-        print(inputs.keys())
-        print(type(inputs), len(inputs))
-        print(inputs['features'][0])
-        print(inputs['targets'][0])
+        #print(inputs['features'][0]) # images
+        #print(inputs['targets'][0]) # masks
         output = state.batch_out["logits"]
-        input_mask = None
-        #  print(output.shape)
-        for mask in input_mask:
-            print(mask)
-           # print(mask.shape)
+        input_masks = state.batch_in['target']
+        for mask in input_masks:
             for m in mask:
                 if m.shape != (350, 525):
                     m = m.cpu().detach().numpy()
@@ -38,12 +31,10 @@ class CustomSegmentationInferCallback(InferCallback):
                 self.valid_masks.append(m)
 
         for prob in output:
-            print(prob.shape)
             for probability in prob:
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                self.probabilities[self.index, :, :] = probability
-                self.index += 1
+                self.probabilities.append(probability)
 
     def on_stage_end(self, state: "State"):
         class_params = {}
@@ -62,10 +53,7 @@ class CustomSegmentationInferCallback(InferCallback):
 
                     d = []
                     for i, j in zip(masks, self.valid_masks[class_id::4]):
-                        if (i.sum() == 0) & (j.sum() == 0):
-                            d.append(1)
-                        else:
-                            d.append(dice(i, j))
+                            d.append(single_dice_coef(y_pred_bin=i, y_true=j))
 
                     attempts.append((t, ms, np.mean(d)))
 

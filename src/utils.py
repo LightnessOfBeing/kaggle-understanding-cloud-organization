@@ -8,7 +8,8 @@ import torch
 from catalyst.utils import get_activation_fn
 
 
-sigmoid = torch.nn.Sigmoid()
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
 
 def visualize(image, mask, original_image=None, original_mask=None, fontsize: int = 14):

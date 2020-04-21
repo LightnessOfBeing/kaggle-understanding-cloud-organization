@@ -1,6 +1,6 @@
 model_params:
   model: smp.Unet
-  encoder_name: efficientnet-b0
+  encoder_name: &encoder_name efficientnet-b0
   encoder_weights: imagenet
   classes: 4
   activation: null
@@ -15,7 +15,14 @@ distributed_params:
   opt_level: O1
 
 stages:
-  o
+  data_params:
+    batch_size: 8
+    num_workers: 4
+    df_train_name: "train.csv"
+    path: "../../input/dataset_320x640"
+    image_folder: "train_images"
+    model_name: *encoder_name
+    type: train
 
   state_params:
     main_metric: loss
@@ -23,7 +30,7 @@ stages:
 
   stage1:
     callbacks_params:
-      custom_dice_10:
+      dice_kirill:
         callback: CustomDiceCallback
 
       dice_metric:
@@ -66,7 +73,7 @@ stages:
 
   stage2:
     callbacks_params:
-      custom_dice:
+      dice_kirill:
         callback: CustomDiceCallback
 
       dice_metric:
@@ -106,3 +113,20 @@ stages:
       scheduler: ReduceLROnPlateau
       factor: 0.5
       patience: 1
+
+  infer:
+    data_params:
+      batch_size: 8
+      num_workers: 4
+      df_train_name: "train.csv"
+      path: "../../input/dataset_320x640"
+      image_folder: "train_images"
+      model_name: efficientnet-b0
+      type: test
+
+    state_params:
+      num_epochs: 1
+
+    callbacks_params:
+      post_processing:
+        callback: CustomSegmentationInferCallback

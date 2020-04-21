@@ -24,7 +24,8 @@ class CustomSegmentationInferCallback(InferCallback):
         output = state.batch_out["logits"]
         #  print(output.shape)
         for mask in input_mask:
-            print(mask.shape)
+            print(mask)
+           # print(mask.shape)
             for m in mask:
                 if m.shape != (350, 525):
                     m = m.cpu().detach().numpy()

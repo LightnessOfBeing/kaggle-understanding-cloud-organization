@@ -20,7 +20,7 @@ class CustomSegmentationInferCallback(InferCallback):
         print("Stage 3 started!")
 
     def on_batch_end(self, state: "State"):
-        input_images, input_mask = state.batch_in
+        input_images, input_mask = state.batch_in['targets']
         output = state.batch_out["logits"]
         #  print(output.shape)
         for mask in input_mask:

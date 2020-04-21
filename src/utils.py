@@ -131,7 +131,7 @@ def make_mask(df: pd.DataFrame, image_name: str = 'img.jpg', shape: tuple = (320
 def single_dice_coef(y_pred_bin, y_true):
     # shape of y_true and y_pred_bin: (height, width)
     # activation_fn = sigmoid("Sigmoid")
-    y_pred_bin = sigmoid(y_pred_bin)
+    y_pred_bin = torch.nn.Sigmoid()(y_pred_bin)
     y_pred_bin = y_pred_bin.cpu().detach().numpy()
     y_pred_bin = (y_pred_bin > 0.5)
     y_true = y_true.cpu().detach().numpy()

@@ -23,6 +23,8 @@ class CustomSegmentationInferCallback(InferCallback):
         inputs = state.batch_in
         print(inputs.keys())
         print(type(inputs), len(inputs))
+        print(inputs['features'][0])
+        print(inputs['targets'][0])
         output = state.batch_out["logits"]
         input_mask = None
         #  print(output.shape)

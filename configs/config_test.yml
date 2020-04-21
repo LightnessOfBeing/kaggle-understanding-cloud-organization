@@ -22,6 +22,7 @@ stages:
     image_folder: "train_images"
     model_name: *encoder_name
     test_mode: true
+    type: train
 
   state_params:
     main_metric: loss
@@ -68,6 +69,15 @@ stages:
       patience: 2
 
   infer:
+    data_params:
+      batch_size: 8
+      num_workers: 4
+      df_train_name: "train.csv"
+      path: "../../input/dataset_320x640"
+      image_folder: "train_images"
+      model_name: efficientnet-b0
+      type: test
+
     state_params:
       num_epochs: 1
 

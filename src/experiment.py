@@ -18,6 +18,7 @@ class Experiment(ConfigExperiment):
         image_folder = kwargs.get('image_folder', None)
         encoder_name = kwargs.get('model_name', None)
         test_mode = kwargs.get('test_mode', None)
+        type = kwargs.get('type', None)
 
         df_train = pd.read_csv(os.path.join(path, df_train_name))
         if df_pl_name is not None:
@@ -52,8 +53,10 @@ class Experiment(ConfigExperiment):
                                      preprocessing_fn=preprocess_fn)
 
         datasets = collections.OrderedDict()
-        datasets["train"] = train_dataset
-        datasets["valid"] = valid_dataset
-        datasets["infer"] = valid_dataset
+        if type == "train":
+            datasets["train"] = train_dataset
+            datasets["valid"] = valid_dataset
+        else:
+            datasets["infer"] = valid_dataset
 
         return datasets

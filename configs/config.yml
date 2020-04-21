@@ -22,6 +22,7 @@ stages:
     path: "../../input/dataset_320x640"
     image_folder: "train_images"
     model_name: efficientnet-b0
+    type: train
 
   state_params:
     main_metric: loss

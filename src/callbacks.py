@@ -14,6 +14,7 @@ class CustomSegmentationInferCallback(InferCallback):
         super().__init__()
         self.valid_masks = []
         self.probabilities = np.zeros((2220, 350, 525))
+        self.index = 0
 
     def on_stage_start(self, state: "State"):
         print("Stage 3 started!")
@@ -21,7 +22,7 @@ class CustomSegmentationInferCallback(InferCallback):
     def on_batch_end(self, state: "State"):
         input_images, input_mask = state.batch_in
         output = state.batch_out["logits"]
-      #  print(output.shape)
+        #  print(output.shape)
         for mask in input_mask:
             print(mask.shape)
             for m in mask:
@@ -30,13 +31,13 @@ class CustomSegmentationInferCallback(InferCallback):
                     m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.valid_masks.append(m)
 
-
         for prob in output:
             print(prob.shape)
             for probability in prob:
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                self.probabilities[j, :, :] = probability
+                self.probabilities[self.index, :, :] = probability
+                self.index += 1
         '''
     def on_stage_end(self, state: "State"):
         class_params = {}
@@ -87,6 +88,8 @@ class DiceLossCallback(Callback):
                                                    activation='sigmoid')
         state.batch_metrics[self.prefix + "_1e7"] = f_score(outputs, inputs, beta=1., eps=1e-7, threshold=0.5,
                                                    activation='sigmoid')
+
+'''
 
 
 class CustomDiceCallback(MetricCallback):

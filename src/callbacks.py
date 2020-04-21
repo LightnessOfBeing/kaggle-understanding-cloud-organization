@@ -25,13 +25,14 @@ class CustomSegmentationInferCallback(InferCallback):
         input_masks = state.batch_in['targets']
         for mask in input_masks:
             for m in mask:
+                m = m.cpu().detach().numpy()
                 if m.shape != (350, 525):
-                    m = m.cpu().detach().numpy()
                     m = cv2.resize(m, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.valid_masks.append(m)
 
         for prob in output:
             for probability in prob:
+                probability = probability.cpu().detach().numpy()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.probabilities.append(probability)

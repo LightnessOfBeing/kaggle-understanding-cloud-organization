@@ -38,7 +38,7 @@ class CustomSegmentationInferCallback(InferCallback):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.probabilities[self.index, :, :] = probability
                 self.index += 1
-        '''
+
     def on_stage_end(self, state: "State"):
         class_params = {}
         for class_id in range(4):
@@ -72,7 +72,7 @@ class CustomSegmentationInferCallback(InferCallback):
 
             class_params[class_id] = (best_threshold, best_size)
             np.save('./logs/class_params.npy', class_params)
-
+'''
 
 class DiceLossCallback(Callback):
     def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "fscore"):

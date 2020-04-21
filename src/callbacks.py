@@ -22,7 +22,7 @@ class CustomSegmentationInferCallback(InferCallback):
         #print(inputs['features'][0]) # images
         #print(inputs['targets'][0]) # masks
         output = state.batch_out["logits"]
-        input_masks = state.batch_in['target']
+        input_masks = state.batch_in['targets']
         for mask in input_masks:
             for m in mask:
                 if m.shape != (350, 525):

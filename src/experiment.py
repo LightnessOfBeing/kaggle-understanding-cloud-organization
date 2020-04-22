@@ -41,6 +41,7 @@ class Experiment(ConfigExperiment):
         df_test = pd.read_csv(f'{path}/sample_submission.csv')
         df_test['label'] = df_test['Image_Label'].apply(lambda x: x.split('_')[1])
         df_test['im_id'] = df_test['Image_Label'].apply(lambda x: x.split('_')[0])
+        test_ids = df_test['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
 
         preprocess_fn = get_preprocessing_fn(encoder_name, pretrained='imagenet')
 
@@ -52,11 +53,18 @@ class Experiment(ConfigExperiment):
                                      transforms=get_transforms('valid'),
                                      preprocessing_fn=preprocess_fn)
 
+        test_dataset = CloudDataset(df=df_test, path=path, img_ids=test_ids, image_folder="test_images",
+                                    transforms=get_transforms('valid'),
+                                    preprocessing_fn=preprocess_fn)
+
         datasets = collections.OrderedDict()
         if type == "train":
             datasets["train"] = train_dataset
             datasets["valid"] = valid_dataset
-        else:
+        elif type == "postprocess":
             datasets["infer"] = valid_dataset
+        else:
+            print("test_dataset is instantiated")
+            datasets["infer"] = test_dataset
 
         return datasets

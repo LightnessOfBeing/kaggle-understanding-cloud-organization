@@ -6,10 +6,10 @@ from catalyst.core import State
 from catalyst.dl import Callback, CallbackOrder, MetricCallback, InferCallback
 
 from src.losses import f_score
-from src.utils import mean_dice_coef, post_process, sigmoid, dice, single_dice_coef
+from src.utils import mean_dice_coef, post_process, sigmoid, dice, single_dice_coef, mask2rle
 
 
-class CustomSegmentationInferCallback(InferCallback):
+class PostprocessingCallback(InferCallback):
     def __init__(self):
         super().__init__()
         self.valid_masks = []
@@ -19,8 +19,8 @@ class CustomSegmentationInferCallback(InferCallback):
         print("Stage 3 started!")
 
     def on_batch_end(self, state: "State"):
-        #print(inputs['features'][0]) # images
-        #print(inputs['targets'][0]) # masks
+        # print(inputs['features'][0]) # images
+        # print(inputs['targets'][0]) # masks
         output = state.batch_out["logits"]
         input_masks = state.batch_in['targets']
         for mask in input_masks:
@@ -54,7 +54,7 @@ class CustomSegmentationInferCallback(InferCallback):
 
                     d = []
                     for i, j in zip(masks, self.valid_masks[class_id::4]):
-                            d.append(single_dice_coef(y_pred_bin=i, y_true=j))
+                        d.append(single_dice_coef(y_pred_bin=i, y_true=j))
 
                     attempts.append((t, ms, np.mean(d)))
 
@@ -67,8 +67,48 @@ class CustomSegmentationInferCallback(InferCallback):
 
             class_params[class_id] = (best_threshold, best_size)
             np.save('./logs/class_params.npy', class_params)
-'''
 
+
+class CustomInferCallback(InferCallback):
+
+    def __init__(self, path):
+        super().__init__()
+        print("Custom infer callback is initialized")
+        self.path = path
+        self.class_params = dict()
+        self.encoded_pixels = []
+        self.pred_distr = {'-1': 0, '0': 0, '1': 0, '2': 0, '3': 0}
+        self.image_id = 0
+
+    def on_stage_start(self, state: "State"):
+        self.class_params = np.load('./logs/class_params.npy')
+
+    def on_batch_end(self, state: "State"):
+        output = state.batch_out["logits"]
+        for prob in output:
+            for probability in prob:
+                probability = probability.cpu().detach().numpy()
+                if probability.shape != (350, 525):
+                    probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+                prediction, num_predict = post_process(sigmoid(probability),
+                                                       self.class_params[self.image_id % 4][0],
+                                                       self.class_params[self.image_id % 4][1])
+                if num_predict == 0:
+                    self.pred_distr[-1] += 1
+                    self.encoded_pixels.append('')
+                else:
+                    self.pred_distr[self.image_id % 4] += 1
+                    r = mask2rle(prediction)
+                    self.encoded_pixels.append(r)
+
+    def on_stage_end(self, state: "State"):
+        np.save("./logs/pred_distr.npy", self.pred_distr)
+        sub = pd.read_csv(f'{self.path}/sample_submission.csv')
+        sub['EncodedPixels'] = self.encoded_pixels
+        sub.to_csv(f'submission.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+
+
+'''
 class DiceLossCallback(Callback):
     def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "fscore"):
         self.input_key = input_key
@@ -85,7 +125,6 @@ class DiceLossCallback(Callback):
                                                    activation='sigmoid')
 
 '''
-
 
 class CustomDiceCallback(MetricCallback):
     def __init__(

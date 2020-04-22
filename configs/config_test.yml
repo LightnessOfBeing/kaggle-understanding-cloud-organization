@@ -68,19 +68,32 @@ stages:
       scheduler: ReduceLROnPlateau
       patience: 2
 
-  infer:
-    data_params:
-      batch_size: 8
-      num_workers: 4
-      df_train_name: "train.csv"
-      path: "../../input/dataset_320x640"
-      image_folder: "train_images"
-      model_name: efficientnet-b0
-      type: test
+  #infer_postprocess:
+  #  data_params:
+  #    batch_size: 8
+  #    num_workers: 4
+  #    df_train_name: "train.csv"
+  #    path: "../../input/dataset_320x640"
+  #    image_folder: "train_images"
+  #    model_name: efficientnet-b0
+  #    type: test
+  #
+  #  state_params:
+  #    num_epochs: 1
+  #
+  #  callbacks_params:
+  #    post_processing:
+  #      callback: PostprocessCallback
 
+  infer:
     state_params:
       num_epochs: 1
 
+    data_params:
+      type: test
+
     callbacks_params:
-      post_processing:
-        callback: CustomSegmentationInferCallback
+      inference:
+        callback: CustomInferCallback
+        path: "../../input/dataset_320x640"
+        type: test

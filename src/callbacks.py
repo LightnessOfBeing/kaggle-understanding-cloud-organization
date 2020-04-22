@@ -71,10 +71,10 @@ class PostprocessingCallback(InferCallback):
 
 class CustomInferCallback(InferCallback):
 
-    def __init__(self, path):
+    def __init__(self, **kwargs):
         super().__init__()
         print("Custom infer callback is initialized")
-        self.path = path
+        self.path = kwargs.get('path', None)
         self.class_params = dict()
         self.encoded_pixels = []
         self.pred_distr = {'-1': 0, '0': 0, '1': 0, '2': 0, '3': 0}

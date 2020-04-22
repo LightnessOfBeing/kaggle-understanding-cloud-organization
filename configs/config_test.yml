@@ -96,4 +96,3 @@ stages:
       inference:
         callback: CustomInferCallback
         path: "../../input/dataset_320x640"
-        type: test

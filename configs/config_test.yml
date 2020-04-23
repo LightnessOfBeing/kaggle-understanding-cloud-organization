@@ -18,7 +18,7 @@ stages:
     batch_size: 8
     num_workers: 8
     df_train_name: "train.csv"
-    path: "../input/cloudsresizedall/dataset_320x640"
+    path: "../../input/dataset_320x640"
     image_folder: "train_images"
     model_name: *encoder_name
     test_mode: true

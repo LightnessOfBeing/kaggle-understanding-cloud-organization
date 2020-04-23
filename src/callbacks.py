@@ -116,7 +116,7 @@ class CustomInferCallback(InferCallback):
         for prob in self.predictions['logits']:
             print(type(prob), prob)
             for probability in prob:
-                probability = probability.cpu().detach().numpy()
+                # probability = probability.cpu().detach().numpy()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 prediction, num_predict = post_process(sigmoid(probability),

@@ -91,6 +91,7 @@ stages:
 
     data_params:
       type: test
+      batch_size: 64
 
     callbacks_params:
       inference:

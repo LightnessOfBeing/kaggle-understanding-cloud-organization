@@ -10,9 +10,6 @@ args:
   check: False
   verbose: True
 
-distributed_params:
-  opt_level: O1
-
 stages:
   data_params:
     batch_size: 8
@@ -85,7 +82,7 @@ stages:
   #    post_processing:
   #      callback: PostprocessCallback
 
-  infer:
+  stage_final:
     state_params:
       num_epochs: 1
 

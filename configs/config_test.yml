@@ -13,7 +13,7 @@ args:
 stages:
   data_params:
     batch_size: 8
-    num_workers: 4
+    num_workers: 8
     df_train_name: "train.csv"
     path: "../../input/dataset_320x640"
     image_folder: "train_images"
@@ -82,7 +82,7 @@ stages:
   #    post_processing:
   #      callback: PostprocessCallback
 
-  stage_final:
+  infer_final:
     state_params:
       num_epochs: 1
 

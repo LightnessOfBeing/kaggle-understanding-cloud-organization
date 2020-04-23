@@ -87,7 +87,7 @@ class CustomInferCallback(InferCallback):
             self.class_params = np.load('./logs/class_params.npy')
             return
         for i in range(4):
-            self.class_params[i] = (threshold, min_size)
+            self.class_params[i] = (self.threshold, self.min_size)
 
     def on_batch_end(self, state: "State"):
         output = state.batch_out["logits"]

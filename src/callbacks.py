@@ -69,10 +69,10 @@ class PostprocessingCallback(InferCallback):
             np.save('./logs/class_params.npy', class_params)
 
 
-class CustomInferCallback(InferCallback):
+class CustomInferCallback(Callback):
 
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(CallbackOrder.External)
         print("Custom infer callback is initialized")
         self.path = kwargs.get('path', None)
         self.threshold = kwargs.get('threshold', None)

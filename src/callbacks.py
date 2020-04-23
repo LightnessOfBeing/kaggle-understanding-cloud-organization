@@ -88,10 +88,14 @@ class CustomInferCallback(InferCallback):
             return
         for i in range(4):
             self.class_params[i] = (self.threshold, self.min_size)
+
+    def on_batch_start(self, state: "State"):
+        print(state.batch_in.is_cuda)
+        state.batch_in.cuda()
     
     def on_batch_end(self, state: "State"):
-        print(next(state.model.parameters()).is_cuda)
-        print("kek!")
+      #  print(next(state.model.parameters()).is_cuda)
+      #  print("kek!")
         output = state.batch_out["logits"]
         for prob in output:
             for probability in prob:

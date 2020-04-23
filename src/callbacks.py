@@ -1,12 +1,11 @@
 import cv2
 import numpy as np
 import pandas as pd
-import torch
 from catalyst.core import State
-from catalyst.dl import Callback, CallbackOrder, MetricCallback, InferCallback
+from catalyst.dl import MetricCallback, InferCallback
+from tqdm import tqdm
 
-from src.losses import f_score
-from src.utils import mean_dice_coef, post_process, sigmoid, dice, single_dice_coef, mask2rle
+from src.utils import mean_dice_coef, post_process, sigmoid, single_dice_coef, mask2rle
 
 
 class PostprocessingCallback(InferCallback):
@@ -111,10 +110,10 @@ class CustomInferCallback(InferCallback):
                     self.encoded_pixels.append(r)
         '''
 
-    def on_stage_end(self, state: "State"):
+    def on_stage_end(self, state: State):
         print("Processing")
-        for prob in self.predictions['logits']:
-            print(type(prob), prob)
+        for prob in tqdm(self.predictions['logits']):
+           # print(type(prob), prob)
             for probability in prob:
                 # probability = probability.cpu().detach().numpy()
                 if probability.shape != (350, 525):

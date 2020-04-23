@@ -79,7 +79,7 @@ class CustomInferCallback(InferCallback):
         self.min_size = kwargs.get('min_size', None)
         self.class_params = dict()
         self.encoded_pixels = []
-        self.pred_distr = {'-1': 0, '0': 0, '1': 0, '2': 0, '3': 0}
+        self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
 
     def on_stage_start(self, state: "State"):

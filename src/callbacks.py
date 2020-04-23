@@ -120,8 +120,8 @@ class CustomInferCallback(InferCallback):
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 prediction, num_predict = post_process(sigmoid(probability),
-                                                       self.class_params[self.image_id % 4][0],
-                                                       self.class_params[self.image_id % 4][1])
+                                                       threshold=self.threshold,
+                                                       min_size=self.min_size)
                 if num_predict == 0:
                     self.pred_distr[-1] += 1
                     self.encoded_pixels.append('')

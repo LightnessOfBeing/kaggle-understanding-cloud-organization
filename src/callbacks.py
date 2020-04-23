@@ -83,7 +83,7 @@ class CustomInferCallback(InferCallback):
         self.image_id = 0
 
     def on_stage_start(self, state: "State"):
-        if self.threshold is None or self.mask_size is None:
+        if self.threshold is None or self.min_size is None:
             self.class_params = np.load('./logs/class_params.npy')
             return
         for i in range(4):

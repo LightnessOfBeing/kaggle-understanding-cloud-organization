@@ -83,6 +83,7 @@ class CustomInferCallback(Callback):
         self.image_id = 0
 
     def on_stage_start(self, state: "State"):
+        state.model.cuda()
         if self.threshold is None or self.min_size is None:
             self.class_params = np.load('./logs/class_params.npy')
             return
@@ -90,6 +91,7 @@ class CustomInferCallback(Callback):
             self.class_params[i] = (self.threshold, self.min_size)
 
     def on_batch_end(self, state: "State"):
+        print(next(state.model.parameters()).is_cuda)
         print("kek!")
         '''
         output = state.batch_out["logits"]

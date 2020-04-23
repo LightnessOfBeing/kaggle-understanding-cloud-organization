@@ -69,10 +69,10 @@ class PostprocessingCallback(InferCallback):
             np.save('./logs/class_params.npy', class_params)
 
 
-class CustomInferCallback(Callback):
+class CustomInferCallback(InferCallback):
 
     def __init__(self, **kwargs):
-        super().__init__(CallbackOrder.External)
+        super().__init__()
         print("Custom infer callback is initialized")
         self.path = kwargs.get('path', None)
         self.threshold = kwargs.get('threshold', None)
@@ -81,7 +81,7 @@ class CustomInferCallback(Callback):
         self.encoded_pixels = []
         self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
-
+    '''
     def on_stage_start(self, state: "State"):
        # state.model.cuda()
         if self.threshold is None or self.min_size is None:
@@ -89,7 +89,7 @@ class CustomInferCallback(Callback):
             return
         for i in range(4):
             self.class_params[i] = (self.threshold, self.min_size)
-
+    
     def on_batch_end(self, state: "State"):
         print(next(state.model.parameters()).is_cuda)
         print("kek!")
@@ -109,9 +109,24 @@ class CustomInferCallback(Callback):
                     self.pred_distr[self.image_id % 4] += 1
                     r = mask2rle(prediction)
                     self.encoded_pixels.append(r)
-
+        '''
 
     def on_stage_end(self, state: "State"):
+        for prob in self.predictions:
+            for probability in prob:
+                probability = probability.cpu().detach().numpy()
+                if probability.shape != (350, 525):
+                    probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+                prediction, num_predict = post_process(sigmoid(probability),
+                                                       self.class_params[self.image_id % 4][0],
+                                                       self.class_params[self.image_id % 4][1])
+                if num_predict == 0:
+                    self.pred_distr[-1] += 1
+                    self.encoded_pixels.append('')
+                else:
+                    self.pred_distr[self.image_id % 4] += 1
+                    r = mask2rle(prediction)
+                    self.encoded_pixels.append(r)
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f'{self.path}/sample_submission.csv')
         sub['EncodedPixels'] = self.encoded_pixels

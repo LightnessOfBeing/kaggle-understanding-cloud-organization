@@ -91,7 +91,7 @@ class CustomInferCallback(InferCallback):
 
     def on_batch_start(self, state: "State"):
         print(state.batch_in['features'].is_cuda)
-        state.batch_in.cuda()
+       # state.batch_in.cuda()
     
     def on_batch_end(self, state: "State"):
       #  print(next(state.model.parameters()).is_cuda)

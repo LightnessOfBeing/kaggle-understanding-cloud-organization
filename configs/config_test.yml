@@ -92,6 +92,6 @@ stages:
 
     callbacks_params:
       inference:
-        callback: InferCallback
+        callback: CustomInferCallback
         threshold: 0.4
         min_size: 15000

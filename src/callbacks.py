@@ -112,6 +112,7 @@ class CustomInferCallback(InferCallback):
         '''
 
     def on_stage_end(self, state: "State"):
+        print(self.predictions.keys())
         for prob in self.predictions:
             for probability in prob:
                 probability = probability.cpu().detach().numpy()

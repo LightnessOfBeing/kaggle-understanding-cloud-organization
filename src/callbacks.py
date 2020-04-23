@@ -90,6 +90,8 @@ class CustomInferCallback(InferCallback):
             self.class_params[i] = (self.threshold, self.min_size)
 
     def on_batch_end(self, state: "State"):
+        print("kek!")
+        '''
         output = state.batch_out["logits"]
         for prob in output:
             for probability in prob:
@@ -106,6 +108,7 @@ class CustomInferCallback(InferCallback):
                     self.pred_distr[self.image_id % 4] += 1
                     r = mask2rle(prediction)
                     self.encoded_pixels.append(r)
+        '''
 
     def on_stage_end(self, state: "State"):
         np.save("./logs/pred_distr.npy", self.pred_distr)

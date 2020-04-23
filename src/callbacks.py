@@ -112,8 +112,8 @@ class CustomInferCallback(InferCallback):
         '''
 
     def on_stage_end(self, state: "State"):
-        print(self.predictions.keys())
-        for prob in self.predictions:
+        print("Processing")
+        for prob in self.predictions['logits']:
             for probability in prob:
                 probability = probability.cpu().detach().numpy()
                 if probability.shape != (350, 525):

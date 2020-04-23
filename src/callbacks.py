@@ -76,7 +76,7 @@ class CustomInferCallback(InferCallback):
         print("Custom infer callback is initialized")
         self.path = kwargs.get('path', None)
         self.threshold = kwargs.get('threshold', None)
-        self.mask_size = kwargs.get('mask_size', None)
+        self.min_size = kwargs.get('min_size', None)
         self.class_params = dict()
         self.encoded_pixels = []
         self.pred_distr = {'-1': 0, '0': 0, '1': 0, '2': 0, '3': 0}
@@ -85,6 +85,9 @@ class CustomInferCallback(InferCallback):
     def on_stage_start(self, state: "State"):
         if self.threshold is None or self.mask_size is None:
             self.class_params = np.load('./logs/class_params.npy')
+            return
+        for i in range(4):
+            self.class_params[i] = (threshold, min_size)
 
     def on_batch_end(self, state: "State"):
         output = state.batch_out["logits"]

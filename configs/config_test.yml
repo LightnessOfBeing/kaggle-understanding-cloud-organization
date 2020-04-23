@@ -86,13 +86,6 @@ stages:
     state_params:
       num_epochs: 1
 
-    data_params:
-      type: test
-      batch_size: 16
-
     callbacks_params:
       inference:
-        callback: CustomInferCallback
-        path: "../../input/dataset_320x640"
-        threshold: 0.5
-        min_size: 15000
+        callback: InferCallback

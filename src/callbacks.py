@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import cv2
 import numpy as np
@@ -117,16 +118,16 @@ class CustomInferCallback(InferCallback):
         for prob in tqdm(self.predictions['logits']):
             for probability in prob:
                 # probability = probability.cpu().detach().numpy()
-                start_time = time.time()
+                start_time = datetime.now()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                print(f'Resize {time.time() - start_time}')
-                start_time = time.time()
+                print(f'Resize {datetime.now() - start_time}')
+                start_time = datetime.now()
                 prediction, num_predict = post_process(sigmoid(probability),
                                                        threshold=self.threshold,
                                                        min_size=self.min_size)
-                print(f'post_process {time.time() - start_time}')
-                start_time = time.time()
+                print(f'post_process {datetime.now() - start_time}')
+                start_time = datetime.now()
                 if num_predict == 0:
                     self.pred_distr[-1] += 1
                     self.encoded_pixels.append('')
@@ -134,7 +135,7 @@ class CustomInferCallback(InferCallback):
                     self.pred_distr[self.image_id % 4] += 1
                     r = mask2rle(prediction)
                     self.encoded_pixels.append(r)
-                print(f'save {time.time() - start_time}')
+                print(f'save {datetime.now() - start_time}')
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f'{self.path}/sample_submission.csv')
         sub['EncodedPixels'] = self.encoded_pixels

@@ -1,6 +1,3 @@
-import time
-from datetime import datetime
-
 import cv2
 import numpy as np
 import pandas as pd
@@ -17,12 +14,10 @@ class PostprocessingCallback(InferCallback):
         self.valid_masks = []
         self.probabilities = []
 
-    def on_stage_start(self, state: "State"):
+    def on_stage_start(self, state: State):
         print("Stage 3 started!")
 
-    def on_batch_end(self, state: "State"):
-        # print(inputs['features'][0]) # images
-        # print(inputs['targets'][0]) # masks
+    def on_batch_end(self, state: State):
         output = state.batch_out["logits"]
         input_masks = state.batch_in['targets']
         for mask in input_masks:
@@ -39,7 +34,7 @@ class PostprocessingCallback(InferCallback):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 self.probabilities.append(probability)
 
-    def on_stage_end(self, state: "State"):
+    def on_stage_end(self, state: State):
         class_params = {}
         for class_id in range(4):
             print(class_id)
@@ -83,35 +78,6 @@ class CustomInferCallback(InferCallback):
         self.encoded_pixels = [None for i in range(14792)]
         self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
-    '''
-    def on_stage_start(self, state: "State"):
-       # state.model.cuda()
-        if self.threshold is None or self.min_size is None:
-            self.class_params = np.load('./logs/class_params.npy')
-            return
-        for i in range(4):
-            self.class_params[i] = (self.threshold, self.min_size)
-    
-    def on_batch_end(self, state: "State"):
-        print(next(state.model.parameters()).is_cuda)
-        print("kek!")
-        output = state.batch_out["logits"]
-        for prob in output:
-            for probability in prob:
-                probability = probability.cpu().detach().numpy()
-                if probability.shape != (350, 525):
-                    probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                prediction, num_predict = post_process(sigmoid(probability),
-                                                       self.class_params[self.image_id % 4][0],
-                                                       self.class_params[self.image_id % 4][1])
-                if num_predict == 0:
-                    self.pred_distr[-1] += 1
-                    self.encoded_pixels.append('')
-                else:
-                    self.pred_distr[self.image_id % 4] += 1
-                    r = mask2rle(prediction)
-                    self.encoded_pixels.append(r)
-        '''
 
     def on_stage_end(self, state: State):
         print("Processing")
@@ -154,6 +120,7 @@ class DiceLossCallback(Callback):
                                                    activation='sigmoid')
 
 '''
+
 
 class CustomDiceCallback(MetricCallback):
     def __init__(

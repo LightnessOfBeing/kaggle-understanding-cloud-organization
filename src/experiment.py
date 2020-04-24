@@ -64,7 +64,6 @@ class Experiment(ConfigExperiment):
         elif type == "postprocess":
             datasets["infer"] = valid_dataset
         else:
-            print("test_dataset is instantiated")
             datasets["infer"] = test_dataset
 
         return datasets

@@ -4,8 +4,6 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import torch
-from catalyst.utils import get_activation_fn
 
 
 def sigmoid(x):

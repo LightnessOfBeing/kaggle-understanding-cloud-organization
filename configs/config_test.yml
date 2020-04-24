@@ -30,7 +30,7 @@ stages:
 
   stage1:
 
-    callbacks_params: &callbacks_params
+    callbacks_params: &train_callbacks
       dice_metric:
         callback: CustomDiceCallback
 
@@ -64,26 +64,29 @@ stages:
         decoder.*:
           lr: 0.001
 
-    scheduler_params:
+    scheduler_params: &scheduler_params
       scheduler: ReduceLROnPlateau
-      patience: 2
+      factor: 0.5
+      patience: 1
 
-  #infer_postprocess:
-  #  data_params:
-  #    batch_size: 8
-  #    num_workers: 4
-  #    df_train_name: "train.csv"
-  #    path: "../../input/dataset_320x640"
-  #    image_folder: "train_images"
-  #    model_name: efficientnet-b0
-  #    type: test
-  #
-  #  state_params:
-  #    num_epochs: 1
-  #
-  #  callbacks_params:
-  #    post_processing:
-  #      callback: PostprocessCallback
+  stage2:
+    callbacks_params: *train_callbacks
+
+    state_params:
+      num_epochs: 1
+
+    criterion_params:
+      criterion: SymmetricLovaszLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+          lr: 0.0002
+        decoder.*:
+          lr: 0.0008
+
+    scheduler_params: *scheduler_params
 
   infer_final:
     state_params:

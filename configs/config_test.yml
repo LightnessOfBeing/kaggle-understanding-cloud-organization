@@ -98,3 +98,4 @@ stages:
         callback: CustomInferCallback
         threshold: 0.4
         min_size: 15000
+        path: "../../input/dataset_320x640"

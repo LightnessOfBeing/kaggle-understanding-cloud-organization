@@ -1,0 +1,85 @@
+model_params:
+  model: smp.Unet
+  encoder_name: &encoder_name efficientnet-b0
+  encoder_weights: imagenet
+  classes: 4
+  activation: null
+
+args:
+  logdir: "./logs/clouds_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+distributed_params:
+  opt_level: O1
+
+stages:
+  data_params:
+    batch_size: 8
+    num_workers: 4
+    df_train_name: "train.csv"
+    path: "../../input/dataset_320x640"
+    image_folder: "train_images"
+    model_name: *encoder_name
+    type: train
+
+  state_params:
+    main_metric: loss
+    minimize_metric: true
+    num_epochs: 35
+
+  stage1:
+    callbacks_params:
+      dice_metric:
+        callback: CustomDiceCallback
+
+      dice:
+        callback: DiceCallback
+
+      optimizer:
+        callback: OptimizerCallback
+
+      scheduler:
+        callback: SchedulerCallback
+
+      saver:
+        callback: CheckpointCallback
+        save_n_best: 2
+
+      early_stop:
+        callback: EarlyStoppingCallback
+        patience: 6
+        min_delta: 0.0005
+        metric: loss
+
+    criterion_params:
+      criterion: SymmetricLovaszLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+         lr: 0.0002
+        decoder.*:
+          lr: 0.002
+
+    scheduler_params:
+      scheduler: ReduceLROnPlateau
+      factor: 0.4
+      patience: 2
+
+  infer_final:
+    state_params:
+      num_epochs: 1
+
+    data_params:
+      type: test
+      batch_size: 8
+
+    callbacks_params:
+      inference:
+        callback: CustomInferCallback
+        threshold: 0.4
+        min_size: 15000
+        path: "../../input/dataset_320x640"

@@ -78,7 +78,7 @@ def plot_with_augmentation(image, mask, augment):
 def post_process(probability: np.array = None, threshold: float = 0.5, min_size: int = 10):
     mask = cv2.threshold(probability, threshold, 1, cv2.THRESH_BINARY)[1]
     num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
-    predictions = np.zeros(probability.shape, np.float16)
+    predictions = np.zeros(probability.shape, np.uint8)
     num = 0
     for c in range(1, num_component):
         p = (component == c)

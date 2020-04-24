@@ -126,8 +126,8 @@ class CustomInferCallback(InferCallback):
                     self.encoded_pixels.append('')
                 else:
                     self.pred_distr[self.image_id % 4] += 1
-                    r = mask2rle('1 1')
-                    self.encoded_pixels.append(r)
+                  #  r = mask2rle('1 1')
+                    self.encoded_pixels.append('')
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f'{self.path}/sample_submission.csv')
         sub['EncodedPixels'] = self.encoded_pixels

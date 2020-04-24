@@ -117,17 +117,11 @@ class CustomInferCallback(InferCallback):
         print("Processing")
         for prob in tqdm(self.predictions['logits']):
             for probability in prob:
-                # probability = probability.cpu().detach().numpy()
-                start_time = datetime.now()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
-                print(f'Resize {datetime.now() - start_time}')
-                start_time = datetime.now()
                 prediction, num_predict = post_process(sigmoid(probability),
                                                        threshold=self.threshold,
                                                        min_size=self.min_size)
-                print(f'post_process {datetime.now() - start_time}')
-                start_time = datetime.now()
                 if num_predict == 0:
                     self.pred_distr[-1] += 1
                     self.encoded_pixels[self.image_id] = ''
@@ -136,11 +130,11 @@ class CustomInferCallback(InferCallback):
                     r = mask2rle(prediction)
                     self.encoded_pixels[self.image_id] = r
                 self.image_id += 1
-                print(f'save {datetime.now() - start_time}')
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f'{self.path}/sample_submission.csv')
         sub['EncodedPixels'] = self.encoded_pixels
         sub.to_csv(f'submission.csv', columns=['Image_Label', 'EncodedPixels'], index=False)
+        print("Inference is finished")
 
 
 '''

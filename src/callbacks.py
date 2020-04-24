@@ -80,7 +80,7 @@ class CustomInferCallback(InferCallback):
         self.threshold = kwargs.get('threshold', None)
         self.min_size = kwargs.get('min_size', None)
         self.class_params = dict()
-        self.encoded_pixels = []
+        self.encoded_pixels = [None for i in range(14792)]
         self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
     '''
@@ -130,11 +130,12 @@ class CustomInferCallback(InferCallback):
                 start_time = datetime.now()
                 if num_predict == 0:
                     self.pred_distr[-1] += 1
-                    self.encoded_pixels.append('')
+                    self.encoded_pixels[self.image_id] = ''
                 else:
                     self.pred_distr[self.image_id % 4] += 1
                     r = mask2rle(prediction)
-                    self.encoded_pixels.append(r)
+                    self.encoded_pixels[self.image_id] = r
+                self.image_id += 1
                 print(f'save {datetime.now() - start_time}')
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f'{self.path}/sample_submission.csv')

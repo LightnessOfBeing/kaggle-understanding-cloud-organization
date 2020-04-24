@@ -29,7 +29,6 @@ stages:
     minimize_metric: true
 
   stage1:
-
     callbacks_params: &train_callbacks
       dice_metric:
         callback: CustomDiceCallback
@@ -63,9 +62,9 @@ stages:
       optimizer: Adam
       layerwise_params:
         encoder.*:
-          lr: 0.0001
+          lr: 0.0002
         decoder.*:
-          lr: 0.001
+          lr: 0.002
 
     scheduler_params: &scheduler_params
       scheduler: ReduceLROnPlateau

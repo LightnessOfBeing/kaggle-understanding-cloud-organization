@@ -81,7 +81,7 @@ def post_process(probability: np.array = None, threshold: float = 0.5, min_size:
     else:
         mask = probability
     num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
-    predictions = np.zeros((350, 525), np.float32)
+    predictions = np.zeros(probability.shape, np.float32)
     num = 0
     for c in range(1, num_component):
         p = (component == c)

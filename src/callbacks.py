@@ -116,8 +116,8 @@ class CustomInferCallback(InferCallback):
            # print(type(prob), prob)
             for probability in prob:
                 # probability = probability.cpu().detach().numpy()
-                if probability.shape != (350, 525):
-                    probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
+             #   if probability.shape != (350, 525):
+             #       probability = cv2.resize(probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR)
                 prediction, num_predict = post_process(sigmoid(probability),
                                                        threshold=self.threshold,
                                                        min_size=self.min_size)

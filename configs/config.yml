@@ -1,6 +1,6 @@
 model_params:
   model: smp.Unet
-  encoder_name: &encoder_name efficientnet-b3
+  encoder_name: &encoder_name efficientnet-b0
   encoder_weights: imagenet
   classes: 4
   activation: null
@@ -19,7 +19,7 @@ stages:
     batch_size: 8
     num_workers: 4
     df_train_name: "train.csv"
-    path: "../../input/dataset_320x640"
+    path: "../../input/dataset_512x768"
     image_folder: "train_images"
     model_name: *encoder_name
     type: train
@@ -101,4 +101,4 @@ stages:
         callback: CustomInferCallback
         threshold: 0.4
         min_size: 15000
-        path: "../../input/dataset_320x640"
+        path: "../../input/dataset_512x768"

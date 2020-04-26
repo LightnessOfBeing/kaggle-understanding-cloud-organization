@@ -16,7 +16,7 @@ distributed_params:
 
 stages:
   data_params:
-    batch_size: 8
+    batch_size: 4
     num_workers: 4
     df_train_name: "train.csv"
     path: "../../input/dataset_512x768"
@@ -94,7 +94,6 @@ stages:
 
     data_params:
       type: test
-      batch_size: 8
 
     callbacks_params:
       inference:

@@ -12,12 +12,12 @@ args:
   verbose: True
 
 distributed_params:
-  opt_level: O2
+  opt_level: O1
 
 stages:
   data_params:
     batch_size: 4
-    num_workers: 4
+    num_workers: 8
     df_train_name: "train.csv"
     path: "../../input/dataset_512x768"
     image_folder: "train_images"

@@ -4,7 +4,7 @@ import torch.nn as nn
 from src.utils import mean_dice_coef
 
 
-def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation='sigmoid'):
+def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation="sigmoid"):
     """
     Args:
         pr (torch.Tensor): A list of predicted elements
@@ -23,9 +23,7 @@ def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation='sigmoid'):
     elif activation == "softmax2d":
         activation_fn = torch.nn.Softmax2d()
     else:
-        raise NotImplementedError(
-            "Activation implemented for sigmoid and softmax2d"
-        )
+        raise NotImplementedError("Activation implemented for sigmoid and softmax2d")
 
     pr = activation_fn(pr)
 
@@ -36,13 +34,14 @@ def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation='sigmoid'):
     fp = torch.sum(pr) - tp
     fn = torch.sum(gt) - tp
 
-    score = ((1 + beta ** 2) * tp + eps) \
-            / ((1 + beta ** 2) * tp + beta ** 2 * fn + fp + eps)
+    score = ((1 + beta ** 2) * tp + eps) / (
+        (1 + beta ** 2) * tp + beta ** 2 * fn + fp + eps
+    )
 
     return score
 
 
-'''
+"""
 class DiceLoss(nn.Module):
     __name__ = 'dice_loss'
 
@@ -53,13 +52,13 @@ class DiceLoss(nn.Module):
 
     def forward(self, y_pr, y_gt):
         return 1 - f_score(y_pr, y_gt, beta=1., eps=self.eps, threshold=0.5, activation=self.activation)
-'''
+"""
 
 
 class DiceLoss(nn.Module):
-    __name__ = 'dice_loss'
+    __name__ = "dice_loss"
 
-    def __init__(self, eps=1e-7, activation='sigmoid'):
+    def __init__(self, eps=1e-7, activation="sigmoid"):
         super().__init__()
         self.activation = activation
         self.eps = eps
@@ -69,11 +68,11 @@ class DiceLoss(nn.Module):
 
 
 class BCEDiceLossCustom(DiceLoss):
-    __name__ = 'bce_dice_loss'
+    __name__ = "bce_dice_loss"
 
-    def __init__(self, eps=1e-7, activation='sigmoid'):
+    def __init__(self, eps=1e-7, activation="sigmoid"):
         super().__init__(eps, activation)
-        self.bce = nn.BCEWithLogitsLoss(reduction='mean')
+        self.bce = nn.BCEWithLogitsLoss(reduction="mean")
 
     def forward(self, y_pr, y_gt):
         dice = super().forward(y_pr, y_gt)

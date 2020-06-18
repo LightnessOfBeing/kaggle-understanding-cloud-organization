@@ -107,6 +107,7 @@ def mean(values, ignore_nan=False, empty=0):
 
 # ([2, 4, 320, 640]) B x C x H x W
 
+
 def symmetric_lovasz(outputs, targets):
     return (_lovasz_hinge(outputs, targets) + _lovasz_hinge(-outputs, 1 - targets)) / 2
 

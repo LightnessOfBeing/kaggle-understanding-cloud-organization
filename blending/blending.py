@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 import argparse
 import os
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from src.utils import rle_decode, mask2rle
+from src.utils import mask2rle, rle_decode
 
 if __name__ == "__main__":
-    '''
+    """
     Used for blending submissions
     !python blending.py --path my_path
-    '''
+    """
 
     parser = argparse.ArgumentParser(description="blend submissions")
-    parser.add_argument("--path", help="path to submissions folder", type=str, default='./submissions')
+    parser.add_argument(
+        "--path", help="path to submissions folder", type=str, default="./submissions"
+    )
     parser.add_argument("--name", help="suffix", type=str, default=None)
     parser.add_argument("--vote_threshold", type=int, default=None)
 
@@ -40,14 +43,16 @@ if __name__ == "__main__":
         mask_final = np.where(mask >= threshold, 1, 0)
         if mask_final.sum() == 0:
             pred_distr[-1] += 1
-            encoded_pixels.append('')
+            encoded_pixels.append("")
         else:
             pred_distr[i % 4] += 1
             r = mask2rle(mask_final)
             encoded_pixels.append(r)
 
-    print(f"empty={pred_distr[-1]} fish={pred_distr[0]} flower={pred_distr[1]} gravel={pred_distr[2]} sugar={pred_distr[3]}")
-    non_empty = pred_distr[0] + pred_distr[1]+ pred_distr[2]+ pred_distr[3]
+    print(
+        f"empty={pred_distr[-1]} fish={pred_distr[0]} flower={pred_distr[1]} gravel={pred_distr[2]} sugar={pred_distr[3]}"
+    )
+    non_empty = pred_distr[0] + pred_distr[1] + pred_distr[2] + pred_distr[3]
     total = non_empty + pred_distr[-1]
     print(f"% of non-empty masks {round(non_empty / total, 4)}")
 
@@ -58,4 +63,3 @@ if __name__ == "__main__":
     else:
         name = "_" + args.name
     sub_final.to_csv(f"./submission_blend{name}.csv", index=None)
-

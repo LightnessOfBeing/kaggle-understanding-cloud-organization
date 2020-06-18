@@ -4,6 +4,10 @@ import torch.nn as nn
 from src.utils import mean_dice_coef
 
 
+def identity(x):
+    return x
+
+
 def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation="sigmoid"):
     """
     Args:
@@ -17,7 +21,7 @@ def f_score(pr, gt, beta=1, eps=1e-7, threshold=None, activation="sigmoid"):
     """
 
     if activation is None or activation == "none":
-        activation_fn = lambda x: x
+        activation_fn = identity
     elif activation == "sigmoid":
         activation_fn = torch.nn.Sigmoid()
     elif activation == "softmax2d":

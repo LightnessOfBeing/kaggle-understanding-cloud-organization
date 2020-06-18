@@ -26,7 +26,7 @@ if __name__ == "__main__":
     threshold = args.vote_threshold
     filenames = os.listdir(args.path)
     dataframes = [pd.read_csv(os.path.join(args.path, name)) for name in filenames]
-    if threshold == None:
+    if threshold is None:
         threshold = len(dataframes) // 2 + 1
     test_samples = len(dataframes[0])
 

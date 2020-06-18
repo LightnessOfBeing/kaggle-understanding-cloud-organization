@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 import pandas as pd
-from catalyst.core import State
-from catalyst.dl import InferCallback, MetricCallback
+from catalyst.dl import InferCallback, MetricCallback, State
 from tqdm import tqdm
 
 from src.utils import mask2rle, mean_dice_coef, post_process, sigmoid, single_dice_coef
@@ -122,7 +121,7 @@ class CustomInferCallback(InferCallback):
         sub = pd.read_csv(f"{self.path}/sample_submission.csv")
         sub["EncodedPixels"] = self.encoded_pixels
         sub.to_csv(
-            f"submission.csv", columns=["Image_Label", "EncodedPixels"], index=False
+            "submission.csv", columns=["Image_Label", "EncodedPixels"], index=False
         )
         print("Inference is finished")
 

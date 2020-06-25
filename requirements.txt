@@ -1,0 +1,10 @@
+torch==1.4.0
+opencv_python==4.2.0.32
+catalyst==20.4.1
+pandas==1.0.1
+tqdm==4.43.0
+matplotlib==3.2.1
+numpy==1.18.4
+segmentation_models_pytorch==0.1.0
+albumentations==0.4.3
+scikit_learn==0.23.1

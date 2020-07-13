@@ -12,9 +12,9 @@ from src.dataset import CloudDataset
 
 class Experiment(ConfigExperiment):
     def get_datasets(self, **kwargs):
+        path = kwargs.get("path", None)
         df_train_name = kwargs.get("df_train_name", None)
         df_pl_name = kwargs.get("df_pl_name", None)
-        path = kwargs.get("path", None)
         image_folder = kwargs.get("image_folder", None)
         encoder_name = kwargs.get("model_name", None)
         test_mode = kwargs.get("test_mode", None)
@@ -22,8 +22,9 @@ class Experiment(ConfigExperiment):
 
         df_train = pd.read_csv(os.path.join(path, df_train_name))
         if df_pl_name is not None:
-            df_pl = pd.read_csv(df_pl_name)
-            df_train = df_train.append(os.path.join(path, df_pl))
+            df_pl = pd.read_csv(os.path.join(path, df_pl_name))
+            df_train = df_train.append(df_pl)
+            print("Pseudo-labels added to train df")
 
         if test_mode:
             df_train = df_train[:150]
@@ -49,7 +50,7 @@ class Experiment(ConfigExperiment):
             test_size=0.1,
         )
 
-        df_test = pd.read_csv(f"{path}/sample_submission.csv")
+        df_test = pd.read_csv(os.path.join(path, "sample_submission.csv"))
         df_test["label"] = df_test["Image_Label"].apply(lambda x: x.split("_")[1])
         df_test["im_id"] = df_test["Image_Label"].apply(lambda x: x.split("_")[0])
         test_ids = (

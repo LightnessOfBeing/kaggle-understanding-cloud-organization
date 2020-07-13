@@ -1,0 +1,106 @@
+model_params:
+  model: smp.Unet
+  encoder_name: &encoder_name efficientnet-b0
+  encoder_weights: imagenet
+  classes: 4
+  activation: null
+
+args:
+  logdir: "./logs/clouds_logs"
+  seed: 65
+  check: False
+  verbose: True
+
+distributed_params:
+  opt_level: O1
+
+stages:
+  data_params:
+    batch_size: 8
+    num_workers: 4
+    path: "../../input/dataset_320x640"
+    df_train_name: "train.csv"
+    model_name: *encoder_name
+    type: train
+    image_folder: "all_images"
+    df_pl_name: "train_pl_0.3_0.7_60.csv"
+
+  state_params:
+    main_metric: loss
+    minimize_metric: true
+    num_epochs: 30
+
+  stage1:
+
+    callbacks_params: &train_callbacks
+      dice_metric:
+        callback: CustomDiceCallback
+
+      dice:
+        callback: DiceCallback
+
+      optimizer:
+        callback: OptimizerCallback
+
+      scheduler:
+        callback: SchedulerCallback
+
+      saver:
+        callback: CheckpointCallback
+        save_n_best: 2
+
+      early_stop:
+        callback: EarlyStoppingCallback
+        patience: 5
+        min_delta: 0.0005
+        metric: loss
+
+    criterion_params:
+      criterion: BCEDiceLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+         lr: 0.0002
+        decoder.*:
+          lr: 0.002
+
+    scheduler_params: &scheduler_params
+      scheduler: ReduceLROnPlateau
+      factor: 0.5
+      patience: 1
+
+  stage2:
+
+    callbacks_params: *train_callbacks
+
+    state_params:
+      num_epochs: 30
+
+    criterion_params:
+      criterion: SymmetricLovaszLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+          lr: 0.0002
+        decoder.*:
+          lr: 0.0008
+
+    scheduler_params: *scheduler_params
+
+  infer_final:
+    state_params:
+      num_epochs: 1
+
+    data_params:
+      type: test
+
+    callbacks_params:
+      inference:
+        callback: CustomInferCallback
+        threshold: 0.4
+        min_size: 15000
+        path: "../../input/dataset_320x640"

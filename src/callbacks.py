@@ -1,8 +1,10 @@
 import cv2
 import numpy as np
 import pandas as pd
-from catalyst.dl import InferCallback, MetricCallback, State
+from catalyst import utils
+from catalyst.dl import InferCallback, MetricCallback, State, Callback, CallbackOrder
 from tqdm import tqdm
+import os
 
 from src.utils import mask2rle, mean_dice_coef, post_process, sigmoid, single_dice_coef
 
@@ -58,8 +60,6 @@ class PostprocessingCallback(InferCallback):
                     23000,
                     25000,
                     27000,
-                    30000,
-                    50000,
                 ]:
                     masks = []
                     for i in range(class_id, len(self.probabilities), 4):
@@ -126,6 +126,91 @@ class CustomInferCallback(InferCallback):
         print("Inference is finished")
 
 
+class PseudoLabelsCallback(InferCallback):
+    def __init__(self, **kwargs):
+        super().__init__()
+        print("Pseudolabels callback is initialized")
+        self.data_path = kwargs.get("data_path", None)
+        self.data_folder = kwargs.get("data_folder", None)
+        self.sub_name = kwargs.get("sub_name", None)
+        self.low_threshold = kwargs.get("low_threshold", None)
+        self.high_threshold = kwargs.get("high_threshold", None)
+        # TODO self.always_take = kwargs.get("always_take", None)
+        self.good_pixel_threshold = kwargs.get("good_pixel_threshold", None)
+        self.mask_size_threshold = kwargs.get("mask_size_threshold", None)
+        self.activation_threshold = kwargs.get("activation_threshold", None)
+        self.encoded_pixels = []
+        self.image_id = 0
+
+    def on_stage_end(self, state: State):
+        print("Processing")
+        preds_write = [False, False, False, False]
+        allow = True
+        names_pl = []
+        encoded_pixels_pl = []
+        sub = pd.read_csv(os.path.join(self.data_path, self.sub_name))
+        print(self.activation_threshold)
+        for prob in tqdm(self.predictions["logits"]):
+            for probability in prob:
+
+                probability = sigmoid(probability)
+                pseudo_label = np.copy(probability)
+                ones_condition = (pseudo_label < self.low_threshold) | (
+                    pseudo_label > self.high_threshold
+                )
+
+                #  print(ones_condition.sum())
+                #  print(pseudo_label.sum())
+                pseudo_label[ones_condition] = 1
+                #  print(pseudo_label.sum())
+                pseudo_label[~ones_condition] = 0
+                # print(pseudo_label.sum())
+                # print("\n\n")
+                val = (
+                    pseudo_label.sum()
+                    * 100
+                    / (pseudo_label.shape[0] * pseudo_label.shape[1])
+                )
+                #  print(val)
+                if val < self.good_pixel_threshold:
+                    allow = False
+
+                preds_write[self.image_id % 4] = (
+                    probability,
+                    sub.iloc[self.image_id]["Image_Label"],
+                )
+                self.image_id += 1
+
+                if self.image_id % 4 == 0:
+                    if allow:
+                        print(self.activation_threshold)
+                        for probability_new, name in preds_write:
+                            names_pl.append(name)
+                            predict_pl, num_predict_pl = post_process(
+                                probability_new,
+                                self.activation_threshold,
+                                self.mask_size_threshold,
+                            )
+                            if num_predict_pl == 0:
+                                encoded_pixels_pl.append("")
+                            else:
+                                r_pl = mask2rle(predict_pl)
+                                encoded_pixels_pl.append(r_pl)
+                    allow = True
+
+        df_pseudo_labels = pd.DataFrame(
+            {"Image_Label": names_pl, "EncodedPixels": encoded_pixels_pl}
+        )
+        df_pseudo_labels.to_csv(
+            os.path.join(
+                self.data_path,
+                f"train_pl_{self.low_threshold}_{self.high_threshold}_{self.good_pixel_threshold}.csv",
+            ),
+            index=False,
+        )
+        print("Pseudo-labels generation has finished!")
+
+
 """
 class DiceLossCallback(Callback):
     def __init__(self, input_key: str = "targets", output_key: str = "logits", prefix: str = "fscore"):
@@ -163,3 +248,14 @@ class CustomDiceCallback(MetricCallback):
             threshold=threshold,
             activation=activation,
         )
+
+
+class CheckpointLoader(Callback):
+    def __init__(self, checkpoint_path):
+        super().__init__(CallbackOrder.Other)
+        self.checkpoint_path = checkpoint_path
+
+    def on_stage_start(self, state: State):
+        print(f"Checkpoint {self.checkpoint_path} is being loaded!")
+        checkpoint = utils.load_checkpoint(self.checkpoint_path)
+        utils.unpack_checkpoint(checkpoint, model=state.model)

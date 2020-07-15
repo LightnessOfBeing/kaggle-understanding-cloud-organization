@@ -8,11 +8,13 @@ from src.utils import make_mask, to_tensor
 
 
 class CloudDataset(Dataset):
-    def __init__(self, df, path, img_ids, image_folder, transforms, preprocessing_fn):
+    def __init__(self, df, path, img_ids, image_folder, transforms, preprocessing_fn, height, width):
         self.df = df
         self.img_ids = img_ids
         self.path = path
         self.data_folder = os.path.join(self.path, image_folder)
+        self.height = height
+        self.width = width
         bad_imgs = [
             "046586a.jpg",
             "1588d4c.jpg",
@@ -36,7 +38,7 @@ class CloudDataset(Dataset):
 
     def __getitem__(self, idx):
         image_name = self.img_ids[idx]
-        mask = make_mask(self.df, image_name)
+        mask = make_mask(self.df, image_name, (self.height, self.width))
         image_path = os.path.join(self.data_folder, image_name)
         img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

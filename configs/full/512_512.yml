@@ -18,12 +18,13 @@ stages:
   data_params:
     batch_size: 8
     num_workers: 4
-    path: "../../input/dataset_320x640"
+    path: "../../input/dataset_512x768"
     df_train_name: "train.csv"
     model_name: *encoder_name
     type: train
-    image_folder: "all_images"
-    df_pl_name: "train_pl_0.3_0.7_60.csv"
+    image_folder: "train_images"
+    height: 512
+    width: 768
 
   state_params:
     main_metric: loss
@@ -101,6 +102,6 @@ stages:
     callbacks_params:
       inference:
         callback: CustomInferCallback
-        threshold: 0.4
-        min_size: 15000
-        path: "../../input/dataset_320x640"
+        threshold: 0.3
+        min_size: 10000
+        path: ../../input/dataset_512x768

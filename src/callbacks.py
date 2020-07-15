@@ -96,10 +96,10 @@ class CustomInferCallback(InferCallback):
         self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
 
-    def on_stage_end(self, state: State):
-        print("Processing")
-        for prob in tqdm(self.predictions["logits"]):
+    def on_batch_end(self, state: State):
+        for prob in state.batch_out["logits"]:
             for probability in prob:
+                probability = probability.detach().cpu().numpy()
                 if probability.shape != (350, 525):
                     probability = cv2.resize(
                         probability, dsize=(525, 350), interpolation=cv2.INTER_LINEAR
@@ -117,6 +117,9 @@ class CustomInferCallback(InferCallback):
                     r = mask2rle(prediction)
                     self.encoded_pixels[self.image_id] = r
                 self.image_id += 1
+
+
+    def on_stage_end(self, state: State):
         np.save("./logs/pred_distr.npy", self.pred_distr)
         sub = pd.read_csv(f"{self.path}/sample_submission.csv")
         sub["EncodedPixels"] = self.encoded_pixels
@@ -149,7 +152,6 @@ class PseudoLabelsCallback(InferCallback):
         names_pl = []
         encoded_pixels_pl = []
         sub = pd.read_csv(os.path.join(self.data_path, self.sub_name))
-        print(self.activation_threshold)
         for prob in tqdm(self.predictions["logits"]):
             for probability in prob:
 
@@ -159,19 +161,13 @@ class PseudoLabelsCallback(InferCallback):
                     pseudo_label > self.high_threshold
                 )
 
-                #  print(ones_condition.sum())
-                #  print(pseudo_label.sum())
                 pseudo_label[ones_condition] = 1
-                #  print(pseudo_label.sum())
                 pseudo_label[~ones_condition] = 0
-                # print(pseudo_label.sum())
-                # print("\n\n")
                 val = (
                     pseudo_label.sum()
                     * 100
                     / (pseudo_label.shape[0] * pseudo_label.shape[1])
                 )
-                #  print(val)
                 if val < self.good_pixel_threshold:
                     allow = False
 
@@ -252,7 +248,7 @@ class CustomDiceCallback(MetricCallback):
 
 class CheckpointLoader(Callback):
     def __init__(self, checkpoint_path):
-        super().__init__(CallbackOrder.Other)
+        super().__init__(CallbackOrder.External)
         self.checkpoint_path = checkpoint_path
 
     def on_stage_start(self, state: State):

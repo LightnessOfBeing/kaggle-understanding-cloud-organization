@@ -22,16 +22,20 @@ stages:
     df_train_name: "train.csv"
     model_name: *encoder_name
     type: train
-    image_folder: "all_images"
-    df_pl_name: "train_pl_0.3_0.7_60.csv"
+
 
   state_params:
     main_metric: loss
     minimize_metric: true
     num_epochs: 30
 
-  stage2:
-    callbacks_params:
+  stage1:
+
+    data_params:
+      image_folder: "all_images"
+      df_pl_name: "train_pl_0.3_0.7_80.csv"
+
+    callbacks_params: &train_callbacks
       dice_metric:
         callback: CustomDiceCallback
 
@@ -44,10 +48,6 @@ stages:
       scheduler:
         callback: SchedulerCallback
 
-      loader:
-        callback: CheckpointLoader
-        checkpoint_path:  "../../checkpoints/stage1.320.pl.03.07.60.pth"
-
       saver:
         callback: CheckpointCallback
         save_n_best: 2
@@ -57,6 +57,29 @@ stages:
         patience: 5
         min_delta: 0.0005
         metric: loss
+
+    criterion_params:
+      criterion: BCEDiceLoss
+
+    optimizer_params:
+      optimizer: Adam
+      layerwise_params:
+        encoder.*:
+         lr: 0.0002
+        decoder.*:
+          lr: 0.002
+
+    scheduler_params: &scheduler_params
+      scheduler: ReduceLROnPlateau
+      factor: 0.5
+      patience: 1
+
+  stage2:
+
+    data_params:
+      image_folder: "train_images"
+
+    callbacks_params: *train_callbacks
 
     state_params:
       num_epochs: 30
@@ -72,10 +95,7 @@ stages:
         decoder.*:
           lr: 0.0008
 
-    scheduler_params:
-      scheduler: ReduceLROnPlateau
-      factor: 0.5
-      patience: 1
+    scheduler_params: *scheduler_params
 
   infer_final:
     state_params:
@@ -83,6 +103,7 @@ stages:
 
     data_params:
       type: test
+      data_folder: "test_images"
 
     callbacks_params:
       inference:

@@ -17,11 +17,13 @@ stages:
   data_params:
     batch_size: 8
     num_workers: 4
-    path: ../../input/dataset_320x640
+    path: ../../input/dataset_512x768
     image_folder: train_images
     df_train_name: "train.csv"
     model_name: *encoder_name
     type: test
+    height: 512
+    width: 768
 
   infer_final:
     state_params:
@@ -34,10 +36,10 @@ stages:
     callbacks_params:
       loader:
         callback: CheckpointCallback
-        resume:  logs/clouds_logs/checkpoints/best.pth
+        resume:  logs/clouds_logs/checkpoints/stage2.21.pth
 
       inference:
         callback: CustomInferCallback
         threshold: 0.4
         min_size: 15000
-        path: "../../input/dataset_320x640"
+        path: ../../input/dataset_512x768

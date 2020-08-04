@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from src.utils import mask2rle, rle_decode
 
+
 if __name__ == "__main__":
     """
     Used for blending submissions

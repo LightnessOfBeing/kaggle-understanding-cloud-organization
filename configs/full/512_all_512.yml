@@ -6,7 +6,6 @@ model_params:
   activation: null
 
 args:
-  logdir: "./logs/clouds_logs"
   seed: 65
   check: False
   verbose: True
@@ -22,9 +21,9 @@ stages:
     df_train_name: "train.csv"
     model_name: *encoder_name
     type: train
-    image_folder: "train_images"
     height: 512
     width: 768
+
 
   state_params:
     main_metric: loss
@@ -32,6 +31,10 @@ stages:
     num_epochs: 30
 
   stage1:
+
+    data_params:
+      image_folder: "all_images"
+      df_pl_name: "train_pl_10_0_0_5000.csv"
 
     callbacks_params: &train_callbacks
       dice_metric:
@@ -74,6 +77,9 @@ stages:
 
   stage2:
 
+    data_params:
+      image_folder: "train_images"
+
     callbacks_params: *train_callbacks
 
     state_params:
@@ -98,10 +104,11 @@ stages:
 
     data_params:
       type: test
+      data_folder: "test_images"
 
     callbacks_params:
       inference:
         callback: CustomInferCallback
         threshold: 0.4
-        min_size: 15000
-        path: ../../input/dataset_512x768
+        min_size: 5000
+        path: "../../input/dataset_512x768"

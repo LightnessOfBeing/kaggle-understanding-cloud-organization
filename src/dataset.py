@@ -8,7 +8,17 @@ from src.utils import make_mask, to_tensor
 
 
 class CloudDataset(Dataset):
-    def __init__(self, df, path, img_ids, image_folder, transforms, preprocessing_fn, height, width):
+    def __init__(
+        self,
+        df,
+        path,
+        img_ids,
+        image_folder,
+        transforms,
+        preprocessing_fn,
+        height,
+        width,
+    ):
         self.df = df
         self.img_ids = img_ids
         self.path = path

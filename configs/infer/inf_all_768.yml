@@ -1,0 +1,49 @@
+model_params:
+  model: smp.Unet
+  encoder_name: &encoder_name efficientnet-b0
+  classes: 4
+  activation: null
+
+args:
+  seed: 65
+  check: False
+  verbose: True
+
+distributed_params:
+  opt_level: O1
+
+stages:
+  data_params:
+    batch_size: 8
+    num_workers: 8
+    df_train_name: train.csv
+    path: ../../input/dataset_768x1152
+    image_folder: train_images
+    model_name: *encoder_name
+    test_mode: true
+    type: test
+    height: 768
+    width: 1152
+
+  infer_pseudo_labels:
+    state_params:
+      num_epochs: 1
+
+    data_params:
+      type: test
+      batch_size: 8
+
+    callbacks_params:
+      loader:
+        callback: CheckpointCallback
+        resume: ../../checkpoints/768_768.pth
+
+      pseudo_labels:
+        callback: PseudoLabelsCallback
+        data_path: ../../input/dataset_768x1152
+        sub_name: sample_submission.csv
+        low_threshold: 10
+        high_threshold: 0
+        good_pixel_threshold: 0
+        mask_size_threshold: 11000
+        activation_threshold: 0.4

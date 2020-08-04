@@ -5,7 +5,6 @@ model_params:
   activation: null
 
 args:
-  logdir: ./logs/clouds_logs
   seed: 65
   check: False
   verbose: True
@@ -18,11 +17,13 @@ stages:
     batch_size: 8
     num_workers: 8
     df_train_name: train.csv
-    path: ../../input/dataset_320x640
+    path: ../../input/dataset_352x512
     image_folder: train_images
     model_name: *encoder_name
     test_mode: true
     type: test
+    height: 352
+    width: 512
 
   infer_pseudo_labels:
     state_params:
@@ -35,14 +36,14 @@ stages:
     callbacks_params:
       loader:
         callback: CheckpointCallback
-        resume: ../../checkpoints/stage2.nopl.320.pth
+        resume: ../../checkpoints/352_352.pth
 
       pseudo_labels:
         callback: PseudoLabelsCallback
-        data_path: ../../input/dataset_320x640
+        data_path: ../../input/dataset_352x512
         sub_name: sample_submission.csv
         low_threshold: 0.3
         high_threshold: 0.7
-        good_pixel_threshold: 80
-        mask_size_threshold: 15000
+        good_pixel_threshold: 70
+        mask_size_threshold: 2500
         activation_threshold: 0.4

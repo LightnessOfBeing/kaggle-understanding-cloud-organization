@@ -1,10 +1,11 @@
+import os
+
 import cv2
 import numpy as np
 import pandas as pd
 from catalyst import utils
 from catalyst.dl import InferCallback, MetricCallback, State, Callback, CallbackOrder
-from tqdm import tqdm
-import os
+from pytorch_toolbelt.inference import tta
 
 from src.utils import mask2rle, mean_dice_coef, post_process, sigmoid, single_dice_coef
 
@@ -84,9 +85,9 @@ class PostprocessingCallback(InferCallback):
             np.save("./logs/class_params.npy", class_params)
 
 
-class CustomInferCallback(InferCallback):
+class CustomInferCallback(Callback):
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(CallbackOrder.External)
         print("Custom infer callback is initialized")
         self.path = kwargs.get("path", None)
         self.threshold = kwargs.get("threshold", None)
@@ -95,8 +96,19 @@ class CustomInferCallback(InferCallback):
         self.encoded_pixels = [None for i in range(14792)]
         self.pred_distr = {-1: 0, 0: 0, 1: 0, 2: 0, 3: 0}
         self.image_id = 0
+        self.tta = kwargs.get("tta", None)
+
+    def on_stage_start(self, state: "State"):
+        if self.tta is not None:
+            # state.model = tta.SegmentationTTAWrapper(state.model, tta.aliases.d4_transform())
+            state.model = tta.TTAWrapper(state.model, tta.d4_image2mask)
+            print(f"tta model created! type={type(state.model)}")
 
     def on_batch_end(self, state: State):
+        #  print(type(state.model))
+        # if not isinstance(state.model, tta.wrappers.SegmentationTTAWrapper):
+        #    print("Not instance of tta")
+        #    exit()
         for prob in state.batch_out["logits"]:
             for probability in prob:
                 probability = probability.detach().cpu().numpy()
@@ -117,7 +129,6 @@ class CustomInferCallback(InferCallback):
                     r = mask2rle(prediction)
                     self.encoded_pixels[self.image_id] = r
                 self.image_id += 1
-
 
     def on_stage_end(self, state: State):
         np.save("./logs/pred_distr.npy", self.pred_distr)
@@ -142,19 +153,17 @@ class PseudoLabelsCallback(InferCallback):
         self.good_pixel_threshold = kwargs.get("good_pixel_threshold", None)
         self.mask_size_threshold = kwargs.get("mask_size_threshold", None)
         self.activation_threshold = kwargs.get("activation_threshold", None)
-        self.encoded_pixels = []
+        self.encoded_pixels_pl = []
+        self.names_pl = []
         self.image_id = 0
+        self.sub = pd.read_csv(os.path.join(self.data_path, self.sub_name))
 
-    def on_stage_end(self, state: State):
-        print("Processing")
+    def on_batch_end(self, state: State):
         preds_write = [False, False, False, False]
         allow = True
-        names_pl = []
-        encoded_pixels_pl = []
-        sub = pd.read_csv(os.path.join(self.data_path, self.sub_name))
-        for prob in tqdm(self.predictions["logits"]):
+        for prob in state.batch_out["logits"]:
             for probability in prob:
-
+                probability = probability.detach().cpu().numpy()
                 probability = sigmoid(probability)
                 pseudo_label = np.copy(probability)
                 ones_condition = (pseudo_label < self.low_threshold) | (
@@ -173,38 +182,41 @@ class PseudoLabelsCallback(InferCallback):
 
                 preds_write[self.image_id % 4] = (
                     probability,
-                    sub.iloc[self.image_id]["Image_Label"],
+                    self.sub.iloc[self.image_id]["Image_Label"],
                 )
                 self.image_id += 1
 
                 if self.image_id % 4 == 0:
                     if allow:
-                        print(self.activation_threshold)
                         for probability_new, name in preds_write:
-                            names_pl.append(name)
+                            self.names_pl.append(name)
                             predict_pl, num_predict_pl = post_process(
                                 probability_new,
                                 self.activation_threshold,
                                 self.mask_size_threshold,
                             )
                             if num_predict_pl == 0:
-                                encoded_pixels_pl.append("")
+                                self.encoded_pixels_pl.append("")
                             else:
                                 r_pl = mask2rle(predict_pl)
-                                encoded_pixels_pl.append(r_pl)
+                                self.encoded_pixels_pl.append(r_pl)
                     allow = True
 
+    def on_stage_end(self, state: State):
+        print("Processing")
         df_pseudo_labels = pd.DataFrame(
-            {"Image_Label": names_pl, "EncodedPixels": encoded_pixels_pl}
+            {"Image_Label": self.names_pl, "EncodedPixels": self.encoded_pixels_pl}
         )
         df_pseudo_labels.to_csv(
             os.path.join(
                 self.data_path,
-                f"train_pl_{self.low_threshold}_{self.high_threshold}_{self.good_pixel_threshold}.csv",
+                f"train_pl_{self.low_threshold}_{self.high_threshold}_{self.good_pixel_threshold}_{self.mask_size_threshold}.csv",
             ),
             index=False,
         )
-        print("Pseudo-labels generation has finished!")
+        print(
+            f"Pseudo-labels generation has finished! {len(df_pseudo_labels) / 4} labels were created!"
+        )
 
 
 """
@@ -248,7 +260,7 @@ class CustomDiceCallback(MetricCallback):
 
 class CheckpointLoader(Callback):
     def __init__(self, checkpoint_path):
-        super().__init__(CallbackOrder.External)
+        super().__init__(CallbackOrder.Internal)
         self.checkpoint_path = checkpoint_path
 
     def on_stage_start(self, state: State):

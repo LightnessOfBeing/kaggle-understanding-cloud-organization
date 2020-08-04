@@ -6,7 +6,6 @@ model_params:
   activation: null
 
 args:
-  logdir: "./logs/clouds_logs"
   seed: 65
   check: False
   verbose: True
@@ -18,22 +17,21 @@ stages:
   data_params:
     batch_size: 8
     num_workers: 4
-    path: "../../input/dataset_512x768"
+    path: &path "../../input/dataset_768x1152"
     df_train_name: "train.csv"
     model_name: *encoder_name
     type: train
     image_folder: "train_images"
-    height: 512
-    width: 768
+    height: 768
+    width: 1152
 
   state_params:
     main_metric: loss
     minimize_metric: true
     num_epochs: 30
 
-  stage1:
-
-    callbacks_params: &train_callbacks
+  stage2:
+    callbacks_params:
       dice_metric:
         callback: CustomDiceCallback
 
@@ -46,6 +44,10 @@ stages:
       scheduler:
         callback: SchedulerCallback
 
+      loader:
+        callback: CheckpointLoader
+        checkpoint_path:  "../../checkpoints/352_pl.pth"
+
       saver:
         callback: CheckpointCallback
         save_n_best: 2
@@ -55,26 +57,6 @@ stages:
         patience: 5
         min_delta: 0.0005
         metric: loss
-
-    criterion_params:
-      criterion: BCEDiceLoss
-
-    optimizer_params:
-      optimizer: Adam
-      layerwise_params:
-        encoder.*:
-         lr: 0.0002
-        decoder.*:
-          lr: 0.002
-
-    scheduler_params: &scheduler_params
-      scheduler: ReduceLROnPlateau
-      factor: 0.5
-      patience: 1
-
-  stage2:
-
-    callbacks_params: *train_callbacks
 
     state_params:
       num_epochs: 30
@@ -90,7 +72,10 @@ stages:
         decoder.*:
           lr: 0.0008
 
-    scheduler_params: *scheduler_params
+    scheduler_params:
+      scheduler: ReduceLROnPlateau
+      factor: 0.5
+      patience: 1
 
   infer_final:
     state_params:
@@ -103,5 +88,5 @@ stages:
       inference:
         callback: CustomInferCallback
         threshold: 0.4
-        min_size: 15000
-        path: ../../input/dataset_512x768
+        min_size: 11000
+        path: *path

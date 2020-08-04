@@ -36,10 +36,10 @@ stages:
     callbacks_params:
       loader:
         callback: CheckpointCallback
-        resume:  logs/clouds_logs/checkpoints/stage2.21.pth
+        resume: ../../checkpoints/stage2_512_pl030780_512.pth
 
       inference:
         callback: CustomInferCallback
-        threshold: 0.4
-        min_size: 15000
+        threshold: 0.35
+        min_size: 10000
         path: ../../input/dataset_512x768

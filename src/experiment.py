@@ -27,7 +27,9 @@ class Experiment(ConfigExperiment):
             if df_pl_name is not None:
                 df_pl = pd.read_csv(os.path.join(path, df_pl_name))
                 df_train = df_train.append(df_pl)
-                print("Pseudo-labels added to train df")
+                print(
+                    f"Pseudo-labels named {df_pl_name} {len(df_pl) / 4} added to train df"
+                )
 
             if test_mode:
                 df_train = df_train[:150]
@@ -37,11 +39,11 @@ class Experiment(ConfigExperiment):
 
             id_mask_count = (
                 df_train.loc[~df_train["EncodedPixels"].isnull(), "Image_Label"]
-                    .apply(lambda x: x.split("_")[0])
-                    .value_counts()
-                    .reset_index()
-                    .rename(columns={"index": "img_id", "Image_Label": "count"})
-                    .sort_values(["count", "img_id"])
+                .apply(lambda x: x.split("_")[0])
+                .value_counts()
+                .reset_index()
+                .rename(columns={"index": "img_id", "Image_Label": "count"})
+                .sort_values(["count", "img_id"])
             )
             assert len(id_mask_count["img_id"].values) == len(
                 id_mask_count["img_id"].unique()
@@ -58,9 +60,9 @@ class Experiment(ConfigExperiment):
         df_test["im_id"] = df_test["Image_Label"].apply(lambda x: x.split("_")[0])
         test_ids = (
             df_test["Image_Label"]
-                .apply(lambda x: x.split("_")[0])
-                .drop_duplicates()
-                .values
+            .apply(lambda x: x.split("_")[0])
+            .drop_duplicates()
+            .values
         )
 
         preprocess_fn = get_preprocessing_fn(encoder_name, pretrained="imagenet")
@@ -74,7 +76,7 @@ class Experiment(ConfigExperiment):
                 transforms=get_transforms("train"),
                 preprocessing_fn=preprocess_fn,
                 height=height,
-                width=width
+                width=width,
             )
 
             valid_dataset = CloudDataset(
@@ -85,7 +87,7 @@ class Experiment(ConfigExperiment):
                 transforms=get_transforms("valid"),
                 preprocessing_fn=preprocess_fn,
                 height=height,
-                width=width
+                width=width,
             )
 
         test_dataset = CloudDataset(
@@ -96,7 +98,7 @@ class Experiment(ConfigExperiment):
             transforms=get_transforms("valid"),
             preprocessing_fn=preprocess_fn,
             height=height,
-            width=width
+            width=width,
         )
 
         datasets = collections.OrderedDict()

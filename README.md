@@ -7,7 +7,7 @@ https://www.kaggle.com/c/understanding_cloud_organization
 private/public score of 0.65800/0.67007
 
 # How to run 
-You can access original dataset here: https://www.kaggle.com/c/understanding_cloud_organization/data
+You can access original dataset here: https://www.kaggle.com/c/understanding_cloud_organization/data  
 Resized datasets with pseudo-labels and different resolutions are not released yet.
 
 To run the pipeline with a configuration file from the project root folder:

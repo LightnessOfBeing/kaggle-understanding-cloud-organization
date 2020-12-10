@@ -10,6 +10,13 @@ https://www.kaggle.com/c/understanding_cloud_organization
 
 <img src="https://storage.googleapis.com/kaggle-media/competitions/MaxPlanck/Teaser_AnimationwLabels.gif" width="60%" height="60%" align="center">
 
+You need to classify cloud organization patterns from satellite images. If successful, you’ll help scientists to better understand how clouds will shape our future climate. This research will guide the development of next-generation models which could reduce uncertainties in climate projections.
+
+# Poster 
+
+There is a poster, which describes our approach end-to-end:
+
+
 # Approach
 
 ## Preprocessing

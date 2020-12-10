@@ -2,18 +2,15 @@
 # Kaggle Understanding cloud organization
 https://www.kaggle.com/c/understanding_cloud_organization
 
-95th place solution (out of 1,538 teams Top 6.2%)
+**95th place solution (out of 1,538 teams Top 6.2%)**
 
-private/public score of 0.65800/0.67007
+**private/public score of 0.65800/0.67007**
 
-# How to run 
-You can access original dataset here: https://www.kaggle.com/c/understanding_cloud_organization/data  
-Resized datasets with pseudo-labels and different resolutions are not released yet.
+# Competition description
 
-To run the pipeline with a configuration file from the project root folder:
-```
-catalyst-dl run --expdir src --logdir {LOGDIR_NAME} --config {CONFIG_PATH}
-```
+<img src="https://storage.googleapis.com/kaggle-media/competitions/MaxPlanck/Teaser_AnimationwLabels.gif" width="60%" height="60%" align="center">
+
+# Approach
 
 ## Preprocessing
 1. Removing bad images
@@ -92,6 +89,15 @@ After adding an artificial submission to ensemble the % of non-empty masks rose 
 * Weights averaging between folds.
 * Weights averaging between k best scores of a single fold model.
 * Ensembling bigger number of models.
+
+# How to run 
+You can access original dataset here: https://www.kaggle.com/c/understanding_cloud_organization/data  
+Resized datasets with pseudo-labels and different resolutions are not released yet.
+
+To run the pipeline with a configuration file from the project root folder:
+```
+catalyst-dl run --expdir src --logdir {LOGDIR_NAME} --config {CONFIG_PATH}
+```
 
 ## Credits
 

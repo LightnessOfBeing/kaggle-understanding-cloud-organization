@@ -14,7 +14,7 @@ You need to classify cloud organization patterns from satellite images. If succe
 
 # Poster 
 
-There is a  ![link](https://github.com/LightnessOfBeing/kaggle-understanding-cloud-organization/blob/master/poster/Poster_Clouds.pdf) to the poster, which describes our approach end-to-end.
+There is a  [link](https://github.com/LightnessOfBeing/kaggle-understanding-cloud-organization/blob/master/poster/Poster_Clouds.pdf) to the poster, which describes our approach end-to-end.
 
 # Approach
 

@@ -1,7 +1,7 @@
 albumentations==0.4.3
 catalyst==20.4.1
 matplotlib==3.2.1
-numpy==1.18.4
+numpy==1.22.0
 opencv_python==4.2.0.32
 pandas==1.0.1
 scikit_learn==0.23.1
